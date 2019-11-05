@@ -12,7 +12,6 @@ const phases = {
 	  prod: {namespace:'c2mvws-prod'   , name: `${name}`, phase: 'prod' , changeId:changeId, suffix: '-prod'             , instance: `${name}-prod`             , version:`${version}-${changeId}`, tag:`prod-${version}`            , host: 'c2mvws.pathfinder.gov.bc.ca'}
 }
 
-
 process.on('unhandledRejection', (reason) => {
   console.log(reason);
   process.exit(1);
