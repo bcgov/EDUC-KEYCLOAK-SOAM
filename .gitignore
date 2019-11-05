@@ -4,3 +4,5 @@ node_modules
 .project
 .classpath
 .settings
+.pipeline/.node/
+.pipeline/node_modules/
