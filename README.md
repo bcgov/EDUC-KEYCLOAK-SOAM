@@ -4,13 +4,13 @@
 ```
 #Switch to the correct project/namespace (tools)
 #Navigate to /.pipeline folder in project
-./npmw build -- --pr=48
+./npmw build -- --pr=2
 
 ```
 
 ## Deploying
 ```
-./npmw deploy -- --pr=48 --env=dev
+./npmw deploy -- --pr=2 --env=dev
 
 ```
 
