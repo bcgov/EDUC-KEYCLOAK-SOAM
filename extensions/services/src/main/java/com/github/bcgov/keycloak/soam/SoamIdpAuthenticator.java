@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.github.bcgov.keycloak;
+package com.github.bcgov.keycloak.soam;
 
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
