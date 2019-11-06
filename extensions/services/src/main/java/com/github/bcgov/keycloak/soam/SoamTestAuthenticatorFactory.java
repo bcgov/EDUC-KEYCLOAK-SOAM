@@ -38,7 +38,7 @@ public class SoamTestAuthenticatorFactory implements AuthenticatorFactory {
     public static final String ROLE_NAME = PROVIDER_ID+".role";
     public static final String ERROR_URL = PROVIDER_ID+".error-url";
     
-    static RequireRoleByClient SINGLETON = new RequireRoleByClient();
+    static SoamTestAuthenticator SINGLETON = new SoamTestAuthenticator();
 
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
 
