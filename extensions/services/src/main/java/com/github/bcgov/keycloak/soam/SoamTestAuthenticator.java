@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.github.bcgov.keycloak.authenticators.soam;
+package com.github.bcgov.keycloak.soam;
 
 import java.io.ByteArrayInputStream;
 
