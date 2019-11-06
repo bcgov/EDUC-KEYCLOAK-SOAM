@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.github.bcgov.keycloak.authenticators;
+package com.github.bcgov.keycloak.authenticators.soam;
 
 import java.util.ArrayList;
 import java.util.List;
