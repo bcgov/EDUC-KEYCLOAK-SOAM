@@ -41,7 +41,7 @@ import java.util.Map;
  */
 public class SoamIdpAuthenticator extends AbstractIdpAuthenticator {
 
-    private static Logger logger = Logger.getLogger(IdpCreateUserIfUniqueAuthenticator.class);
+    private static Logger logger = Logger.getLogger(SoamIdpAuthenticator.class);
 
 
     @Override
