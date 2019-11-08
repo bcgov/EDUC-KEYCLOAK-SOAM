@@ -122,6 +122,10 @@ public class SoamUserStorageProvider implements UserStorageProvider,UserLookupPr
 	public List<UserModel> searchForUser(Map<String, String> params, RealmModel realm, int firstResult,
 			int maxResults) {
 		logger.info("SOAM: Inside searchForUser 4");
+		logger.info("Params for search 4: ");
+		for(String s: params.keySet()) {
+			logger.info("Key: " + s + " Value: " + params.get(s) + "\n");	
+		}
 		return null;
 	}
 
