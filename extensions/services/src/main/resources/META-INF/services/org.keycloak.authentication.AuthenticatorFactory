@@ -1,4 +1,2 @@
 com.github.bcgov.keycloak.authenticators.RequireRoleByClientFactory
 com.github.bcgov.keycloak.IdpCreateUserIfUniqueAuthenticatorFactory
-com.github.bcgov.keycloak.soam.SoamIdpAuthenticatorFactory
-com.github.bcgov.keycloak.soam.SoamTestAuthenticatorFactory
