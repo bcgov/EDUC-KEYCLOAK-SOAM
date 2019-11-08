@@ -189,6 +189,9 @@ public class IdpCreateUserIfUniqueAuthenticator extends AbstractIdpAuthenticator
     	logger.info("Broker User " + brokerContext.getUsername());
     	logger.info("Broker ID " + brokerContext.getId());
     	logger.info("Broker Model User " + brokerContext.getModelUsername());
+        String userIdAttrName =brokerContext.getIdpConfig().getAlias()+ "_user_guid";
+    	String userIdAttrValue = brokerContext.getUserAttribute(userIdAttrName);
+    	logger.info("User GUID: " + userIdAttrValue);
     }
     
     @Override
