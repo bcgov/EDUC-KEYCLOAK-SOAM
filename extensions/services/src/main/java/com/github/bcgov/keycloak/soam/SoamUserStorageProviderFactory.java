@@ -8,6 +8,7 @@ import org.keycloak.storage.UserStorageProviderFactory;
 public class SoamUserStorageProviderFactory implements UserStorageProviderFactory<SoamUserStorageProvider> {
 
 	private static Logger logger = Logger.getLogger(SoamUserStorageProviderFactory.class);
+	static SoamUserStorageProvider SINGLETON = new SoamUserStorageProvider();
 	
 	public SoamUserStorageProviderFactory() {
 		logger.info("SOAM Fac: Inside SoamUserStorageProviderFactory");
@@ -16,7 +17,7 @@ public class SoamUserStorageProviderFactory implements UserStorageProviderFactor
 	@Override
 	public SoamUserStorageProvider create(KeycloakSession session, ComponentModel model) {
 		logger.info("SOAM Fac: Inside create");
-		return null;
+		return SINGLETON;
 	}
 
 	@Override
