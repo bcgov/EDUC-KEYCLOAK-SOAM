@@ -1,1 +1,1 @@
-com.github.bcgov.keycloak.soam.SoamUserStorageProvider
+com.github.bcgov.keycloak.soam.SoamUserStorageProviderFactory
