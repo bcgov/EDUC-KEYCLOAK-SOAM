@@ -175,7 +175,20 @@ public class IdpCreateUserIfUniqueAuthenticator extends AbstractIdpAuthenticator
 
     // Empty method by default. This exists, so subclass can override and add callback after new user is registered through social
     protected void userRegisteredSuccess(AuthenticationFlowContext context, UserModel registeredUser, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-
+    	logger.info("SOAM: inside userRegisteredSuccess");
+    	logger.info("User Model: ");
+    	logger.info(registeredUser.getEmail());
+    	logger.info(registeredUser.getFirstName());
+    	logger.info(registeredUser.getId());
+    	logger.info(registeredUser.getServiceAccountClientLink());
+		logger.info("Attributes for user: ");
+		for(String s: registeredUser.getAttributes().keySet()) {
+			logger.info("Key: " + s + " Value: " + registeredUser.getAttributes().get(s) + "\n");	
+		}
+    	logger.info(registeredUser.getUsername());
+    	logger.info("Broker User " + brokerContext.getUsername());
+    	logger.info("Broker ID " + brokerContext.getId());
+    	logger.info("Broker Model User " + brokerContext.getModelUsername());
     }
     
     @Override
