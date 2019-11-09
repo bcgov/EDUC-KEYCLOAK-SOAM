@@ -16,6 +16,8 @@
 ```
 - Create an identity provider which is BC DevExchange Keycloak
 - Create a test client
+- In realm settings, turn off login with email and turn on duplicate emails (Needs to be done in both the SOAM & BCDevExchange KC)
+
 ```
 
 ## Cleanup
