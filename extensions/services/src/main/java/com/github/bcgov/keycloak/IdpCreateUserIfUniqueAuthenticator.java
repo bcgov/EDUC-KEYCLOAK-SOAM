@@ -59,6 +59,11 @@ public class IdpCreateUserIfUniqueAuthenticator extends AbstractIdpAuthenticator
             return;
         }
         
+        logger.info("Context values: ");
+        for(String s: brokerContext.getContextData().keySet()) {
+        	logger.info("Context data key: " + s + " value: " + brokerContext.getContextData().get(s));	
+        }
+        
         String userIdAttrName =brokerContext.getIdpConfig().getAlias()+ "_user_guid";
         String usernameAttrName =brokerContext.getIdpConfig().getAlias()+ "_username";
         String userIdAttrValue = brokerContext.getUserAttribute(userIdAttrName);
