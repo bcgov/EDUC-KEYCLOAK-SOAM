@@ -17,6 +17,11 @@
 
 package com.github.bcgov.keycloak;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.Response;
+
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -25,16 +30,12 @@ import org.keycloak.authentication.authenticators.broker.util.SerializedBrokered
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
-import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.representations.JsonWebToken;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.messages.Messages;
-
-import javax.ws.rs.core.Response;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -63,6 +64,16 @@ public class IdpCreateUserIfUniqueAuthenticator extends AbstractIdpAuthenticator
         for(String s: brokerContext.getContextData().keySet()) {
         	logger.info("Context data key: " + s + " value: " + brokerContext.getContextData().get(s));	
         }
+        
+        JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
+        
+        logger.info("JWT print: " + token.toString());
+        logger.info("JWT print guid: " + token.getSubject());
+        logger.info("Claims: ");
+        for(String s: token.getOtherClaims().keySet()) {
+        	logger.info("Claim key: " + s + " value: " + token.getOtherClaims().get(s));	
+        }
+        
         
         String userIdAttrName =brokerContext.getIdpConfig().getAlias()+ "_user_guid";
         String usernameAttrName =brokerContext.getIdpConfig().getAlias()+ "_username";
