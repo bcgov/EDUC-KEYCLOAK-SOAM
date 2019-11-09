@@ -62,6 +62,7 @@ public class IdpCreateUserIfUniqueAuthenticator extends AbstractIdpAuthenticator
         String userIdAttrName =brokerContext.getIdpConfig().getAlias()+ "_user_guid";
         String usernameAttrName =brokerContext.getIdpConfig().getAlias()+ "_username";
         String userIdAttrValue = brokerContext.getUserAttribute(userIdAttrName);
+        logger.info("User GUID: " + userIdAttrValue);
         
         String username = getUsername(context, serializedCtx, brokerContext);
         if (username == null) {
@@ -140,6 +141,7 @@ public class IdpCreateUserIfUniqueAuthenticator extends AbstractIdpAuthenticator
     	// check by IdP userid
         String userIdAttrName =brokerContext.getIdpConfig().getAlias()+ "_user_guid";
     	String userIdAttrValue = brokerContext.getUserAttribute(userIdAttrName);
+    	logger.info("User GUID: " + userIdAttrValue);
     	List<UserModel> existingUserByAttr=context.getSession().users().searchForUserByUserAttribute(userIdAttrName, userIdAttrValue, context.getRealm());
     	if (existingUserByAttr.size() == 1) {
     		return new ExistingUserInfo(existingUserByAttr.get(0).getId(), userIdAttrName, userIdAttrValue);
@@ -168,7 +170,11 @@ public class IdpCreateUserIfUniqueAuthenticator extends AbstractIdpAuthenticator
     }
 
     protected String getUsername(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
+    	logger.info("SOAM: inside getUsername");
         RealmModel realm = context.getRealm();
+        String val = realm.isRegistrationEmailAsUsername() ? brokerContext.getEmail() : brokerContext.getModelUsername();
+        logger.info("Username value: " + val);
+
         return realm.isRegistrationEmailAsUsername() ? brokerContext.getEmail() : brokerContext.getModelUsername();
     }
 
