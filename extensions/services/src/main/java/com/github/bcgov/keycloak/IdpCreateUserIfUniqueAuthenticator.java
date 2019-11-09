@@ -50,7 +50,7 @@ public class IdpCreateUserIfUniqueAuthenticator extends AbstractIdpAuthenticator
 
     @Override
     protected void authenticateImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-
+    	logger.info("SOAM: inside authenticateImpl");
         KeycloakSession session = context.getSession();
         RealmModel realm = context.getRealm();
 
@@ -136,7 +136,7 @@ public class IdpCreateUserIfUniqueAuthenticator extends AbstractIdpAuthenticator
     protected ExistingUserInfo checkExistingUser(AuthenticationFlowContext context, String username, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
     	//brokerContext.getBrokerUserId()
     	//context.getSession().users().searchForUserByUserAttribute(attrName, attrValue, realm)
-    	
+    	logger.info("SOAM: inside checkExistingUser");
     	// check by IdP userid
         String userIdAttrName =brokerContext.getIdpConfig().getAlias()+ "_user_guid";
     	String userIdAttrValue = brokerContext.getUserAttribute(userIdAttrName);
