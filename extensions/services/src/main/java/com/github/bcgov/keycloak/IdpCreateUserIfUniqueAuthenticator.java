@@ -99,7 +99,9 @@ public class IdpCreateUserIfUniqueAuthenticator extends AbstractIdpAuthenticator
             federatedUser.setEmail(brokerContext.getEmail());
             federatedUser.setFirstName(brokerContext.getFirstName());
             federatedUser.setLastName(brokerContext.getLastName());
-
+            
+            
+            
             for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
                 federatedUser.setAttribute(attr.getKey(), attr.getValue());
             }
