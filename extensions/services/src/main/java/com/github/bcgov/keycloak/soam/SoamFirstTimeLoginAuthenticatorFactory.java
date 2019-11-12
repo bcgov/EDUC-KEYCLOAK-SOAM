@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class SoamFirstTimeLoginAuthenticatorFactory implements AuthenticatorFactory {
 
-    public static final String PROVIDER_ID = "bcgov-idp-create-user-if-unique";
+    public static final String PROVIDER_ID = "bcgov-soam-authenticator";
     static SoamFirstTimeLoginAuthenticator SINGLETON = new SoamFirstTimeLoginAuthenticator();
 
 
@@ -84,7 +84,7 @@ public class SoamFirstTimeLoginAuthenticatorFactory implements AuthenticatorFact
 
     @Override
     public String getDisplayType() {
-        return "Soam Authenticator";
+        return "SOAM Authenticator";
     }
 
     @Override
