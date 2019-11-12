@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class SoamFirstTimeLoginAuthenticatorFactory implements AuthenticatorFactory {
 
-    public static final String PROVIDER_ID = "bcgov-soam-authenticator";
+    public static final String PROVIDER_ID = "bcgov-soam-authenticator"; 
     static SoamFirstTimeLoginAuthenticator SINGLETON = new SoamFirstTimeLoginAuthenticator();
 
 
