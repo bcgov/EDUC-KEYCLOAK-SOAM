@@ -64,7 +64,7 @@ public class SoamFirstTimeLoginAuthenticatorFactory implements AuthenticatorFact
 
     @Override
     public String getReferenceCategory() {
-        return "createUserIfUnique";
+        return "soamAuthenticators";
     }
 
     @Override
@@ -84,12 +84,12 @@ public class SoamFirstTimeLoginAuthenticatorFactory implements AuthenticatorFact
 
     @Override
     public String getDisplayType() {
-        return "Create User If Unique (BCGOV)";
+        return "Soam Authenticator";
     }
 
     @Override
     public String getHelpText() {
-        return "Detect if there is existing Keycloak account with same email like identity provider. If no, create new user";
+        return "Full SOAM Authentication";
     }
 
     @Override
