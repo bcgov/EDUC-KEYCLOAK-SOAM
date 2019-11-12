@@ -104,7 +104,6 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
                 federatedUser.setAttribute(attr.getKey(), attr.getValue());
             }
 
-            federatedUser.setSingleAttribute("MARCO_WAS_HERE", "WHATUP NATHAN");
             federatedUser.setSingleAttribute(userIdAttrName, userIdAttrValue);
 
             //AuthenticatorConfigModel config = context.getAuthenticatorConfig();
