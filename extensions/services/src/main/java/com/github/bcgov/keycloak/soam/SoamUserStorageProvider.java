@@ -1,5 +1,6 @@
 package com.github.bcgov.keycloak.soam;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,8 @@ import org.keycloak.models.UserModel;
 import org.keycloak.storage.UserStorageProvider;
 import org.keycloak.storage.user.UserLookupProvider;
 import org.keycloak.storage.user.UserQueryProvider;
+
+import com.github.bcgov.keycloak.soam.model.SoamUserModel;
 
 public class SoamUserStorageProvider implements UserStorageProvider,UserLookupProvider, UserQueryProvider {
 
@@ -27,84 +30,108 @@ public class SoamUserStorageProvider implements UserStorageProvider,UserLookupPr
 	@Override
 	public int getUsersCount(RealmModel realm) {
 		logger.info("SOAM: Inside getUsersCount");
-		return 0;
+		return 1;
 	}
 
 	@Override
 	public List<UserModel> getUsers(RealmModel realm) {
 		logger.info("SOAM: Inside getUsers 1");
-		return null;
+		List<UserModel> list = new ArrayList<UserModel>();
+		list.add(getTestUserModel());
+		return list;
 	}
 
 	@Override
 	public List<UserModel> getUsers(RealmModel realm, int firstResult, int maxResults) {
 		logger.info("SOAM: Inside getUsers 2");
-		return null;
+		List<UserModel> list = new ArrayList<UserModel>();
+		list.add(getTestUserModel());
+		return list;
 	}
 
 	@Override
 	public List<UserModel> searchForUser(String search, RealmModel realm) {
 		logger.info("SOAM: Inside searchForUser 1");
-		return null;
+		List<UserModel> list = new ArrayList<UserModel>();
+		list.add(getTestUserModel());
+		return list;
 	}
 
 	@Override
 	public List<UserModel> searchForUser(String search, RealmModel realm, int firstResult, int maxResults) {
 		logger.info("SOAM: Inside searchForUser 2");
-		return null;
+		List<UserModel> list = new ArrayList<UserModel>();
+		list.add(getTestUserModel());
+		return list;
 	}
 
 	@Override
 	public List<UserModel> searchForUser(Map<String, String> params, RealmModel realm) {
 		logger.info("SOAM: Inside searchForUser 3");
-		return null;
+		List<UserModel> list = new ArrayList<UserModel>();
+		list.add(getTestUserModel());
+		return list;
 	}
 
 	@Override
 	public List<UserModel> searchForUser(Map<String, String> params, RealmModel realm, int firstResult,
 			int maxResults) {
 		logger.info("SOAM: Inside searchForUser 4");
-		logger.info("Params for search 4: ");
-		for(String s: params.keySet()) {
-			logger.info("Key: " + s + " Value: " + params.get(s) + "\n");	
-		}
-		return null;
+		List<UserModel> list = new ArrayList<UserModel>();
+		list.add(getTestUserModel());
+		return list;
 	}
 
 	@Override
 	public List<UserModel> getGroupMembers(RealmModel realm, GroupModel group, int firstResult, int maxResults) {
 		logger.info("SOAM: Inside getGroupMembers");
-		return null;
+		List<UserModel> list = new ArrayList<UserModel>();
+		list.add(getTestUserModel());
+		return list;
 	}
 
 	@Override
 	public List<UserModel> getGroupMembers(RealmModel realm, GroupModel group) {
 		logger.info("SOAM: Inside getGroupMembers 2");
-		return null;
+		List<UserModel> list = new ArrayList<UserModel>();
+		list.add(getTestUserModel());
+		return list;
 	}
 
 	@Override
 	public List<UserModel> searchForUserByUserAttribute(String attrName, String attrValue, RealmModel realm) {
 		logger.info("SOAM: Inside searchForUserByUserAttribute");
-		return null;
+		List<UserModel> list = new ArrayList<UserModel>();
+		list.add(getTestUserModel());
+		return list;
 	}
 
 	@Override
 	public UserModel getUserById(String id, RealmModel realm) {
 		logger.info("SOAM: Inside getUserById");
-		return null;
+		return getTestUserModel();
 	}
 
 	@Override
 	public UserModel getUserByUsername(String username, RealmModel realm) {
 		logger.info("SOAM: Inside getUserByUsername");
-		return null;
+		return getTestUserModel();
 	}
 
 	@Override
 	public UserModel getUserByEmail(String email, RealmModel realm) {
 		logger.info("SOAM: Inside getUserByEmail");
-		return null;
+		return getTestUserModel();
+	}
+	
+	private UserModel getTestUserModel() {
+		SoamUserModel model = new SoamUserModel();
+		model.setSingleAttribute("MARCOWASHERE", "THEBOYSINTHEHOUSE");
+		model.setEmail("asdfasdf@someplace.com");
+		model.setFirstName("Eric");
+		model.setLastName("Sermon");
+		model.setUsername("edub");
+		return model;
 	}
 
 }
