@@ -105,6 +105,11 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             }
 
             federatedUser.setSingleAttribute(userIdAttrName, userIdAttrValue);
+            
+            federatedUser.setSingleAttribute("PEN", "123456789");
+            federatedUser.setSingleAttribute("AssuranceLvl", "2");
+            federatedUser.setSingleAttribute("Address", "2033 Someplace, Somewhere, BC");
+            federatedUser.setSingleAttribute("DOB", "1990-10-16");
 
             //AuthenticatorConfigModel config = context.getAuthenticatorConfig();
             //if (config != null && Boolean.parseBoolean(config.getConfig().get(IdpCreateUserIfUniqueAuthenticatorFactory.REQUIRE_PASSWORD_UPDATE_AFTER_REGISTRATION))) {
