@@ -150,7 +150,6 @@ public class SoamUserStorageProvider implements UserStorageProvider,UserLookupPr
 		model.setUsername(username);
 		Date date = new Date();
 		model.setCreatedTimestamp(date.getTime());
-		model.setFederationLink("7e4f77b7-51a8-4626-b54a-770bf8d83798");
 		model.setEnabled(true);
 		model.setEmailVerified(true);
 		return model;
