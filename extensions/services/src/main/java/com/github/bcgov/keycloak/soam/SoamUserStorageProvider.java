@@ -101,9 +101,9 @@ public class SoamUserStorageProvider implements UserStorageProvider,UserLookupPr
 	@Override
 	public List<UserModel> searchForUserByUserAttribute(String attrName, String attrValue, RealmModel realm) {
 		logger.info("SOAM: Inside searchForUserByUserAttribute");
-		List<UserModel> list = new ArrayList<UserModel>();
-		list.add(getTestUserModel());
-		return list;
+		//List<UserModel> list = new ArrayList<UserModel>();
+		//list.add(getTestUserModel());
+		return null;
 	}
 
 	@Override
