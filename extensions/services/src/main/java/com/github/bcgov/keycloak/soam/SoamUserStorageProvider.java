@@ -140,6 +140,21 @@ public class SoamUserStorageProvider implements UserStorageProvider,UserLookupPr
 		model.setEmailVerified(true);
 		return model;
 	}
+	
+	private UserModel getTestUserModel(String username) {
+		SoamUserModel model = new SoamUserModel();
+		model.setSingleAttribute("MARCOWASHERE", "THEBOYSINTHEHOUSE");
+		model.setEmail("asdfasdf@someplace.com");
+		model.setFirstName("Eric");
+		model.setLastName("Sermon");
+		model.setUsername(username);
+		Date date = new Date();
+		model.setCreatedTimestamp(date.getTime());
+		model.setFederationLink("123456GUID");
+		model.setEnabled(true);
+		model.setEmailVerified(true);
+		return model;
+	}
 
 	@Override
 	public UserModel addUser(RealmModel realm, String username) {
