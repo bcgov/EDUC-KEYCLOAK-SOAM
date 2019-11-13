@@ -1,6 +1,7 @@
 package com.github.bcgov.keycloak.soam;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -11,10 +12,11 @@ import org.keycloak.models.UserModel;
 import org.keycloak.storage.UserStorageProvider;
 import org.keycloak.storage.user.UserLookupProvider;
 import org.keycloak.storage.user.UserQueryProvider;
+import org.keycloak.storage.user.UserRegistrationProvider;
 
 import com.github.bcgov.keycloak.soam.model.SoamUserModel;
 
-public class SoamUserStorageProvider implements UserStorageProvider,UserLookupProvider, UserQueryProvider {
+public class SoamUserStorageProvider implements UserStorageProvider,UserLookupProvider, UserQueryProvider, UserRegistrationProvider {
 
 	private static Logger logger = Logger.getLogger(SoamUserStorageProvider.class);
 	
@@ -131,7 +133,24 @@ public class SoamUserStorageProvider implements UserStorageProvider,UserLookupPr
 		model.setFirstName("Eric");
 		model.setLastName("Sermon");
 		model.setUsername("edub");
+		Date date = new Date();
+		model.setCreatedTimestamp(date.getTime());
+		model.setFederationLink("123456GUID");
+		model.setEnabled(true);
+		model.setEmailVerified(true);
 		return model;
+	}
+
+	@Override
+	public UserModel addUser(RealmModel realm, String username) {
+		logger.info("SOAM: Inside addUser");
+		return getTestUserModel();
+	}
+
+	@Override
+	public boolean removeUser(RealmModel realm, UserModel user) {
+		logger.info("SOAM: Inside removeUser");
+		return true;
 	}
 
 }
