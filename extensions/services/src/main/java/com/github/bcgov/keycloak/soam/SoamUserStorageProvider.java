@@ -159,7 +159,7 @@ public class SoamUserStorageProvider implements UserStorageProvider,UserLookupPr
 	@Override
 	public UserModel addUser(RealmModel realm, String username) {
 		logger.info("SOAM: Inside addUser");
-		return getTestUserModel();
+		return getTestUserModel(username);
 	}
 
 	@Override
