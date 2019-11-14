@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.logging.Logger;
+import org.keycloak.models.AuthenticatedClientSessionModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
@@ -13,6 +14,7 @@ import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
 import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
+import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.IDToken;
 
 public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
@@ -31,6 +33,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	public static final String PROVIDER_ID = "oidc-hello-world-mapper";
 
 	static {
+		logger.info("SOAM: inside static");
 		// The builtin protocol mapper let the user define under which claim name (key)
 		// the protocol mapper writes its value. To display this option in the generic
 		// dialog
@@ -52,16 +55,19 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 
 	@Override
 	public String getDisplayCategory() {
+		logger.info("SOAM: inside getDisplayCategory");
 		return "Token mapper";
 	}
 
 	@Override
 	public String getDisplayType() {
+		logger.info("SOAM: inside getDisplayType");
 		return "Hello World Mapper";
 	}
 
 	@Override
 	public String getHelpText() {
+		logger.info("SOAM: inside getHelpText");
 		return "Adds a hello world text to the claim";
 	}
 
@@ -72,6 +78,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 
 	@Override
 	public String getId() {
+		logger.info("SOAM: inside getId");
 		return PROVIDER_ID;
 	}
 
@@ -87,7 +94,17 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		//
 		// Sets a static "Hello world" string, but we could write a dynamic value like a
 		// group attribute here too.
+		logger.info("SOAM: inside setClaim");
 		OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");
 	}
+
+	@Override
+	public AccessToken transformAccessToken(AccessToken token, ProtocolMapperModel mappingModel,
+			KeycloakSession session, UserSessionModel userSession, AuthenticatedClientSessionModel clientSession) {
+		logger.info("SOAM: inside transformAccessToken");
+		return super.transformAccessToken(token, mappingModel, session, userSession, clientSession);
+	}
+	
+	
 
 }
