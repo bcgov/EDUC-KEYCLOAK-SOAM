@@ -17,6 +17,7 @@ import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
 import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.AccessToken;
+import org.keycloak.representations.IDToken;
 
 public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper{
 
@@ -75,6 +76,21 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
 		mapper.setConfig(config);
 		return mapper;
 	}
+
+	@Override
+	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
+		logger.info("SOAM: inside setClaim");
+		super.setClaim(token, mappingModel, userSession);
+	}
+
+	@Override
+	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession,
+			KeycloakSession keycloakSession) {
+		logger.info("SOAM: inside setClaim2");
+		super.setClaim(token, mappingModel, userSession, keycloakSession);
+	}
+	
+	
 	
 	
 }
