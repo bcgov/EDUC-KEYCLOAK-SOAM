@@ -25,59 +25,37 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
 
 	private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
 
-	/**
-	 * Maybe you want to have config fields for your Mapper
-	 */
-	/*
-    static {
-        ProviderConfigProperty property;
-        property = new ProviderConfigProperty();
-        property.setName(ProtocolMapperUtils.USER_ATTRIBUTE);
-        property.setLabel(ProtocolMapperUtils.USER_MODEL_ATTRIBUTE_LABEL);
-        property.setHelpText(ProtocolMapperUtils.USER_MODEL_ATTRIBUTE_HELP_TEXT);
-        property.setType(ProviderConfigProperty.STRING_TYPE);
-        configProperties.add(property);
-
-        property = new ProviderConfigProperty();
-        property.setName(ProtocolMapperUtils.MULTIVALUED);
-        property.setLabel(ProtocolMapperUtils.MULTIVALUED_LABEL);
-        property.setHelpText(ProtocolMapperUtils.MULTIVALUED_HELP_TEXT);
-        property.setType(ProviderConfigProperty.BOOLEAN_TYPE);
-        configProperties.add(property);
-
-    }
-	 */
-
 	@Override
 	public List<ProviderConfigProperty> getConfigProperties() {
-		logger.info("SOAM: inside authenticateImpl");
+		logger.info("SOAM: inside getConfigProperties");
 		return configProperties;
 	}
 
 	@Override
 	public String getDisplayCategory() {
-		logger.info("SOAM: inside authenticateImpl");
+		logger.info("SOAM: inside getDisplayCategory");
 		return TOKEN_MAPPER_CATEGORY;
 	}
 
 	@Override
 	public String getDisplayType() {
-		logger.info("SOAM: inside authenticateImpl");
+		logger.info("SOAM: inside getDisplayType");
 		return "Stackoverflow Custom Protocol Mapper";
 	}
 
 	@Override
 	public String getId() {
-		logger.info("SOAM: inside authenticateImpl");
+		logger.info("SOAM: inside getId");
 		return PROVIDER_ID;
 	}
 
 	@Override
 	public String getHelpText() {
-		logger.info("SOAM: inside authenticateImpl");
+		logger.info("SOAM: inside getHelpText");
 		return "some help text";
 	}
 
+	@Override
 	public AccessToken transformAccessToken(AccessToken token, ProtocolMapperModel mappingModel, KeycloakSession session,
 			UserSessionModel userSession, AuthenticatedClientSessionModel clientSession) {
 		logger.info("SOAM: inside transformAccessToken");
@@ -97,7 +75,6 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
 		mapper.setConfig(config);
 		return mapper;
 	}
-
-
-
+	
+	
 }
