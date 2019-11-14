@@ -82,6 +82,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper{
 	}
 
 	public static ProtocolMapperModel create(String name, boolean accessToken, boolean idToken, boolean userInfo) {
+		logger.info("SOAM Protocol Mapper: inside create");
 		ProtocolMapperModel mapper = new ProtocolMapperModel();
 		mapper.setName(name);
 		mapper.setProtocolMapper(PROVIDER_ID);
