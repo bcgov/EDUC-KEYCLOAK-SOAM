@@ -19,17 +19,13 @@ package com.github.bcgov.keycloak.soam;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.keycloak.models.GroupModel;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
-import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.mappers.AbstractOIDCProtocolMapper;
-import org.keycloak.protocol.oidc.mappers.GroupMembershipMapper;
 import org.keycloak.protocol.oidc.mappers.OIDCAccessTokenMapper;
 import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
@@ -49,15 +45,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
 
     static {
         OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
-        ProviderConfigProperty property1 = new ProviderConfigProperty();
-        property1.setName("full.path");
-        property1.setLabel("Full group path");
-        property1.setType(ProviderConfigProperty.BOOLEAN_TYPE);
-        property1.setDefaultValue("true");
-        property1.setHelpText("Include full path to group i.e. /top/level1/level2, false will just specify the group name");
-        configProperties.add(property1);
-
-        OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, GroupMembershipMapper.class);
+        OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SoamProtocolMapper.class);
     }
 
     public static final String PROVIDER_ID = "oidc-soam-group-membership-mapper";
@@ -87,31 +75,8 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
         return "Map soam claims";
     }
 
-    public static boolean useFullPath(ProtocolMapperModel mappingModel) {
-        return "true".equals(mappingModel.getConfig().get("full.path"));
-    }
-
-
-    /**
-     * Adds the group membership information to the {@link IDToken#otherClaims}.
-     * @param token
-     * @param mappingModel
-     * @param userSession
-     */
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
-
-        List<String> membership = new LinkedList<>();
-        boolean fullPath = useFullPath(mappingModel);
-        for (GroupModel group : userSession.getUser().getGroups()) {
-            if (fullPath) {
-                membership.add(ModelToRepresentation.buildGroupPath(group));
-            } else {
-                membership.add(group.getName());
-            }
-        }
-        String protocolClaim = mappingModel.getConfig().get(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME);
-
-        token.getOtherClaims().put(protocolClaim, membership);
+        token.getOtherClaims().put("Marco Was Here", "YESSS");
     }
 
     public static ProtocolMapperModel create(String name,
