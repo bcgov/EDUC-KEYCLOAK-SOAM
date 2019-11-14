@@ -35,7 +35,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper {
 	public String getId() {
 		// TODO Auto-generated method stub
 		return null;
-	}
+	} 
 
 	@Override
 	public String getHelpText() {
