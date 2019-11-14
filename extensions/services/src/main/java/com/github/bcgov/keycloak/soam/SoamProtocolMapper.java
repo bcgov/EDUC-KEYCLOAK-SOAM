@@ -12,10 +12,13 @@ import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.mappers.AbstractOIDCProtocolMapper;
+import org.keycloak.protocol.oidc.mappers.OIDCAccessTokenMapper;
+import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
+import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.AccessToken;
 
-public class SoamProtocolMapper extends AbstractOIDCProtocolMapper{
+public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper	{
 
 	public static final String PROVIDER_ID = "soam-customprotocolmapper";
 
@@ -72,6 +75,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper{
 		return "SOAM Help Text";
 	}
 
+	@Override
 	public AccessToken transformAccessToken(AccessToken token, ProtocolMapperModel mappingModel, KeycloakSession session,
 			UserSessionModel userSession, AuthenticatedClientSessionModel clientSession) {
 		logger.info("SOAM Protocol Mapper: inside transformAccessToken");
