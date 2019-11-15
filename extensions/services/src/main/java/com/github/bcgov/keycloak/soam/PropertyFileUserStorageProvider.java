@@ -1,16 +1,11 @@
 package com.github.bcgov.keycloak.soam;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.keycloak.component.ComponentModel;
@@ -23,9 +18,9 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.models.utils.UserModelDelegate;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
-import org.keycloak.storage.adapter.AbstractUserAdapter;
 import org.keycloak.storage.user.UserLookupProvider;
 import org.keycloak.storage.user.UserQueryProvider;
 import org.keycloak.storage.user.UserRegistrationProvider;
@@ -64,15 +59,24 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
 		return adapter;
 	}
 
-	protected UserModel createAdapter(RealmModel realm, String username) {
-		return new AbstractUserAdapter(session, realm, model) {
-			@Override
-			public String getUsername() {
-				return username;
-			}
-		};
-	}
-
+    protected UserModel createAdapter(RealmModel realm, String username) {
+        UserModel local = session.userLocalStorage().getUserByUsername(username, realm);
+        if (local == null) {
+            local = session.userLocalStorage().addUser(realm, username);
+            local.setFederationLink(model.getId());
+        }
+        return new UserModelDelegate(local) {
+            @Override
+            public void setUsername(String username) {
+                String pw = (String)properties.remove(username);
+                if (pw != null) {
+                    properties.put(username, pw);
+                    save();
+                }
+                super.setUsername(username);
+            }
+        };
+    }
 	@Override
 	public UserModel getUserById(String id, RealmModel realm) {
 		StorageId storageId = new StorageId(id);
