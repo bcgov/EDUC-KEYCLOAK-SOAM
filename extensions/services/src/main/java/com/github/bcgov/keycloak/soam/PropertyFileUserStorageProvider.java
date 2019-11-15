@@ -34,7 +34,7 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
 		UserRegistrationProvider, CredentialInputValidator, CredentialInputUpdater, UserQueryProvider {
 	protected KeycloakSession session;
 	public static final String UNSET_PASSWORD = "#$!-UNSET-PASSWORD";
-	protected Properties properties;
+	protected HashMap<String, String> properties;
 	protected ComponentModel model;
 	// map of loaded users in this transaction
 	protected Map<String, UserModel> loadedUsers = new HashMap<>();
@@ -45,7 +45,7 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
     }
 
 
-	public PropertyFileUserStorageProvider(KeycloakSession session, ComponentModel model, Properties properties) {
+	public PropertyFileUserStorageProvider(KeycloakSession session, ComponentModel model, HashMap<String, String> properties) {
 		this.session = session;
 		this.model = model;
 		this.properties = properties;
@@ -55,7 +55,7 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
 	public UserModel getUserByUsername(String username, RealmModel realm) {
 		UserModel adapter = loadedUsers.get(username);
 		if (adapter == null) {
-			String password = properties.getProperty(username);
+			String password = properties.get(username);
 			if (password != null) {
 				adapter = createAdapter(realm, username);
 				loadedUsers.put(username, adapter);
@@ -87,7 +87,7 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
 
 	@Override
 	public boolean isConfiguredFor(RealmModel realm, UserModel user, String credentialType) {
-		String password = properties.getProperty(user.getUsername());
+		String password = properties.get(user.getUsername());
 		return credentialType.equals(CredentialModel.PASSWORD) && password != null;
 	}
 
@@ -101,7 +101,7 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
         if (!supportsCredentialType(input.getType()) || !(input instanceof UserCredentialModel)) return false;
 
         UserCredentialModel cred = (UserCredentialModel)input;
-        String password = properties.getProperty(user.getUsername());
+        String password = properties.get(user.getUsername());
         if (password == null || UNSET_PASSWORD.equals(password)) return false;
         return password.equals(cred.getValue());
     }
@@ -112,7 +112,7 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
         if (!input.getType().equals(CredentialModel.PASSWORD)) return false;
         UserCredentialModel cred = (UserCredentialModel)input;
         synchronized (properties) {
-            properties.setProperty(user.getUsername(), cred.getValue());
+            properties.put(user.getUsername(), cred.getValue());
             save();
         }
         return true;
@@ -122,7 +122,7 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
     public void disableCredentialType(RealmModel realm, UserModel user, String credentialType) {
         if (!credentialType.equals(CredentialModel.PASSWORD)) return;
         synchronized (properties) {
-            properties.setProperty(user.getUsername(), UNSET_PASSWORD);
+            properties.put(user.getUsername(), UNSET_PASSWORD);
             save();
         }
 
@@ -143,7 +143,7 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
 	@Override
 	public UserModel addUser(RealmModel realm, String username) {
 		synchronized (properties) {
-			properties.setProperty(username, UNSET_PASSWORD);
+			properties.put(username, UNSET_PASSWORD);
 			save();
 		}
 		return createAdapter(realm, username);
@@ -160,16 +160,16 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
 	}
 
 	public void save() {
-		URL url = getClass().getResource("/opt/eap/users.properties");
-		//String path = model.getConfig().getFirst("path");
-		//path = EnvUtil.replace(path);
-		try {
-			FileOutputStream fos = new FileOutputStream(url.toURI().getPath());
-			properties.store(fos, "");
-			fos.close();
-		} catch (IOException | URISyntaxException e) {
-			throw new RuntimeException(e);
-		}
+//		URL url = getClass().getResource("/opt/eap/users.properties");
+//		//String path = model.getConfig().getFirst("path");
+//		//path = EnvUtil.replace(path);
+//		try {
+//			FileOutputStream fos = new FileOutputStream(url.toURI().getPath());
+//			properties.store(fos, "");
+//			fos.close();
+//		} catch (IOException | URISyntaxException e) {
+//			throw new RuntimeException(e);
+//		}
 	}
 	
     @Override
