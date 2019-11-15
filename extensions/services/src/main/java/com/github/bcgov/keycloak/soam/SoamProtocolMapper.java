@@ -1,20 +1,3 @@
-/*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates
- * and other contributors as indicated by the @author tags.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.github.bcgov.keycloak.soam;
 
 import java.util.ArrayList;
@@ -33,11 +16,14 @@ import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
 
+
 /**
- * Maps user group membership
+ * SOAM Protocol Mapper
+ * Will be used to set Education specific claims
+ * for our client applications
+ * 
+ * @author Marco Villeneuve
  *
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
  */
 public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
 
@@ -48,7 +34,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
         OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SoamProtocolMapper.class);
     }
 
-    public static final String PROVIDER_ID = "oidc-soam-group-membership-mapper";
+    public static final String PROVIDER_ID = "oidc-soam-mapper";
 
 
     public List<ProviderConfigProperty> getConfigProperties() {
@@ -62,7 +48,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
 
     @Override
     public String getDisplayType() {
-        return "Soam Protocol Map";
+        return "Soam Protocol Mapper";
     }
 
     @Override
@@ -71,12 +57,12 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
     }
 
     @Override
-    public String getHelpText() {
-        return "Map soam claims";
+    public String getHelpText() { 
+        return "Map SOAM claims";
     }
 
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
-        token.getOtherClaims().put("Marco Was Here", "YESSS");
+        token.getOtherClaims().put("test_claim", "Working!");
     }
 
     public static ProtocolMapperModel create(String name,
