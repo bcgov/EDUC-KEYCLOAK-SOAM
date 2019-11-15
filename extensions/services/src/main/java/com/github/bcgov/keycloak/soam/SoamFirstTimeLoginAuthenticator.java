@@ -67,18 +67,16 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
         
-        logger.info("JWT print: " + token.toString());
-        logger.info("JWT print guid: " + token.getSubject());
         logger.info("Claims: ");
         for(String s: token.getOtherClaims().keySet()) {
         	logger.info("Claim key: " + s + " value: " + token.getOtherClaims().get(s));	
         }
         
+        token.getOtherClaims().put("CATCH_CLAIM", "CAUGHT");
         
         String userIdAttrName =brokerContext.getIdpConfig().getAlias()+ "_user_guid";
         String usernameAttrName =brokerContext.getIdpConfig().getAlias()+ "_username";
         String userIdAttrValue = brokerContext.getUserAttribute(userIdAttrName);
-        logger.info("User GUID: " + userIdAttrValue);
         
         String username = getUsername(context, serializedCtx, brokerContext);
         if (username == null) {
@@ -105,7 +103,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             }
 
             federatedUser.setSingleAttribute(userIdAttrName, userIdAttrValue);
-
+            federatedUser.setSingleAttribute("GUID", "ABCD-EFGH-IJKL-MNOP");
             //AuthenticatorConfigModel config = context.getAuthenticatorConfig();
             //if (config != null && Boolean.parseBoolean(config.getConfig().get(IdpCreateUserIfUniqueAuthenticatorFactory.REQUIRE_PASSWORD_UPDATE_AFTER_REGISTRATION))) {
             //    logger.debugf("User '%s' required to update password", federatedUser.getUsername());
@@ -155,32 +153,32 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
     	//context.getSession().users().searchForUserByUserAttribute(attrName, attrValue, realm)
     	logger.info("SOAM: inside checkExistingUser");
     	// check by IdP userid
-//        String userIdAttrName =brokerContext.getIdpConfig().getAlias()+ "_user_guid";
-//    	String userIdAttrValue = brokerContext.getUserAttribute(userIdAttrName);
-//    	logger.info("User GUID: " + userIdAttrValue);
-//    	List<UserModel> existingUserByAttr=context.getSession().users().searchForUserByUserAttribute(userIdAttrName, userIdAttrValue, context.getRealm());
-//    	if (existingUserByAttr.size() == 1) {
-//    		return new ExistingUserInfo(existingUserByAttr.get(0).getId(), userIdAttrName, userIdAttrValue);
-//    	}
-//    	
-//    	//Check by IdP username
-//    	String usernameAttrName =brokerContext.getIdpConfig().getAlias()+ "_username";
-//    	existingUserByAttr=context.getSession().users().searchForUserByUserAttribute(usernameAttrName, username, context.getRealm());
-//    	if (existingUserByAttr.size() == 1) {
-//    		return new ExistingUserInfo(existingUserByAttr.get(0).getId(), usernameAttrName, username);
-//    	}
-//    	
-//        if (brokerContext.getEmail() != null && !context.getRealm().isDuplicateEmailsAllowed()) {
-//            UserModel existingUser = context.getSession().users().getUserByEmail(brokerContext.getEmail(), context.getRealm());
-//            if (existingUser != null) {
-//                return new ExistingUserInfo(existingUser.getId(), UserModel.EMAIL, existingUser.getEmail());
-//            }
-//        }
-//
-//        UserModel existingUser = context.getSession().users().getUserByUsername(username, context.getRealm());
-//        if (existingUser != null) {
-//            return new ExistingUserInfo(existingUser.getId(), UserModel.USERNAME, existingUser.getUsername());
-//        }
+        String userIdAttrName =brokerContext.getIdpConfig().getAlias()+ "_user_guid";
+    	String userIdAttrValue = brokerContext.getUserAttribute(userIdAttrName);
+    	logger.info("User GUID: " + userIdAttrValue);
+    	List<UserModel> existingUserByAttr=context.getSession().users().searchForUserByUserAttribute(userIdAttrName, userIdAttrValue, context.getRealm());
+    	if (existingUserByAttr.size() == 1) {
+    		return new ExistingUserInfo(existingUserByAttr.get(0).getId(), userIdAttrName, userIdAttrValue);
+    	}
+    	
+    	//Check by IdP username
+    	String usernameAttrName =brokerContext.getIdpConfig().getAlias()+ "_username";
+    	existingUserByAttr=context.getSession().users().searchForUserByUserAttribute(usernameAttrName, username, context.getRealm());
+    	if (existingUserByAttr.size() == 1) {
+    		return new ExistingUserInfo(existingUserByAttr.get(0).getId(), usernameAttrName, username);
+    	}
+    	
+        if (brokerContext.getEmail() != null && !context.getRealm().isDuplicateEmailsAllowed()) {
+            UserModel existingUser = context.getSession().users().getUserByEmail(brokerContext.getEmail(), context.getRealm());
+            if (existingUser != null) {
+                return new ExistingUserInfo(existingUser.getId(), UserModel.EMAIL, existingUser.getEmail());
+            }
+        }
+
+        UserModel existingUser = context.getSession().users().getUserByUsername(username, context.getRealm());
+        if (existingUser != null) {
+            return new ExistingUserInfo(existingUser.getId(), UserModel.USERNAME, existingUser.getUsername());
+        }
 
         return null;
     }
