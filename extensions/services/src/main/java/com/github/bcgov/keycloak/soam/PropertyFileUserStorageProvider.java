@@ -1,7 +1,10 @@
 package com.github.bcgov.keycloak.soam;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -159,13 +162,14 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
 	}
 
 	public void save() {
-		String path = model.getConfig().getFirst("path");
-		path = EnvUtil.replace(path);
+		URL url = getClass().getResource("/users.properties");
+		//String path = model.getConfig().getFirst("path");
+		//path = EnvUtil.replace(path);
 		try {
-			FileOutputStream fos = new FileOutputStream(path);
+			FileOutputStream fos = new FileOutputStream(url.toURI().getPath());
 			properties.store(fos, "");
 			fos.close();
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
 	}
