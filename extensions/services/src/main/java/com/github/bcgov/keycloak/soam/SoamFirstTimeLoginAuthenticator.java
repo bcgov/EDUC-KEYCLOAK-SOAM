@@ -39,10 +39,11 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         //String username = UUID.randomUUID().toString();
         String username = (String)token.getOtherClaims().get("bceid_guid");
- 
+        logger.info("SOAM: inside authImpl1");
         boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);
-
+        logger.info("SOAM: inside authImpl2");        
         if (userExists) {
+        	logger.info("SOAM: inside authImpl3");
             logger.infof("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
                     username, brokerContext.getIdpConfig().getAlias());
 
@@ -62,9 +63,12 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             context.getAuthenticationSession().setAuthNote(BROKER_REGISTERED_NEW_USER, "true");
             context.success();
         } else {
+        	logger.info("SOAM: inside authImpl4");
         	UserModel existingUser = context.getSession().users().getUserByUsername(username, realm);
         	
+        	logger.info("SOAM: inside authImpl5");
         	context.setUser(existingUser);
+        	logger.info("SOAM: inside authImpl6");
         	context.success();
         } 
     }
