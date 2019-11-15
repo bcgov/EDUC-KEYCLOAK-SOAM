@@ -57,7 +57,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
     }
 
     @Override
-    public String getHelpText() {
+    public String getHelpText() { 
         return "Map SOAM claims";
     }
 
