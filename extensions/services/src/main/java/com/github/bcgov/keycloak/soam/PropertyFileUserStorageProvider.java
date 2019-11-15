@@ -99,7 +99,7 @@ public class PropertyFileUserStorageProvider implements
 	        if (input.getType().equals(CredentialModel.PASSWORD)) throw new ReadOnlyException("user is read only for this update");
 
 	        return false;
-	    }
+	    } 
 
 	    @Override
 	    public void disableCredentialType(RealmModel realm, UserModel user, String credentialType) {
