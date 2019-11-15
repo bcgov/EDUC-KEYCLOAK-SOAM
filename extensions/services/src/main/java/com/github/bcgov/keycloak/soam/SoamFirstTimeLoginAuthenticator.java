@@ -1,13 +1,7 @@
 package com.github.bcgov.keycloak.soam;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -17,8 +11,6 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
-
-import twitter4j.JSONObject;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>

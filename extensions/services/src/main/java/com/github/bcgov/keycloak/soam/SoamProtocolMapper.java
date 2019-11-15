@@ -65,9 +65,8 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
 
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
     	//Inject callout from here, using the GUID as our key
-    	logger.info("Protocol Mapper - User GUID is: " + token.getPreferredUsername());
-    	token.setPreferredUsername("Marco");
-    	token.getOtherClaims().put("test_claim", "Working!");
+    	logger.info("Protocol Mapper - User GUID is: " + token.getOtherClaims().get("bceid_guid"));
+    	token.getOtherClaims().put("given_name", "Working Test Claim");
     }
 
     public static ProtocolMapperModel create(String name,
