@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jboss.logging.Logger;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
@@ -27,6 +28,7 @@ import org.keycloak.representations.IDToken;
  */
 public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
 
+	private static Logger logger = Logger.getLogger(SoamProtocolMapper.class);
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
 
     static {
@@ -62,7 +64,9 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
     }
 
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
-        token.getOtherClaims().put("test_claim", "Working!");
+        logger.debug("Deal: " + token.getOtherClaims().get("CATCH_CLAIM"));
+    	logger.debug("Deal Two: " + userSession.getUser().getAttribute("GUID"));
+    	token.getOtherClaims().put("test_claim", "Working!");
     }
 
     public static ProtocolMapperModel create(String name,
