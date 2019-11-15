@@ -44,8 +44,11 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         //String username = UUID.randomUUID().toString();
         String username = (String)token.getOtherClaims().get("bceid_guid");
-        boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);
-        if (!userExists) {
+        //boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);
+        
+        //Temporary change
+        if(context.getSession().users().getUserByUsername(username, realm) != null) {
+        //if (!userExists) {
             logger.infof("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
                     username, brokerContext.getIdpConfig().getAlias());
 
