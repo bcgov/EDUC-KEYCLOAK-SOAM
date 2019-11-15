@@ -2,6 +2,7 @@ package com.github.bcgov.keycloak.soam;
 
 import java.util.List;
 import java.util.Map;
+
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -13,7 +14,11 @@ import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 
 /**
- * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
+ * SOAM First Time login authenticator
+ * This class will handle the callouts to our API
+ * 
+ * @author Marco Villeneuve
+ *
  */
 public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 
@@ -39,11 +44,8 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         //String username = UUID.randomUUID().toString();
         String username = (String)token.getOtherClaims().get("bceid_guid");
-        logger.info("SOAM: inside authImpl1");
         boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);
-        logger.info("SOAM: inside authImpl2");        
-        if (userExists) {
-        	logger.info("SOAM: inside authImpl3");
+        if (!userExists) {
             logger.infof("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
                     username, brokerContext.getIdpConfig().getAlias());
 
@@ -63,22 +65,18 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             context.getAuthenticationSession().setAuthNote(BROKER_REGISTERED_NEW_USER, "true");
             context.success();
         } else {
-        	logger.info("SOAM: inside authImpl4");
         	UserModel existingUser = context.getSession().users().getUserByUsername(username, realm);
-        	
-        	logger.info("SOAM: inside authImpl5");
         	context.setUser(existingUser);
-        	logger.info("SOAM: inside authImpl6");
         	context.success();
         } 
     }
 
     // Could be overriden to detect duplication based on other criterias (firstName, lastName, ...)
-    protected boolean checkExistingUser(AuthenticationFlowContext context, String username, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
+    protected boolean checkExistingUser(AuthenticationFlowContext context, String guid, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
     	logger.info("SOAM: inside checkExistingUser");
-    	logger.info("SOAM: checking if username is in our DB: " + username);
+    	logger.info("SOAM: checking if username is in our DB: " + guid);
     	
-    	//Query here to determine if username already exists
+    	//Query here to determine if GUID already exists
 
         return false;
     }
