@@ -47,7 +47,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         //boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);
         
         //Temporary change
-        if(context.getSession().users().getUserByUsername(username, realm) != null) {
+        if(context.getSession().users().getUserByUsername(username, realm) == null) {
         //if (!userExists) {
             logger.infof("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
                     username, brokerContext.getIdpConfig().getAlias());
