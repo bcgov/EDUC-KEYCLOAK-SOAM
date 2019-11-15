@@ -1,22 +1,9 @@
-/*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates
- * and other contributors as indicated by the @author tags.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.github.bcgov.keycloak.soam;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -24,13 +11,14 @@ import java.util.UUID;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
-import org.keycloak.authentication.authenticators.broker.util.ExistingUserInfo;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
+
+import twitter4j.JSONObject;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -57,11 +45,12 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
         
-        String username = UUID.randomUUID().toString();
+        //String username = UUID.randomUUID().toString();
+        String username = getBCeIDGUID(token);
  
-        ExistingUserInfo duplication = checkExistingUser(context, username, serializedCtx, brokerContext);
+        boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);
 
-        if (duplication == null) {
+        if (userExists) {
             logger.infof("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
                     username, brokerContext.getIdpConfig().getAlias());
 
@@ -89,24 +78,14 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
     }
 
     // Could be overriden to detect duplication based on other criterias (firstName, lastName, ...)
-    protected ExistingUserInfo checkExistingUser(AuthenticationFlowContext context, String username, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
+    protected boolean checkExistingUser(AuthenticationFlowContext context, String username, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
     	logger.info("SOAM: inside checkExistingUser");
     	logger.info("SOAM: checking if username is in our DB: " + username);
     	
     	//Query here to determine if username already exists
 
-        return null;
+        return false;
     }
-
-    protected String getUsername(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-    	logger.info("SOAM: inside getUsername");
-        RealmModel realm = context.getRealm();
-        String val = realm.isRegistrationEmailAsUsername() ? brokerContext.getEmail() : brokerContext.getModelUsername();
-        logger.info("Username value: " + val);
-
-        return realm.isRegistrationEmailAsUsername() ? brokerContext.getEmail() : brokerContext.getModelUsername();
-    }
-
 
     // Empty method by default. This exists, so subclass can override and add callback after new user is registered through social
     protected void userRegisteredSuccess(AuthenticationFlowContext context, UserModel registeredUser, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
@@ -121,6 +100,37 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
     @Override
     public boolean configuredFor(KeycloakSession session, RealmModel realm, UserModel user) {
         return true;
+    }
+    
+
+    private String getBCeIDGUID(JsonWebToken token) {
+    	try {
+			// Sending get request
+			URL url = new URL("https://sso-test.pathfinder.gov.bc.ca/auth/realms/v45fd2kb/users/" + token.getId() + "/federated-identity");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			conn.setRequestProperty("Authorization","Bearer "+ token);
+			conn.setRequestProperty("Content-Type","application/json");
+			conn.setRequestMethod("GET");
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String output;
+
+			StringBuffer response = new StringBuffer();
+			while ((output = in.readLine()) != null) {
+			    response.append(output);
+			}
+
+			in.close();
+
+			logger.info("JSON response: " + response.toString());
+			JSONObject jsonData = new JSONObject(response.toString());
+			
+			return jsonData.getString("userId");
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
     }
 
 }
