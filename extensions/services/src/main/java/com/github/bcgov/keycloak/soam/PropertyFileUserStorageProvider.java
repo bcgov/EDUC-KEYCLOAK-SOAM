@@ -1,6 +1,5 @@
 package com.github.bcgov.keycloak.soam;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -14,7 +13,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.keycloak.common.util.EnvUtil;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialInput;
 import org.keycloak.credential.CredentialInputUpdater;
@@ -162,7 +160,7 @@ public class PropertyFileUserStorageProvider implements UserStorageProvider, Use
 	}
 
 	public void save() {
-		URL url = getClass().getResource("/users.properties");
+		URL url = getClass().getResource("/opt/eap/users.properties");
 		//String path = model.getConfig().getFirst("path");
 		//path = EnvUtil.replace(path);
 		try {
