@@ -45,14 +45,8 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
         
-        logger.info("Broker user ID: " + serializedCtx.getBrokerUserId());
-        logger.info("Broker session ID: " + serializedCtx.getBrokerSessionId());
-        logger.info("Broker username: " + serializedCtx.getBrokerUsername());
-        logger.info("Regular ID: " + serializedCtx.getId());
-        logger.info("Identity provider ID: " + serializedCtx.getIdentityProviderId());
-        
         //String username = UUID.randomUUID().toString();
-        String username = getBCeIDGUID(token, serializedCtx.getBrokerUserId());
+        String username = (String)token.getOtherClaims().get("bceid_guid");
  
         boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);
 
@@ -108,35 +102,36 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         return true;
     }
     
+   
 
-    private String getBCeIDGUID(JsonWebToken token, String brokeredID) {
-    	try {
-			// Sending get request
-			URL url = new URL("https://sso-test.pathfinder.gov.bc.ca/auth/admin/realms/v45fd2kb/users/" + brokeredID + "/federated-identity");
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-			conn.setRequestProperty("Authorization","Bearer "+ token);
-			conn.setRequestProperty("Content-Type","application/json");
-			conn.setRequestMethod("GET");
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String output;
-
-			StringBuffer response = new StringBuffer();
-			while ((output = in.readLine()) != null) {
-			    response.append(output);
-			}
-
-			in.close();
-
-			logger.info("JSON response: " + response.toString());
-			JSONObject jsonData = new JSONObject(response.toString());
-			
-			return jsonData.getString("userId");
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
-    }
+//    private String getBCeIDGUID(JsonWebToken token, String brokeredID) {
+//    	try {
+//			// Sending get request
+//			URL url = new URL("https://sso-test.pathfinder.gov.bc.ca/auth/admin/realms/v45fd2kb/users/" + brokeredID + "/federated-identity");
+//			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//
+//			conn.setRequestProperty("Authorization","Bearer "+ token);
+//			conn.setRequestProperty("Content-Type","application/json");
+//			conn.setRequestMethod("GET");
+//
+//			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//			String output;
+//
+//			StringBuffer response = new StringBuffer();
+//			while ((output = in.readLine()) != null) {
+//			    response.append(output);
+//			}
+//
+//			in.close();
+//
+//			logger.info("JSON response: " + response.toString());
+//			JSONObject jsonData = new JSONObject(response.toString());
+//			
+//			return jsonData.getString("userId");
+//		} catch (Exception e) {
+//			throw new RuntimeException(e);
+//		}
+//
+//    }
 
 }
