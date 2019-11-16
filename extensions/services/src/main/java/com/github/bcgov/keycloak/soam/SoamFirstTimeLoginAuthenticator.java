@@ -2,6 +2,7 @@ package com.github.bcgov.keycloak.soam;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
@@ -42,7 +43,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
         
-        //String username = UUID.randomUUID().toString();
+        //Username will be a generated GUID when the DB is setup
         String username = (String)token.getOtherClaims().get("bceid_guid");
         //boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);
         
@@ -54,9 +55,11 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 
             UserModel federatedUser = session.users().addUser(realm, username);
             federatedUser.setEnabled(true);
-            federatedUser.setEmail(brokerContext.getEmail());
-            federatedUser.setFirstName(brokerContext.getFirstName());
-            federatedUser.setLastName(brokerContext.getLastName());
+            //federatedUser.setEmail(brokerContext.getEmail());
+            //federatedUser.setFirstName(brokerContext.getFirstName());
+            //federatedUser.setLastName(brokerContext.getLastName());
+            //This random value will be the actual BCeID GUID when the DB is ready
+            federatedUser.setSingleAttribute("GUID", UUID.randomUUID().toString());
 
             for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
                 federatedUser.setAttribute(attr.getKey(), attr.getValue());
