@@ -34,7 +34,7 @@ import java.util.List;
 public class SoamPostLoginAuthenticatorFactory implements AuthenticatorFactory {
 
     public static final String PROVIDER_ID = "bcgov-soam-post-authenticator";
-    static SoamFirstTimeLoginAuthenticator SINGLETON = new SoamFirstTimeLoginAuthenticator();
+    static SoamPostLoginAuthenticator SINGLETON = new SoamPostLoginAuthenticator();
 
 
     @Override
