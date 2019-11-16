@@ -1,12 +1,7 @@
 package com.github.bcgov.keycloak.soam;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
@@ -18,10 +13,12 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 
-import twitter4j.JSONObject;
-
 /**
- * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
+ * SOAM First Time login authenticator
+ * This class will handle the callouts to our API
+ * 
+ * @author Marco Villeneuve
+ *
  */
 public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 
@@ -46,11 +43,12 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
         
         //String username = UUID.randomUUID().toString();
-        String username = getBCeIDGUID(token);
- 
-        boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);
-
-        if (userExists) {
+        String username = (String)token.getOtherClaims().get("bceid_guid");
+        //boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);
+        
+        //Temporary change
+        if(context.getSession().users().getUserByUsername(username, realm) == null) {
+        //if (!userExists) {
             logger.infof("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
                     username, brokerContext.getIdpConfig().getAlias());
 
@@ -71,18 +69,17 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             context.success();
         } else {
         	UserModel existingUser = context.getSession().users().getUserByUsername(username, realm);
-        	
         	context.setUser(existingUser);
         	context.success();
         } 
     }
 
     // Could be overriden to detect duplication based on other criterias (firstName, lastName, ...)
-    protected boolean checkExistingUser(AuthenticationFlowContext context, String username, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
+    protected boolean checkExistingUser(AuthenticationFlowContext context, String guid, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
     	logger.info("SOAM: inside checkExistingUser");
-    	logger.info("SOAM: checking if username is in our DB: " + username);
+    	logger.info("SOAM: checking if username is in our DB: " + guid);
     	
-    	//Query here to determine if username already exists
+    	//Query here to determine if GUID already exists
 
         return false;
     }
@@ -102,35 +99,36 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         return true;
     }
     
+   
 
-    private String getBCeIDGUID(JsonWebToken token) {
-    	try {
-			// Sending get request
-			URL url = new URL("https://sso-test.pathfinder.gov.bc.ca/auth/realms/v45fd2kb/users/" + token.getId() + "/federated-identity");
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-			conn.setRequestProperty("Authorization","Bearer "+ token);
-			conn.setRequestProperty("Content-Type","application/json");
-			conn.setRequestMethod("GET");
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String output;
-
-			StringBuffer response = new StringBuffer();
-			while ((output = in.readLine()) != null) {
-			    response.append(output);
-			}
-
-			in.close();
-
-			logger.info("JSON response: " + response.toString());
-			JSONObject jsonData = new JSONObject(response.toString());
-			
-			return jsonData.getString("userId");
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
-    }
+//    private String getBCeIDGUID(JsonWebToken token, String brokeredID) {
+//    	try {
+//			// Sending get request
+//			URL url = new URL("https://sso-test.pathfinder.gov.bc.ca/auth/admin/realms/v45fd2kb/users/" + brokeredID + "/federated-identity");
+//			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//
+//			conn.setRequestProperty("Authorization","Bearer "+ token);
+//			conn.setRequestProperty("Content-Type","application/json");
+//			conn.setRequestMethod("GET");
+//
+//			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//			String output;
+//
+//			StringBuffer response = new StringBuffer();
+//			while ((output = in.readLine()) != null) {
+//			    response.append(output);
+//			}
+//
+//			in.close();
+//
+//			logger.info("JSON response: " + response.toString());
+//			JSONObject jsonData = new JSONObject(response.toString());
+//			
+//			return jsonData.getString("userId");
+//		} catch (Exception e) {
+//			throw new RuntimeException(e);
+//		}
+//
+//    }
 
 }
