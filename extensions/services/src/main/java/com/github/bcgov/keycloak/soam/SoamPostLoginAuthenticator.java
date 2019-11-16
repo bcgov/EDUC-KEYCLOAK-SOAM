@@ -2,16 +2,12 @@ package com.github.bcgov.keycloak.soam;
 
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
-import org.keycloak.authentication.AuthenticationFlowError;
-import org.keycloak.authentication.AuthenticationFlowException;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
-import org.keycloak.representations.JsonWebToken;
-import org.keycloak.sessions.AuthenticationSessionModel;
 
 
 public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
@@ -36,18 +32,18 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
         	logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
         }
         
-        AuthenticationSessionModel authSession = context.getAuthenticationSession();
-        SerializedBrokeredIdentityContext serializedCtx = SerializedBrokeredIdentityContext.readFromAuthenticationSession(authSession, EXISTING_USER_INFO);
-        if (serializedCtx == null) {
-            throw new AuthenticationFlowException("Not found serialized context in clientSession", AuthenticationFlowError.IDENTITY_PROVIDER_ERROR);
+        logger.info("Headers"); 
+        for(String s: context.getHttpRequest().getHttpHeaders().getRequestHeaders().keySet()) {
+        	logger.info("Key: " + s + " Value: " + context.getHttpRequest().getHttpHeaders().getRequestHeader(s)); 
         }
-        BrokeredIdentityContext brokerContext = serializedCtx.deserialize(context.getSession(), authSession);
-
-        JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
         
-        for(String s: token.getOtherClaims().keySet()) {
-        	logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
-        }
+        logger.info("Authorization: " + context.getHttpRequest().getHttpHeaders().getRequestHeader("Authorization")); 
+        
+//        JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
+//        
+//        for(String s: token.getOtherClaims().keySet()) {
+//        	logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
+//        }
         
         UserModel existingUser = context.getSession().users().getUserByUsername(context.getUser().getUsername(), context.getRealm());
         
