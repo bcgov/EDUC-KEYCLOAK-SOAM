@@ -68,6 +68,8 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
     	logger.info("Protocol Mapper - User GUID is: " + userSession.getUser().getUsername());
     	token.getOtherClaims().put("given_name", "Working Test Claim");
     	token.getOtherClaims().put("preferred_username", "New Username");
+    	token.setPreferredUsername("ABCD");
+    	token.getOtherClaims().remove("preferred_username");
     }
 
     public static ProtocolMapperModel create(String name,
