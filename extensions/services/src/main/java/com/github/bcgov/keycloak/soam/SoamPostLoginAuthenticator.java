@@ -40,9 +40,12 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
         logger.info("context.getSession(): " + context.getSession());
         
         if(context.getUser()!=null) {
-        	logger.info("context.getSession(): " + context.getUser().getFirstAttribute("GUID"));
+        	logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
         }
         
+        UserModel existingUser = context.getSession().users().getUserByUsername(context.getUser().getUsername(), context.getRealm());
+        context.setUser(existingUser);
+        context.success();
     }
 
     @Override
