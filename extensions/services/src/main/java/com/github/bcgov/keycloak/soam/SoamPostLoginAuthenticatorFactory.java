@@ -31,9 +31,9 @@ import java.util.List;
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
-public class SoamReturningLoginAuthenticatorFactory implements AuthenticatorFactory {
+public class SoamPostLoginAuthenticatorFactory implements AuthenticatorFactory {
 
-    public static final String PROVIDER_ID = "bcgov-idp-create-user-if-unique";
+    public static final String PROVIDER_ID = "bcgov-soam-post-authenticator";
     static SoamFirstTimeLoginAuthenticator SINGLETON = new SoamFirstTimeLoginAuthenticator();
 
 
@@ -64,7 +64,7 @@ public class SoamReturningLoginAuthenticatorFactory implements AuthenticatorFact
 
     @Override
     public String getReferenceCategory() {
-        return "createUserIfUnique";
+        return "soamAuthenticators";
     }
 
     @Override
@@ -84,12 +84,12 @@ public class SoamReturningLoginAuthenticatorFactory implements AuthenticatorFact
 
     @Override
     public String getDisplayType() {
-        return "Create User If Unique (BCGOV)";
+        return "SOAM Post Login Authenticator";
     }
 
     @Override
     public String getHelpText() {
-        return "Detect if there is existing Keycloak account with same email like identity provider. If no, create new user";
+        return "SOAM Post Login Authenticator";
     }
 
     @Override
