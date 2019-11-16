@@ -1,20 +1,3 @@
-/*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates
- * and other contributors as indicated by the @author tags.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.github.bcgov.keycloak.soam;
 
 import java.util.List;
@@ -37,21 +20,34 @@ import org.keycloak.representations.JsonWebToken;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.messages.Messages;
 
-/**
- * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
- */
-public class SoamReturningLoginAuthenticator extends AbstractIdpAuthenticator {
 
-    private static Logger logger = Logger.getLogger(SoamReturningLoginAuthenticator.class);
+public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
+
+    private static Logger logger = Logger.getLogger(SoamPostLoginAuthenticator.class);
 
 
     @Override
     protected void actionImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
+    	logger.info("SOAM Post: inside actionImpl");
+        
+    }
+    
+    @Override
+    public void authenticate(AuthenticationFlowContext context) {
+    	logger.info("SOAM Post: inside authenticate");
+       
+        logger.info("context.getUser(): " + context.getUser());
+        logger.info("context.getSession(): " + context.getSession());
+        
+        if(context.getUser()!=null) {
+        	logger.info("context.getSession(): " + context.getUser().getFirstAttribute("GUID"));
+        }
+        
     }
 
     @Override
     protected void authenticateImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-    	logger.info("SOAM: inside authenticateImpl");
+    	logger.info("SOAM Post: inside returning authenticateImpl");
         KeycloakSession session = context.getSession();
         RealmModel realm = context.getRealm();
 
@@ -153,7 +149,7 @@ public class SoamReturningLoginAuthenticator extends AbstractIdpAuthenticator {
     protected ExistingUserInfo checkExistingUser(AuthenticationFlowContext context, String username, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
     	//brokerContext.getBrokerUserId()
     	//context.getSession().users().searchForUserByUserAttribute(attrName, attrValue, realm)
-    	logger.info("SOAM: inside checkExistingUser");
+    	logger.info("SOAM Post: inside checkExistingUser");
     	// check by IdP userid
         String userIdAttrName =brokerContext.getIdpConfig().getAlias()+ "_user_guid";
     	String userIdAttrValue = brokerContext.getUserAttribute(userIdAttrName);
@@ -186,7 +182,7 @@ public class SoamReturningLoginAuthenticator extends AbstractIdpAuthenticator {
     }
 
     protected String getUsername(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-    	logger.info("SOAM: inside getUsername");
+    	logger.info("SOAM Post: inside getUsername");
         RealmModel realm = context.getRealm();
         String val = realm.isRegistrationEmailAsUsername() ? brokerContext.getEmail() : brokerContext.getModelUsername();
         logger.info("Username value: " + val);
@@ -197,7 +193,7 @@ public class SoamReturningLoginAuthenticator extends AbstractIdpAuthenticator {
 
     // Empty method by default. This exists, so subclass can override and add callback after new user is registered through social
     protected void userRegisteredSuccess(AuthenticationFlowContext context, UserModel registeredUser, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-    	logger.info("SOAM: inside userRegisteredSuccess");
+    	logger.info("SOAM Post: inside userRegisteredSuccess");
     	logger.info("User Model: ");
     	logger.info(registeredUser.getEmail());
     	logger.info(registeredUser.getFirstName());
