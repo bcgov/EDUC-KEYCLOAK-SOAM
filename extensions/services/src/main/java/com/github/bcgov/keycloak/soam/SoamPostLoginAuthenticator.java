@@ -1,11 +1,17 @@
 package com.github.bcgov.keycloak.soam;
 
+import java.io.ByteArrayInputStream;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonString;
+
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
-import org.keycloak.broker.provider.IdentityProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
@@ -28,15 +34,16 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
     	
         logger.info("context.getUser(): " + context.getUser());
         logger.info("context.getSession(): " + context.getSession());
-        logger.info("context.getUserFedLink: " + context.getUser().getFederationLink());
-        logger.info("context.firstname: " + context.getUser().getFirstName());
-        logger.info("context.service client: " + context.getUser().getServiceAccountClientLink());
+       	logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
         
-        if(context.getUser()!=null) {
-        	logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
-        }
-        
-        
+       	
+       	String brokeredIdentityContext = context.getAuthenticationSession().getAuthNote("PBL_BROKERED_IDENTITY_CONTEXT");
+       	logger.info("brokeredIdentityContext: " + brokeredIdentityContext);
+		if (brokeredIdentityContext != null){
+			JsonReader reader = Json.createReader(new ByteArrayInputStream(context.getAuthenticationSession().getAuthNote("PBL_BROKERED_IDENTITY_CONTEXT").getBytes()));
+			JsonObject jsonst = (JsonObject)reader.read();
+			logger.info("JSON: " + jsonst);
+		}
 //        JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
 //        
 //        for(String s: token.getOtherClaims().keySet()) {
