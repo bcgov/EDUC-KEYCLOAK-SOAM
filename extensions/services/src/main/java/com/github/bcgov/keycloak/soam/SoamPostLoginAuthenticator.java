@@ -25,6 +25,8 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
     @Override
     public void authenticate(AuthenticationFlowContext context) {
     	logger.info("SOAM Post: inside authenticate");
+    	
+    	logger.info("Exists: " + context.getAuthenticationSession().getAuthNote(EXISTING_USER_INFO));
         
         logger.info("context.getUser(): " + context.getUser());
         logger.info("context.getSession(): " + context.getSession());
@@ -33,11 +35,12 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
         	logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
         }
         
-        logger.info("TOKEN: " + context.getAuthenticationSession().getUserSessionNotes().get(IdentityProvider.FEDERATED_ACCESS_TOKEN));
+        
+        logger.info("TOKEN: " + context.getAuthenticationSession().getClientNotes().get(IdentityProvider.FEDERATED_ACCESS_TOKEN));
         
         
-        for(String s: context.getAuthenticationSession().getUserSessionNotes().keySet()) {
-        	logger.info("Key: " + s + " Val: " + context.getAuthenticationSession().getUserSessionNotes().get(s));
+        for(String s: context.getAuthenticationSession().getClientNotes().keySet()) {
+        	logger.info("Key: " + s + " Val: " + context.getAuthenticationSession().getClientNotes().get(s));
         }
         
 //        JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
