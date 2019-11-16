@@ -1,6 +1,8 @@
 package com.github.bcgov.keycloak.soam;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
@@ -32,12 +34,15 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
         	logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
         }
         
-        logger.info("Headers"); 
-        for(String s: context.getHttpRequest().getHttpHeaders().getRequestHeaders().keySet()) {
-        	logger.info("Key: " + s + " Value: " + context.getHttpRequest().getHttpHeaders().getRequestHeader(s)); 
-        }
         
-        logger.info("Authorization: " + context.getHttpRequest().getHttpHeaders().getRequestHeader("Authorization")); 
+        HttpRequest req = context.getHttpRequest();
+        
+        KeycloakSecurityContext kc = (KeycloakSecurityContext) req.getAttribute(KeycloakSecurityContext.class.getName());
+        if(kc == null) {
+        	logger.info("KSC is null");
+        }
+        logger.info("Token: " + kc.getTokenString());
+        
         
 //        JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
 //        
