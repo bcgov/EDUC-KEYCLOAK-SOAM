@@ -19,6 +19,8 @@ import org.keycloak.models.UserModel;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.JsonWebToken;
 
+import com.google.gson.Gson;
+
 
 public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 
@@ -44,18 +46,15 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 			
 			String brokeredIdentityContext = context.getAuthenticationSession().getAuthNote(PostBrokerLoginConstants.PBL_BROKERED_IDENTITY_CONTEXT);
 			logger.info("brokeredIdentityContext: " + brokeredIdentityContext);
-			if (brokeredIdentityContext != null){
-				reader = Json.createReader(new ByteArrayInputStream(context.getAuthenticationSession().getAuthNote("PBL_BROKERED_IDENTITY_CONTEXT").getBytes()));
-				JsonObject jsonst = (JsonObject)reader.read();
-				
-				logger.info("ID Token: " + jsonst.get("VALIDATED_ID_TOKEN"));
-				testDecodeJWT(jsonst.get("VALIDATED_ID_TOKEN").toString());
+			Gson gson = new Gson();
+
+			SerializedBrokeredIdentityContext serializedCtx = gson.fromJson(brokeredIdentityContext, SerializedBrokeredIdentityContext.class);
+			BrokeredIdentityContext brokerContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
+			JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
+			
+			for(String s: token.getOtherClaims().keySet()) {
+        		logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
 			}
-//        JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
-//        
-//        for(String s: token.getOtherClaims().keySet()) {
-//        	logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
-//        }
 			
 			UserModel existingUser = context.getSession().users().getUserByUsername(context.getUser().getUsername(), context.getRealm());
 			
