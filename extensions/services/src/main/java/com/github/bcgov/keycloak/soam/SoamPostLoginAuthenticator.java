@@ -36,10 +36,8 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 			
 			logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
 			
-			String brokeredIdentityContext = context.getAuthenticationSession().getAuthNote(PostBrokerLoginConstants.PBL_BROKERED_IDENTITY_CONTEXT);
-			logger.info("brokeredIdentityContext: " + brokeredIdentityContext);
-
-			SerializedBrokeredIdentityContext serializedCtx = JsonSerialization.readValue(brokeredIdentityContext, SerializedBrokeredIdentityContext.class);
+			String stringSerialCtx = context.getAuthenticationSession().getAuthNote(PostBrokerLoginConstants.PBL_BROKERED_IDENTITY_CONTEXT);
+			SerializedBrokeredIdentityContext serializedCtx = JsonSerialization.readValue(stringSerialCtx, SerializedBrokeredIdentityContext.class);
 			BrokeredIdentityContext brokerContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
 			JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
 			
