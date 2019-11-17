@@ -5,16 +5,18 @@ import java.io.ByteArrayInputStream;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.json.JsonString;
 
+import org.apache.commons.codec.binary.Base64;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
+import org.keycloak.authentication.authenticators.broker.util.PostBrokerLoginConstants;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.representations.AccessTokenResponse;
 
 
 public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
@@ -30,31 +32,57 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
     
     @Override
     public void authenticate(AuthenticationFlowContext context) {
-    	logger.info("SOAM Post: inside authenticate");
-    	
-        logger.info("context.getUser(): " + context.getUser());
-        logger.info("context.getSession(): " + context.getSession());
-       	logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
-        
-       	
-       	String brokeredIdentityContext = context.getAuthenticationSession().getAuthNote("PBL_BROKERED_IDENTITY_CONTEXT");
-       	logger.info("brokeredIdentityContext: " + brokeredIdentityContext);
-		if (brokeredIdentityContext != null){
-			JsonReader reader = Json.createReader(new ByteArrayInputStream(context.getAuthenticationSession().getAuthNote("PBL_BROKERED_IDENTITY_CONTEXT").getBytes()));
-			JsonObject jsonst = (JsonObject)reader.read();
-			logger.info("JSON: " + jsonst);
-		}
+    	JsonReader reader = null;
+    	try {
+			logger.info("SOAM Post: inside authenticate");
+			
+			logger.info("context.getUser(): " + context.getUser());
+			logger.info("context.getSession(): " + context.getSession());
+			logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
+			
+			
+			String brokeredIdentityContext = context.getAuthenticationSession().getAuthNote(PostBrokerLoginConstants.PBL_BROKERED_IDENTITY_CONTEXT);
+			logger.info("brokeredIdentityContext: " + brokeredIdentityContext);
+			if (brokeredIdentityContext != null){
+				reader = Json.createReader(new ByteArrayInputStream(context.getAuthenticationSession().getAuthNote("PBL_BROKERED_IDENTITY_CONTEXT").getBytes()));
+				JsonObject jsonst = (JsonObject)reader.read();
+				logger.info("ID Token: " + jsonst.getJsonObject("FEDERATED_ACCESS_TOKEN_RESPONSE").get("data"));
+				testDecodeJWT(jsonst.getJsonObject("FEDERATED_ACCESS_TOKEN_RESPONSE").get("data").toString());
+			}
 //        JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
 //        
 //        for(String s: token.getOtherClaims().keySet()) {
 //        	logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
 //        }
-        
-        UserModel existingUser = context.getSession().users().getUserByUsername(context.getUser().getUsername(), context.getRealm());
-        
-        
-        context.setUser(existingUser);
-        context.success();
+			
+			UserModel existingUser = context.getSession().users().getUserByUsername(context.getUser().getUsername(), context.getRealm());
+			
+			
+			context.setUser(existingUser);
+			context.success();
+		} finally {
+			if(reader != null) {
+				reader.close();
+			}
+		}
+    }
+    
+    private void testDecodeJWT(String jwtToken){
+    	logger.info("------------ Decode JWT ------------");
+        String[] split_string = jwtToken.split("\\.");
+        String base64EncodedHeader = split_string[0];
+        String base64EncodedBody = split_string[1];
+        String base64EncodedSignature = split_string[2];
+
+        logger.info("~~~~~~~~~ JWT Header ~~~~~~~");
+        Base64 base64Url = new Base64(true);
+        String header = new String(base64Url.decode(base64EncodedHeader));
+        System.out.println("JWT Header : " + header);
+
+
+        logger.info("~~~~~~~~~ JWT Body ~~~~~~~");
+        String body = new String(base64Url.decode(base64EncodedBody));
+        logger.info("JWT Body : "+body);        
     }
 
     @Override
