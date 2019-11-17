@@ -1,13 +1,9 @@
 package com.github.bcgov.keycloak.soam;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import javax.json.Json;
-import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-import org.apache.commons.codec.binary.Base64;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -17,11 +13,8 @@ import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
-import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.JsonWebToken;
 import org.keycloak.util.JsonSerialization;
-
-import com.google.gson.Gson;
 
 
 public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
