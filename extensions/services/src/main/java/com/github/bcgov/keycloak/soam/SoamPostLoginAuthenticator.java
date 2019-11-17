@@ -17,6 +17,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.AccessTokenResponse;
+import org.keycloak.representations.JsonWebToken;
 
 
 public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
@@ -46,8 +47,9 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 			if (brokeredIdentityContext != null){
 				reader = Json.createReader(new ByteArrayInputStream(context.getAuthenticationSession().getAuthNote("PBL_BROKERED_IDENTITY_CONTEXT").getBytes()));
 				JsonObject jsonst = (JsonObject)reader.read();
-				logger.info("ID Token: " + jsonst.getJsonObject("FEDERATED_ACCESS_TOKEN_RESPONSE").get("data"));
-				testDecodeJWT(jsonst.getJsonObject("FEDERATED_ACCESS_TOKEN_RESPONSE").get("data").toString());
+				
+				logger.info("ID Token: " + jsonst.get("VALIDATED_ID_TOKEN"));
+				testDecodeJWT(jsonst.get("VALIDATED_ID_TOKEN").toString());
 			}
 //        JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
 //        
