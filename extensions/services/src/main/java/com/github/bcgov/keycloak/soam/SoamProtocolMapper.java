@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import org.jboss.logging.Logger;
 import org.keycloak.models.ProtocolMapperModel;
@@ -65,11 +67,15 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
 
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
     	//Inject callout from here, using the GUID as our key
-    	logger.info("Protocol Mapper - User GUID is: " + userSession.getUser().getUsername());
-    	logger.info("Protocol Mapper - Attribute GUID is: " + userSession.getUser().getFirstAttribute("GUID"));
+    	//logger.info("Protocol Mapper - User GUID is: " + userSession.getUser().getUsername());
+    	//logger.info("Protocol Mapper - Attribute GUID is: " + userSession.getUser().getFirstAttribute("GUID"));
     	
-    	token.getOtherClaims().put("given_name", "Working Test Claim");
+    	token.getOtherClaims().put("PEN", getRandomPen());
     }
+    
+	private String getRandomPen() {
+		return UUID.randomUUID().toString().replaceAll("-", "").substring(0,9);
+	}
 
     public static ProtocolMapperModel create(String name,
                                       String tokenClaimName,
