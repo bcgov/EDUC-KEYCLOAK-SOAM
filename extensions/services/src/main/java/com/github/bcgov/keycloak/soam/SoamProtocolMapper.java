@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 
 import org.jboss.logging.Logger;
@@ -34,7 +33,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
 
     static {
-        OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
+        //OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
         OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SoamProtocolMapper.class);
     }
 
@@ -88,7 +87,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
         mapper.setConsentRequired(consentRequired);
         mapper.setConsentText(consentText);
         Map<String, String> config = new HashMap<String, String>();
-        config.put(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME, tokenClaimName);
+//        config.put(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME, tokenClaimName);
         if (accessToken) config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ACCESS_TOKEN, "true");
         if (idToken) config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ID_TOKEN, "true");
         mapper.setConfig(config);
