@@ -71,7 +71,6 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
     	//logger.info("Protocol Mapper - Attribute GUID is: " + userSession.getUser().getFirstAttribute("GUID"));
     	
     	token.getOtherClaims().put("pen", getRandomPen());
-    	token.getOtherClaims().put("another_claim", "test");
     }
     
 	private String getRandomPen() {
