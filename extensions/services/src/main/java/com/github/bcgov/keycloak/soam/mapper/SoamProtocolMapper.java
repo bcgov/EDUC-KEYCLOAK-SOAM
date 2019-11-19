@@ -1,4 +1,4 @@
-package com.github.bcgov.keycloak.soam;
+package com.github.bcgov.keycloak.soam.mapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,7 +87,6 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
         mapper.setConsentRequired(consentRequired);
         mapper.setConsentText(consentText);
         Map<String, String> config = new HashMap<String, String>();
-//        config.put(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME, tokenClaimName);
         if (accessToken) config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ACCESS_TOKEN, "true");
         if (idToken) config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ID_TOKEN, "true");
         mapper.setConfig(config);

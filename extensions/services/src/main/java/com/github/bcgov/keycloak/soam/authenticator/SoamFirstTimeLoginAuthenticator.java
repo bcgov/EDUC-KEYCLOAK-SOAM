@@ -1,4 +1,4 @@
-package com.github.bcgov.keycloak.soam;
+package com.github.bcgov.keycloak.soam.authenticator;
 
 import java.util.List;
 import java.util.Map;
