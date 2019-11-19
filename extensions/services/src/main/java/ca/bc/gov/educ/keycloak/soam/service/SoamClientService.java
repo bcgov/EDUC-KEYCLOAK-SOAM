@@ -12,7 +12,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
 @Configuration
 @EnableOAuth2Client
 @ComponentScan("ca.bc.gov.educ.keycloak.soam")
