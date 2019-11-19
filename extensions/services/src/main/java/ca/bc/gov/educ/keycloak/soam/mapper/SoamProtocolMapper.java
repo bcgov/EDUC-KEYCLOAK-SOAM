@@ -28,6 +28,9 @@ import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 
 import com.github.javafaker.Faker;
 
@@ -40,6 +43,7 @@ import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
  * @author Marco Villeneuve
  *
  */
+@Component
 public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
 
@@ -87,10 +91,10 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		// logger.info("Protocol Mapper - Attribute GUID is: " +
 		// userSession.getUser().getFirstAttribute("GUID"));
 		
-		String pen = getPen();
+		//String pen = getPen();
 	    Faker faker1 = new Faker(new Random(24));
 		
-	    token.getOtherClaims().put("pen", pen);
+	    token.getOtherClaims().put("pen", "123456789");
 	    token.getOtherClaims().put("firstName", faker1.name().firstName());
 	    token.getOtherClaims().put("lastName", faker1.name().lastName());
 	    token.getOtherClaims().put("acccountType", "BCeID");

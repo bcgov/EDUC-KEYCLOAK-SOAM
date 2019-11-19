@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -15,7 +14,6 @@ import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {SoamProtocolMapper.class, ApplicationProperties.class})
-@PropertySource(value = "classpath:application.test.properties")
 public class SoamRestTest {
 
     @Autowired
