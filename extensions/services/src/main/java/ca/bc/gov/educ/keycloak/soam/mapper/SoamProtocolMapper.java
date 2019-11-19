@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.jboss.logging.Logger;
 import org.keycloak.models.ProtocolMapperModel;
@@ -17,6 +16,9 @@ import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
 import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import ca.bc.gov.educ.keycloak.soam.service.SoamClientService;
 
 
 /**
@@ -31,6 +33,9 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
 
 	private static Logger logger = Logger.getLogger(SoamProtocolMapper.class);
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
+    
+    @Autowired
+    private SoamClientService service;
 
     static {
         //OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
@@ -68,13 +73,10 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
     	//Inject callout from here, using the GUID as our key
     	//logger.info("Protocol Mapper - User GUID is: " + userSession.getUser().getUsername());
     	//logger.info("Protocol Mapper - Attribute GUID is: " + userSession.getUser().getFirstAttribute("GUID"));
-    	
-    	token.getOtherClaims().put("pen", getRandomPen());
+    	logger.info("Service is: " + service);
+    	String pen = service.login();
+    	token.getOtherClaims().put("pen", pen);
     }
-    
-	private String getRandomPen() {
-		return UUID.randomUUID().toString().replaceAll("-", "").substring(0,9);
-	}
 
     public static ProtocolMapperModel create(String name,
                                       String tokenClaimName,
