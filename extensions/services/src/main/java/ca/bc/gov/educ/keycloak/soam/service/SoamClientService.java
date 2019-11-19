@@ -9,12 +9,12 @@ import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Configuration
+@SuppressWarnings("deprecation")
 @EnableOAuth2Client
-@ComponentScan("ca.bc.gov.educ.keycloak.soam")
+@Configuration
+@ComponentScan({"ca.bc.gov.educ.keycloak.soam","ca.bc.gov.educ.keycloak.soam.mapper","ca.bc.gov.educ.keycloak.soam.service"})
 public class SoamClientService {
 	private static Logger logger = Logger.getLogger(SoamClientService.class);
 	
