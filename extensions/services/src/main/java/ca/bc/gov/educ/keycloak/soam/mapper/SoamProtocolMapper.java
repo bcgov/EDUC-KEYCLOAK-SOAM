@@ -1,4 +1,4 @@
-package com.github.bcgov.keycloak.soam.mapper;
+package ca.bc.gov.educ.keycloak.soam.mapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;

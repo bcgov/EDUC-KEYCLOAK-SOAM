@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.github.bcgov.keycloak.soam.authenticator;
+package ca.bc.gov.educ.keycloak.soam.authenticator;
 
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
