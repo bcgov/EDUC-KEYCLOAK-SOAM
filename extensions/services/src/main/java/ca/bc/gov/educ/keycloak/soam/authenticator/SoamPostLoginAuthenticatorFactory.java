@@ -15,10 +15,7 @@
  * limitations under the License.
  */
 
-package com.github.bcgov.keycloak.authenticators;
-
-import java.util.ArrayList;
-import java.util.List;
+package ca.bc.gov.educ.keycloak.soam.authenticator;
 
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
@@ -28,44 +25,18 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
-public class RequireRoleByClientFactory implements AuthenticatorFactory {
+public class SoamPostLoginAuthenticatorFactory implements AuthenticatorFactory {
 
-    public static final String PROVIDER_ID = "bcgov-required-role-by-client";
-    public static final String CLIENT_NAME = PROVIDER_ID+".client";
-    public static final String ROLE_NAME = PROVIDER_ID+".role";
-    public static final String ERROR_URL = PROVIDER_ID+".error-url";
-    
-    static RequireRoleByClient SINGLETON = new RequireRoleByClient();
+    public static final String PROVIDER_ID = "bcgov-soam-post-authenticator";
+    static SoamPostLoginAuthenticator SINGLETON = new SoamPostLoginAuthenticator();
 
-    private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
 
-    static {
-        ProviderConfigProperty property;
-        property = new ProviderConfigProperty();
-        property.setName(CLIENT_NAME);
-        property.setLabel("Client/Application");
-        property.setType(ProviderConfigProperty.STRING_TYPE);
-        property.setHelpText("Select a client this action will be applied");
-        configProperties.add(property);
-        
-        property = new ProviderConfigProperty();
-        property.setName(ROLE_NAME);
-        property.setLabel("Required Role");
-        property.setType(ProviderConfigProperty.ROLE_TYPE);
-        property.setHelpText("Select a role a user must have when requested by the defined client");
-        configProperties.add(property);
-        
-        property = new ProviderConfigProperty();
-        property.setName(ERROR_URL);
-        property.setLabel("Error URL");
-        property.setType(ProviderConfigProperty.STRING_TYPE);
-        property.setHelpText("Error URL to redirect user when role is missing. (Defaults to client base URL)");
-        configProperties.add(property);
-    }
-    
     @Override
     public Authenticator create(KeycloakSession session) {
         return SINGLETON;
@@ -73,17 +44,17 @@ public class RequireRoleByClientFactory implements AuthenticatorFactory {
 
     @Override
     public void init(Config.Scope config) {
-    	//no-op
+
     }
 
     @Override
     public void postInit(KeycloakSessionFactory factory) {
-    	//no-op
+
     }
 
     @Override
     public void close() {
-    	//no-op
+
     }
 
     @Override
@@ -93,16 +64,18 @@ public class RequireRoleByClientFactory implements AuthenticatorFactory {
 
     @Override
     public String getReferenceCategory() {
-        return "custom";
+        return "soamAuthenticators";
     }
 
     @Override
     public boolean isConfigurable() {
-        return true;
+        return false;
     }
 
     public static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
-            AuthenticationExecutionModel.Requirement.REQUIRED};
+            AuthenticationExecutionModel.Requirement.ALTERNATIVE,
+            AuthenticationExecutionModel.Requirement.REQUIRED,
+            AuthenticationExecutionModel.Requirement.DISABLED};
 
     @Override
     public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
@@ -111,17 +84,24 @@ public class RequireRoleByClientFactory implements AuthenticatorFactory {
 
     @Override
     public String getDisplayType() {
-        return "Required Role By Client";
+        return "SOAM Post Login Authenticator";
     }
 
     @Override
     public String getHelpText() {
-        return "Validates that a user MUST have a specific role when logging in from a specific client. If it fails, it redirects to the client's base URL";
+        return "SOAM Post Login Authenticator";
     }
 
     @Override
     public boolean isUserSetupAllowed() {
         return false;
+    }
+
+    private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
+
+    static {
+        //ProviderConfigProperty property;
+        //configProperties.add(property);
     }
 
 

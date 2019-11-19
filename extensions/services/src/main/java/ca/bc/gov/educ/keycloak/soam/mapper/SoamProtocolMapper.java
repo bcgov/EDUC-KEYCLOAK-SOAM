@@ -1,4 +1,4 @@
-package com.github.bcgov.keycloak.soam;
+package ca.bc.gov.educ.keycloak.soam.mapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +16,10 @@ import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
 import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import ca.bc.gov.educ.keycloak.soam.service.SoamClientService;
 
 
 /**
@@ -26,13 +30,17 @@ import org.keycloak.representations.IDToken;
  * @author Marco Villeneuve
  *
  */
+@Component
 public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
 
 	private static Logger logger = Logger.getLogger(SoamProtocolMapper.class);
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
+    
+    @Autowired
+    private SoamClientService service;
 
     static {
-        OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
+        //OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
         OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SoamProtocolMapper.class);
     }
 
@@ -65,10 +73,11 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
 
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
     	//Inject callout from here, using the GUID as our key
-    	logger.info("Protocol Mapper - User GUID is: " + userSession.getUser().getUsername());
-    	logger.info("Protocol Mapper - Attribute GUID is: " + userSession.getUser().getFirstAttribute("GUID"));
-    	
-    	token.getOtherClaims().put("given_name", "Working Test Claim");
+    	//logger.info("Protocol Mapper - User GUID is: " + userSession.getUser().getUsername());
+    	//logger.info("Protocol Mapper - Attribute GUID is: " + userSession.getUser().getFirstAttribute("GUID"));
+    	logger.info("Service is: " + service);
+    	String pen = service.login();
+    	token.getOtherClaims().put("pen", pen);
     }
 
     public static ProtocolMapperModel create(String name,
@@ -82,7 +91,6 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OI
         mapper.setConsentRequired(consentRequired);
         mapper.setConsentText(consentText);
         Map<String, String> config = new HashMap<String, String>();
-        config.put(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME, tokenClaimName);
         if (accessToken) config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ACCESS_TOKEN, "true");
         if (idToken) config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ID_TOKEN, "true");
         mapper.setConfig(config);

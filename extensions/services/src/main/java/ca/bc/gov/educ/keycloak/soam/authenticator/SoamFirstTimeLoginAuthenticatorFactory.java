@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.github.bcgov.keycloak.soam;
+package ca.bc.gov.educ.keycloak.soam.authenticator;
 
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
@@ -31,10 +31,10 @@ import java.util.List;
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
-public class SoamPostLoginAuthenticatorFactory implements AuthenticatorFactory {
+public class SoamFirstTimeLoginAuthenticatorFactory implements AuthenticatorFactory {
 
-    public static final String PROVIDER_ID = "bcgov-soam-post-authenticator";
-    static SoamPostLoginAuthenticator SINGLETON = new SoamPostLoginAuthenticator();
+    public static final String PROVIDER_ID = "bcgov-soam-authenticator"; 
+    static SoamFirstTimeLoginAuthenticator SINGLETON = new SoamFirstTimeLoginAuthenticator();
 
 
     @Override
@@ -84,12 +84,12 @@ public class SoamPostLoginAuthenticatorFactory implements AuthenticatorFactory {
 
     @Override
     public String getDisplayType() {
-        return "SOAM Post Login Authenticator";
+        return "SOAM Authenticator";
     }
 
     @Override
     public String getHelpText() {
-        return "SOAM Post Login Authenticator";
+        return "Full SOAM Authentication";
     }
 
     @Override
