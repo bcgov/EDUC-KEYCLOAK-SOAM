@@ -97,7 +97,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	    
 	    Name name = faker1.name();
 		
-	    token.getOtherClaims().put("pen", "123456789");
+	    token.getOtherClaims().put("pen", pen);
 	    token.getOtherClaims().put("firstName", name.firstName());
 	    token.getOtherClaims().put("lastName", name.lastName());
 	    token.getOtherClaims().put("acccountType", "BCeID");
