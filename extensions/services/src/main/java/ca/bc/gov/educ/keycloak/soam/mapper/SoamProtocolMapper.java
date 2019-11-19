@@ -91,7 +91,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		// logger.info("Protocol Mapper - Attribute GUID is: " +
 		// userSession.getUser().getFirstAttribute("GUID"));
 		
-		//String pen = getPen();
+		String pen = getPen();
 	    Faker faker1 = new Faker(new Random(24));
 		
 	    token.getOtherClaims().put("pen", "123456789");
