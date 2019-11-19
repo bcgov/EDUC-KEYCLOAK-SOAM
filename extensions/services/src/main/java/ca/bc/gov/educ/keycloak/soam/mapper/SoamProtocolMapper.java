@@ -32,6 +32,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.stereotype.Component;
 
 import com.github.javafaker.Faker;
+import com.github.javafaker.Name;
 
 import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
 
@@ -93,12 +94,14 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		
 		String pen = getPen();
 	    Faker faker1 = new Faker(new Random(24));
+	    
+	    Name name = faker1.name();
 		
 	    token.getOtherClaims().put("pen", "123456789");
-	    token.getOtherClaims().put("firstName", faker1.name().firstName());
-	    token.getOtherClaims().put("lastName", faker1.name().lastName());
+	    token.getOtherClaims().put("firstName", name.firstName());
+	    token.getOtherClaims().put("lastName", name.lastName());
 	    token.getOtherClaims().put("acccountType", "BCeID");
-		token.getOtherClaims().put("displayName", faker1.name().firstName() + " " + faker1.name().lastName());
+		token.getOtherClaims().put("displayName", name.firstName() + " " + name.lastName());
 	}
 
 	private String getToken() {
