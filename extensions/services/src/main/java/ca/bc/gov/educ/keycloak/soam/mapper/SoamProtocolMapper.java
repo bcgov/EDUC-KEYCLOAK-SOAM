@@ -27,7 +27,8 @@ import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
 import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.github.javafaker.Faker;
@@ -47,13 +48,14 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 
 	private static Logger logger = Logger.getLogger(SoamProtocolMapper.class);
 	private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
-
-	@Autowired
-	private ApplicationProperties props;
+	private static ApplicationProperties props;
 
 	static {
 		// OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
 		OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SoamProtocolMapper.class);
+		ApplicationContext ctx = new AnnotationConfigApplicationContext(ApplicationProperties.class);
+		props = ctx.getBean(ApplicationProperties.class);
+		ctx = null;
 	}
 
 	public static final String PROVIDER_ID = "oidc-soam-mapper";
