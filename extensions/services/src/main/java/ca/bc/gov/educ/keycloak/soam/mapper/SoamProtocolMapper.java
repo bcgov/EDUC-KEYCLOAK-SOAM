@@ -17,6 +17,7 @@ import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ca.bc.gov.educ.keycloak.soam.service.SoamClientService;
 
@@ -29,6 +30,7 @@ import ca.bc.gov.educ.keycloak.soam.service.SoamClientService;
  * @author Marco Villeneuve
  *
  */
+@Component
 public class SoamProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
 
 	private static Logger logger = Logger.getLogger(SoamProtocolMapper.class);
