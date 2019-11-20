@@ -12,21 +12,33 @@ public class ApplicationProperties {
 	
 	private static Logger logger = Logger.getLogger(ApplicationProperties.class);
 
+	private String soamURL;
+	private String tokenURL;
+	private String clientID;
+	private String clientSecret;
+
+	public ApplicationProperties() {
+		logger.info("SOAM: Building application properties");
+		soamURL = System.getenv().getOrDefault("soamURL", "MissingSoamURL");
+		tokenURL = System.getenv().getOrDefault("tokenURL", "MissingSoamTokenURL");
+		clientID = System.getenv().getOrDefault("clientID", "MissingSoamClientID");
+		clientSecret = System.getenv().getOrDefault("clientSecret", "MissingSoamClientSecret");
+	}
+
 	public String getSoamURL() {
-		logger.info("Fetching SOAM URL: " + System.getenv().getOrDefault("soamURL", "hello world"));
-		return System.getenv().getOrDefault("soamURL", "hello world");
+		return soamURL;
 	}
 
 	public String getTokenURL() {
-		return System.getenv().getOrDefault("tokenURL", "testtoken");
+		return tokenURL;
 	}
 
 	public String getClientID() {
-		return System.getenv().getOrDefault("clientID", "testclient");
+		return clientID;
 	}
 
 	public String getClientSecret() {
-		return System.getenv().getOrDefault("clientSecret", "testsecret");
+		return clientSecret;
 	}
 
 }
