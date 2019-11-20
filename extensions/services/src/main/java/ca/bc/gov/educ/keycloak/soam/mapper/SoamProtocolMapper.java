@@ -76,7 +76,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	@Override
 	public String getHelpText() {
 		return "Map SOAM claims";
-	}
+	} 
 
 	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
 		// Inject callout from here, using the GUID as our key
