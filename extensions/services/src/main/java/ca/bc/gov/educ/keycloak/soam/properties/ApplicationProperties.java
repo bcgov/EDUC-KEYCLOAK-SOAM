@@ -1,9 +1,6 @@
 package ca.bc.gov.educ.keycloak.soam.properties;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.jboss.logging.Logger;
 
 /**
  * Class holds all application properties
@@ -11,53 +8,25 @@ import org.springframework.context.annotation.PropertySource;
  * @author Marco Villeneuve
  *
  */
-@Configuration
-@ComponentScan("ca.bc.gov.educ.keycloak.soam")
-@PropertySource("classpath:application.properties")
 public class ApplicationProperties {
-
-	@Value("${soamURL}")
-	private String soamURL;
-
-	@Value("${tokenURL}")
-	private String tokenURL;
-
-	@Value("${clientID}")
-	private String clientID;
-
-	@Value("${clientSecret}")
-	private String clientSecret;
+	
+	private static Logger logger = Logger.getLogger(ApplicationProperties.class);
 
 	public String getSoamURL() {
-		return soamURL;
-	}
-
-	public void setSoamURL(String soamURL) {
-		this.soamURL = soamURL;
+		logger.info("Fetching SOAM URL: " + System.getenv().getOrDefault("soamURL", "hello world"));
+		return System.getenv().getOrDefault("soamURL", "hello world");
 	}
 
 	public String getTokenURL() {
-		return tokenURL;
-	}
-
-	public void setTokenURL(String tokenURL) {
-		this.tokenURL = tokenURL;
+		return System.getenv().getOrDefault("tokenURL", "testtoken");
 	}
 
 	public String getClientID() {
-		return clientID;
-	}
-
-	public void setClientID(String clientID) {
-		this.clientID = clientID;
+		return System.getenv().getOrDefault("clientID", "testclient");
 	}
 
 	public String getClientSecret() {
-		return clientSecret;
-	}
-
-	public void setClientSecret(String clientSecret) {
-		this.clientSecret = clientSecret;
+		return System.getenv().getOrDefault("clientSecret", "testsecret");
 	}
 
 }
