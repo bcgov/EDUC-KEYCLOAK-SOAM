@@ -50,7 +50,9 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	static {
 		// OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
 		OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SoamProtocolMapper.class);
+		logger.info("Getting properties");
 		props = new ApplicationProperties();
+		logger.info("Token URL is: " + props.getTokenURL());
 	}
 
 	public static final String PROVIDER_ID = "oidc-soam-mapper";
@@ -85,8 +87,9 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		// userSession.getUser().getUsername());
 		// logger.info("Protocol Mapper - Attribute GUID is: " +
 		// userSession.getUser().getFirstAttribute("GUID"));
-		
+		logger.info("SOAM Injecting claims");
 		String pen = getPen();
+		logger.info("SOAM After Get PEN");
 	    Faker faker1 = new Faker(new Random(24));
 	    
 	    Name name = faker1.name();
