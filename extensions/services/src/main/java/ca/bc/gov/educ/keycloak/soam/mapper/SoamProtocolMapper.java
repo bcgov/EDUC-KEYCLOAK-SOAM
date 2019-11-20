@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
@@ -85,16 +84,15 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		// userSession.getUser().getUsername());
 		// logger.info("Protocol Mapper - Attribute GUID is: " +
 		// userSession.getUser().getFirstAttribute("GUID"));
-		
+		logger.info("SOAM Injecting claims");
 		String pen = getPen();
-	    Faker faker1 = new Faker(new Random(24));
-	    
-	    Name name = faker1.name();
+		token.getOtherClaims().put("pen", pen);
 		
-	    token.getOtherClaims().put("pen", pen);
+	    Faker faker1 = new Faker();
+	    Name name = faker1.name();
 	    token.getOtherClaims().put("firstName", name.firstName());
 	    token.getOtherClaims().put("lastName", name.lastName());
-	    token.getOtherClaims().put("acccountType", "BCeID");
+	    token.getOtherClaims().put("acccountType", "BCEID");
 		token.getOtherClaims().put("displayName", name.firstName() + " " + name.lastName());
 	}
 
@@ -120,9 +118,6 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
 			conn.setRequestProperty("Authorization", "Bearer " + getToken());
-			// e.g. bearer token=
-			// eyJhbGciOiXXXzUxMiJ9.eyJzdWIiOiPyc2hhcm1hQHBsdW1zbGljZS5jb206OjE6OjkwIiwiZXhwIjoxNTM3MzQyNTIxLCJpYXQiOjE1MzY3Mzc3MjF9.O33zP2l_0eDNfcqSQz29jUGJC-_THYsXllrmkFnk85dNRbAw66dyEKBP5dVcFUuNTA8zhA83kk3Y41_qZYx43T
-
 			conn.setRequestProperty("Content-Type", "application/json");
 			conn.setRequestMethod("GET");
 
@@ -140,7 +135,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 			throw new RuntimeException("Could not call SOAM API: " + e);
 		}
 
-	}
+	} 
 
 	public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
 			String consentText, boolean accessToken, boolean idToken) {
