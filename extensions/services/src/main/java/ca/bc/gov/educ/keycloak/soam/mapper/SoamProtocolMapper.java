@@ -140,7 +140,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 			throw new RuntimeException("Could not call SOAM API: " + e);
 		}
 
-	}
+	} 
 
 	public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
 			String consentText, boolean accessToken, boolean idToken) {
