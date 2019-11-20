@@ -10,10 +10,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.bc.gov.educ.keycloak.soam.mapper.SoamProtocolMapper;
-import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SoamProtocolMapper.class, ApplicationProperties.class})
+@ContextConfiguration(classes = {SoamProtocolMapper.class})
 public class SoamRestTest {
 
     @Autowired

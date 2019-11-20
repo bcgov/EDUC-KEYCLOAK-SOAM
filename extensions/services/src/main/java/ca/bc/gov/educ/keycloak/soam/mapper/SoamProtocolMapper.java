@@ -27,10 +27,9 @@ import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
 import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.github.javafaker.Faker;
+import com.github.javafaker.Name;
 
 import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
 
@@ -41,19 +40,17 @@ import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
  * @author Marco Villeneuve
  *
  */
-@Component
 public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
 
 	private static Logger logger = Logger.getLogger(SoamProtocolMapper.class);
 	private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
-
-	@Autowired
-	private ApplicationProperties props;
+	private static ApplicationProperties props;
 
 	static {
 		// OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
 		OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SoamProtocolMapper.class);
+		props = new ApplicationProperties();
 	}
 
 	public static final String PROVIDER_ID = "oidc-soam-mapper";
@@ -89,14 +86,16 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		// logger.info("Protocol Mapper - Attribute GUID is: " +
 		// userSession.getUser().getFirstAttribute("GUID"));
 		
-		//String pen = getPen();
+		String pen = getPen();
 	    Faker faker1 = new Faker(new Random(24));
+	    
+	    Name name = faker1.name();
 		
-	    token.getOtherClaims().put("pen", "123456789");
-	    token.getOtherClaims().put("firstName", faker1.name().firstName());
-	    token.getOtherClaims().put("lastName", faker1.name().lastName());
+	    token.getOtherClaims().put("pen", pen);
+	    token.getOtherClaims().put("firstName", name.firstName());
+	    token.getOtherClaims().put("lastName", name.lastName());
 	    token.getOtherClaims().put("acccountType", "BCeID");
-		token.getOtherClaims().put("displayName", faker1.name().firstName() + " " + faker1.name().lastName());
+		token.getOtherClaims().put("displayName", name.firstName() + " " + name.lastName());
 	}
 
 	private String getToken() {
