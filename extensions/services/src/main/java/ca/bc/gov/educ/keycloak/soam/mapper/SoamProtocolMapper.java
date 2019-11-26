@@ -1,20 +1,10 @@
 package ca.bc.gov.educ.keycloak.soam.mapper;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.oltu.oauth2.client.OAuthClient;
-import org.apache.oltu.oauth2.client.URLConnectionClient;
-import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
-import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
-import org.apache.oltu.oauth2.common.OAuth;
-import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.jboss.logging.Logger;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
@@ -30,7 +20,6 @@ import org.keycloak.representations.IDToken;
 import com.github.javafaker.Faker;
 import com.github.javafaker.Name;
 
-import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 /**

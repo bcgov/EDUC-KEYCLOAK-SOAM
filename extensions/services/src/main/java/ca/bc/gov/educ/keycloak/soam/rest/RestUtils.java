@@ -62,7 +62,7 @@ public class RestUtils {
 			URL url = new URL(props.getSoamURL());
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-			conn.setRequestProperty("Authorization", "Bearer " + getToken("GET_PEN"));
+			conn.setRequestProperty("Authorization", "Bearer " + getToken("READ_PEN_REQUEST"));
 			conn.setRequestProperty("Content-Type", "application/json");
 			conn.setRequestMethod("GET");
 
