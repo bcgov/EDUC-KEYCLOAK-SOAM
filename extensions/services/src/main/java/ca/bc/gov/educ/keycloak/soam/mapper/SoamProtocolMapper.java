@@ -84,7 +84,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		// logger.info("Protocol Mapper - Attribute GUID is: " +
 		// userSession.getUser().getFirstAttribute("GUID"));
 		logger.info("SOAM Injecting claims");
-		String pen = RestUtils.getInstance().getPen();
+		String pen = RestUtils.getInstance().getPEN();
 		token.getOtherClaims().put("pen", pen);
 		
 	    Faker faker1 = new Faker();
