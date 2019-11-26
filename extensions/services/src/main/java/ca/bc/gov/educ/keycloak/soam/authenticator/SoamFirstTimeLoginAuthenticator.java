@@ -21,7 +21,7 @@ import org.keycloak.representations.JsonWebToken;
  * @author Marco Villeneuve
  *
  */
-public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
+public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator { 
 
     private static Logger logger = Logger.getLogger(SoamFirstTimeLoginAuthenticator.class);
 
