@@ -1,20 +1,10 @@
 package ca.bc.gov.educ.keycloak.soam.mapper;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.oltu.oauth2.client.OAuthClient;
-import org.apache.oltu.oauth2.client.URLConnectionClient;
-import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
-import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
-import org.apache.oltu.oauth2.common.OAuth;
-import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.jboss.logging.Logger;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
@@ -30,7 +20,7 @@ import org.keycloak.representations.IDToken;
 import com.github.javafaker.Faker;
 import com.github.javafaker.Name;
 
-import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
+import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 /**
  * SOAM Protocol Mapper Will be used to set Education specific claims for our
@@ -44,12 +34,10 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 
 	private static Logger logger = Logger.getLogger(SoamProtocolMapper.class);
 	private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
-	private static ApplicationProperties props;
 
 	static {
 		// OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
 		OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SoamProtocolMapper.class);
-		props = new ApplicationProperties();
 	}
 
 	public static final String PROVIDER_ID = "oidc-soam-mapper";
@@ -85,57 +73,16 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		// logger.info("Protocol Mapper - Attribute GUID is: " +
 		// userSession.getUser().getFirstAttribute("GUID"));
 		logger.info("SOAM Injecting claims");
-		String pen = getPen();
+		String pen = RestUtils.getInstance().getPEN();
 		token.getOtherClaims().put("pen", pen);
 		
 	    Faker faker1 = new Faker();
 	    Name name = faker1.name();
 	    token.getOtherClaims().put("firstName", name.firstName());
 	    token.getOtherClaims().put("lastName", name.lastName());
-	    token.getOtherClaims().put("acccountType", "BCEID");
+	    token.getOtherClaims().put("accountType", "BCEID");
 		token.getOtherClaims().put("displayName", name.firstName() + " " + name.lastName());
 	}
-
-	private String getToken() {
-		try {
-			OAuthClient client = new OAuthClient(new URLConnectionClient());
-
-			OAuthClientRequest request = OAuthClientRequest.tokenLocation(props.getTokenURL())
-					.setGrantType(GrantType.CLIENT_CREDENTIALS).setClientId(props.getClientID())
-					.setScope("GET_PEN").setClientSecret(props.getClientSecret()).buildBodyMessage();
-
-			return client.accessToken(request, OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class)
-					.getAccessToken();
-		} catch (Exception exn) {
-			throw new RuntimeException("Could not get token: " + exn);
-		}
-	}
-
-	public String getPen() {
-		try {
-			// Sending get request
-			URL url = new URL(props.getSoamURL());
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-			conn.setRequestProperty("Authorization", "Bearer " + getToken());
-			conn.setRequestProperty("Content-Type", "application/json");
-			conn.setRequestMethod("GET");
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String output;
-
-			StringBuffer response = new StringBuffer();
-			while ((output = in.readLine()) != null) {
-				response.append(output);
-			}
-
-			in.close();
-			return response.toString();
-		} catch (Exception e) {
-			throw new RuntimeException("Could not call SOAM API: " + e);
-		}
-
-	} 
 
 	public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
 			String consentText, boolean accessToken, boolean idToken) {
