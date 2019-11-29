@@ -2,7 +2,6 @@ package ca.bc.gov.educ.keycloak.soam.authenticator;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
@@ -13,6 +12,9 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
+
+import ca.bc.gov.educ.api.soam.model.SoamLoginEntity;
+import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 /**
  * SOAM First Time login authenticator
@@ -51,7 +53,10 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         //Username will be a generated GUID when the DB is setup
         String username = (String)token.getOtherClaims().get("bceid_guid");
-        //boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);
+        
+        if(username != null) {
+        	createOrUpdateBasicUser(username);
+        }
         
         //Temporary change
         if(context.getSession().users().getUserByUsername(username, realm) == null) {
@@ -65,13 +70,17 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             //federatedUser.setFirstName(brokerContext.getFirstName());
             //federatedUser.setLastName(brokerContext.getLastName());
             //This random value will be the actual BCeID GUID when the DB is ready
-            federatedUser.setSingleAttribute("GUID", UUID.randomUUID().toString());
+            federatedUser.setSingleAttribute("first_name", brokerContext.getFirstName());
+            federatedUser.setSingleAttribute("first_name", brokerContext.getLastName());
+            federatedUser.setSingleAttribute("email_address", brokerContext.getEmail());
+            federatedUser.setSingleAttribute("display_name", (String)token.getOtherClaims().get("display_name"));
+            federatedUser.setSingleAttribute("middle_names", "FIX WHEN CAP SERVICE IS IN");
 
             for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
                 federatedUser.setAttribute(attr.getKey(), attr.getValue());
             }
 
-            userRegisteredSuccess(context, federatedUser, serializedCtx, brokerContext);
+            //userRegisteredSuccess(context, federatedUser, serializedCtx, brokerContext);
 
             context.setUser(federatedUser);
             context.getAuthenticationSession().setAuthNote(BROKER_REGISTERED_NEW_USER, "true");
@@ -83,20 +92,19 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         } 
     }
 
-    // Could be overriden to detect duplication based on other criterias (firstName, lastName, ...)
-    protected boolean checkExistingUser(AuthenticationFlowContext context, String guid, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
+    protected SoamLoginEntity createOrUpdateBasicUser(String guid) {
     	logger.info("SOAM: inside checkExistingUser");
     	logger.info("SOAM: checking if username is in our DB: " + guid);
     	
-    	//Query here to determine if GUID already exists
-
-        return false;
+    	SoamLoginEntity soamLoginEntity = RestUtils.getInstance().performLogin("BASIC", guid, guid);
+    	
+        return soamLoginEntity;
     }
 
-    // Empty method by default. This exists, so subclass can override and add callback after new user is registered through social
-    protected void userRegisteredSuccess(AuthenticationFlowContext context, UserModel registeredUser, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-
-    }
+//    // Empty method by default. This exists, so subclass can override and add callback after new user is registered through social
+//    protected void userRegisteredSuccess(AuthenticationFlowContext context, UserModel registeredUser, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
+//
+//    }
     
     @Override
     public boolean requiresUser() {
@@ -107,37 +115,5 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
     public boolean configuredFor(KeycloakSession session, RealmModel realm, UserModel user) {
         return true;
     }
-    
-   
-
-//    private String getBCeIDGUID(JsonWebToken token, String brokeredID) {
-//    	try {
-//			// Sending get request
-//			URL url = new URL("https://sso-test.pathfinder.gov.bc.ca/auth/admin/realms/v45fd2kb/users/" + brokeredID + "/federated-identity");
-//			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//
-//			conn.setRequestProperty("Authorization","Bearer "+ token);
-//			conn.setRequestProperty("Content-Type","application/json");
-//			conn.setRequestMethod("GET");
-//
-//			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//			String output;
-//
-//			StringBuffer response = new StringBuffer();
-//			while ((output = in.readLine()) != null) {
-//			    response.append(output);
-//			}
-//
-//			in.close();
-//
-//			logger.info("JSON response: " + response.toString());
-//			JSONObject jsonData = new JSONObject(response.toString());
-//			
-//			return jsonData.getString("userId");
-//		} catch (Exception e) {
-//			throw new RuntimeException(e);
-//		}
-//
-//    }
 
 }
