@@ -43,6 +43,12 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
         
+        logger.info("JWT token is: " + token);
+        
+		for(String s: token.getOtherClaims().keySet()) {
+    		logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
+		}
+        
         //Username will be a generated GUID when the DB is setup
         String username = (String)token.getOtherClaims().get("bceid_guid");
         //boolean userExists = checkExistingUser(context, username, serializedCtx, brokerContext);

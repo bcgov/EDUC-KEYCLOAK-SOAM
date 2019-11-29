@@ -41,6 +41,8 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 			BrokeredIdentityContext brokerContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
 			JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
 			
+	        logger.info("JWT token is: " + token);
+	        
 			for(String s: token.getOtherClaims().keySet()) {
         		logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
 			}
