@@ -5,7 +5,7 @@ pipeline{
     stages{
       stage('Build App') {
          steps {
-            sh "mvn -f ./api/pom.xml -Dmaven.test.skip=true package"
+            sh "mvn -f extensions/services/pom.xml -Dmaven.test.skip=true package"
          }
       }
     }
