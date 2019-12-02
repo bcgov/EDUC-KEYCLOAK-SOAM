@@ -106,7 +106,7 @@ objects:
       contextDir: "extensions"
     strategy:
       jenkinsPipelineStrategy:
-         jenkinsfilePath: ../openshift/Jenkinsfile
+         jenkinsfilePath: "../openshift/Jenkinsfile"
     successfulBuildsHistoryLimit: 3
     triggers:
     - imageChange:
