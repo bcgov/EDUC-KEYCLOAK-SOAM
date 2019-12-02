@@ -100,7 +100,7 @@ objects:
     runPolicy: SerialLatestOnly
     source:
       git:
-        ref: ${SOURCE_GIT_REF}
+        ref: master
         uri: ${SOURCE_GIT_URL}
       type: Git
     strategy:
