@@ -103,10 +103,9 @@ objects:
         ref: ${SOURCE_GIT_REF}
         uri: ${SOURCE_GIT_URL}
       type: Git
-      contextDir: "extensions"
     strategy:
       jenkinsPipelineStrategy:
-         jenkinsfilePath: "/Jenkinsfile"
+         jenkinsfilePath: "openshift/Jenkinsfile"
     successfulBuildsHistoryLimit: 3
     triggers:
     - imageChange:
