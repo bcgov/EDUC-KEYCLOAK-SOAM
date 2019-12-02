@@ -1,0 +1,12 @@
+pipeline{
+   agent {
+       label 'maven35'
+    }
+    stages{
+      stage('Build App') {
+         steps {
+            sh "mvn -f extensions/services/pom.xml -Dmaven.test.skip=true package"
+         }
+      }
+    }
+}
