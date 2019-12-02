@@ -106,6 +106,13 @@ objects:
     strategy:
       jenkinsPipelineStrategy:
          jenkinsfilePath: "openshift/Jenkinsfile"
+         env:
+          - name: BUILD_LOGLEVEL
+            value: '0'
+          - name: S2I_SOURCE_DEPLOYMENTS_FILTER
+            value: '*.jar *.zip *.tar.gz'
+          - name: MAVEN_S2I_ARTIFACT_DIRS
+            value: 'services/target/dist,themes/target'
     successfulBuildsHistoryLimit: 3
     triggers:
     - imageChange:
