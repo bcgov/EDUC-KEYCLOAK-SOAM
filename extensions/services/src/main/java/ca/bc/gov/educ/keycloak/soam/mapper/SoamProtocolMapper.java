@@ -94,21 +94,21 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 			token.getOtherClaims().put("displayName", soamLoginEntity.getStudent().getLegalFirstName() + " " + soamLoginEntity.getStudent().getLegalLastName());
 		}
 		//In this case we have a digital identity; someone that has logged in but does not have an associated student record
-		else if(soamLoginEntity.getSoamDigitalIdentity() != null) {
-			token.getOtherClaims().put("digitalIdentityID", soamLoginEntity.getSoamDigitalIdentity().getDigitalIdentityID());
-			token.getOtherClaims().put("emailAddress", soamLoginEntity.getSoamDigitalIdentity().getEmailAddress());
-			token.getOtherClaims().put("firstName", soamLoginEntity.getSoamDigitalIdentity().getFirstName());
-			token.getOtherClaims().put("lastName", soamLoginEntity.getSoamDigitalIdentity().getLastName());
-			token.getOtherClaims().put("middleNames", soamLoginEntity.getSoamDigitalIdentity().getMiddleNames()); 
-			token.getOtherClaims().put("displayName", soamLoginEntity.getSoamDigitalIdentity().getFirstName() + " " + soamLoginEntity.getSoamDigitalIdentity().getLastName());
+		else if(soamLoginEntity.getDigitalIdentityID() != null) {
+			token.getOtherClaims().put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID());
+			token.getOtherClaims().put("emailAddress", userSession.getUser().getFirstAttribute("email_address"));
+			token.getOtherClaims().put("firstName", userSession.getUser().getFirstAttribute("first_name"));
+			token.getOtherClaims().put("lastName", userSession.getUser().getFirstAttribute("last_name"));
+			token.getOtherClaims().put("middleNames", userSession.getUser().getFirstAttribute("middle_names")); 
+			token.getOtherClaims().put("displayName", userSession.getUser().getFirstAttribute("first_name") + " " + userSession.getUser().getFirstAttribute("last_name"));
 		}
 		//This is an exception since we have no data at all
 		else {
 			throw new RuntimeException("No student or digital ID data found in SoamLoginEntity");
 		}
 		
-	    token.getOtherClaims().put("firstName", null);
-	    token.getOtherClaims().put("lastName", null);
+//	    token.getOtherClaims().put("firstName", null);
+//	    token.getOtherClaims().put("lastName", null);
 	    token.getOtherClaims().put("accountType", "BCEID");
 
 	}

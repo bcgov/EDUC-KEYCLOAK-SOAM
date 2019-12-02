@@ -54,9 +54,11 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         //Username will be a generated GUID when the DB is setup
         String username = (String)token.getOtherClaims().get("bceid_guid");
         
-        if(username != null) {
-        	createOrUpdateBasicUser(username);
+        if(username == null) {
+        	throw new RuntimeException("No BCeID guid was found in token");
         }
+
+        createOrUpdateBasicUser(username);
         
         //Temporary change
         if(context.getSession().users().getUserByUsername(username, realm) == null) {
@@ -71,7 +73,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             //federatedUser.setLastName(brokerContext.getLastName());
             //This random value will be the actual BCeID GUID when the DB is ready
             federatedUser.setSingleAttribute("first_name", brokerContext.getFirstName());
-            federatedUser.setSingleAttribute("first_name", brokerContext.getLastName());
+            federatedUser.setSingleAttribute("last_name", brokerContext.getLastName());
             federatedUser.setSingleAttribute("email_address", brokerContext.getEmail());
             federatedUser.setSingleAttribute("display_name", (String)token.getOtherClaims().get("display_name"));
             federatedUser.setSingleAttribute("middle_names", "FIX WHEN CAP SERVICE IS IN");
@@ -94,7 +96,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 
     protected SoamLoginEntity createOrUpdateBasicUser(String guid) {
     	logger.info("SOAM: inside checkExistingUser");
-    	logger.info("SOAM: checking if username is in our DB: " + guid);
+    	logger.info("SOAM: performing login: " + guid);
     	
     	SoamLoginEntity soamLoginEntity = RestUtils.getInstance().performLogin("BASIC", guid, guid);
     	
