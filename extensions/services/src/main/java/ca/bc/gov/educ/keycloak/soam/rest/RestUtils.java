@@ -79,7 +79,6 @@ public class RestUtils {
 		}
     }
     
-    
     public SoamLoginEntity getSoamLoginEntity(String identifierType, String identifierValue) {
 		RestTemplate restTemplate = getRestTemplate(null);
 		HttpHeaders headers = new HttpHeaders();

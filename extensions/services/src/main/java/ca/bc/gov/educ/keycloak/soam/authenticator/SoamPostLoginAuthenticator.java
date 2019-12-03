@@ -32,7 +32,8 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 			logger.info("SOAM Post: inside authenticate");
 			
 	        if (context.getAuthenticationSession().getAuthNote(BROKER_REGISTERED_NEW_USER) != null) {
-	            context.attempted();
+	        	context.setUser(context.getUser());
+				context.success();
 	            return;
 	        }
 			
