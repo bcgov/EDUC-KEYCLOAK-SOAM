@@ -27,7 +27,7 @@ public class ApplicationProperties {
 
 	public String getSoamApiURL() {
 		return soamApiURL;
-	}
+	} 
 
 	public String getTokenURL() {
 		return tokenURL;
