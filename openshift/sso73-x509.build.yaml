@@ -103,16 +103,20 @@ objects:
         ref: ${SOURCE_GIT_REF}
         uri: ${SOURCE_GIT_URL}
       type: Git
+      contextDir: "extensions"
     strategy:
-      jenkinsPipelineStrategy:
-         jenkinsfilePath: "openshift/Jenkinsfile"
-         env:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: 'openjdk18-openshift:1.6'
+        env:
           - name: BUILD_LOGLEVEL
             value: '0'
           - name: S2I_SOURCE_DEPLOYMENTS_FILTER
             value: '*.jar *.zip *.tar.gz'
           - name: MAVEN_S2I_ARTIFACT_DIRS
             value: 'services/target/dist,themes/target'
+      type: Source
     successfulBuildsHistoryLimit: 3
     triggers:
     - imageChange:

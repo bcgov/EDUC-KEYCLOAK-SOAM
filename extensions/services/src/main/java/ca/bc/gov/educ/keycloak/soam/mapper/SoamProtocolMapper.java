@@ -17,7 +17,7 @@ import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
 
-import ca.bc.gov.educ.api.soam.model.SoamLoginEntity;
+import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 /**
