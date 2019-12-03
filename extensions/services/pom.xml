@@ -29,6 +29,9 @@
 							<outputFile>target/dist/${project.artifactId}-${project.version}.jar</outputFile>
 							<artifactSet>
 								<excludes>
+									<exclude>META-INF/*.SF</exclude>
+									<exclude>META-INF/*.DSA</exclude>
+									<exclude>META-INF/*.RSA</exclude>
 									<exclude>classworlds:classworlds</exclude>
 									<exclude>junit:junit</exclude>
 									<exclude>jmock:*</exclude>
