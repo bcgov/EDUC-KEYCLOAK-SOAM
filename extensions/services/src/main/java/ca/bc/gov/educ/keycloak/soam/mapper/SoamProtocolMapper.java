@@ -80,6 +80,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 			token.getOtherClaims().put("legalMiddleNames", soamLoginEntity.getStudent().getLegalMiddleNames());
 			token.getOtherClaims().put("legalLastName", soamLoginEntity.getStudent().getLegalLastName());
 			token.getOtherClaims().put("dob", soamLoginEntity.getStudent().getDob());
+			token.getOtherClaims().put("pen", soamLoginEntity.getStudent().getPen());
 			token.getOtherClaims().put("sexCode", soamLoginEntity.getStudent().getSexCode());
 			token.getOtherClaims().put("dataSourceCode", soamLoginEntity.getStudent().getDataSourceCode());
 			token.getOtherClaims().put("usualFirstName", soamLoginEntity.getStudent().getUsualFirstName());

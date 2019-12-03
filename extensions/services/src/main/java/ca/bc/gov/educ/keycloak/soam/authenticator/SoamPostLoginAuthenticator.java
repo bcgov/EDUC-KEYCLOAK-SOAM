@@ -1,20 +1,17 @@
 package ca.bc.gov.educ.keycloak.soam.authenticator;
 
-import java.io.IOException;
-
 import javax.json.JsonReader;
 
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
-import org.keycloak.authentication.authenticators.broker.util.PostBrokerLoginConstants;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
-import org.keycloak.representations.JsonWebToken;
-import org.keycloak.util.JsonSerialization;
+
+import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 
 public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
@@ -34,30 +31,43 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
     	try {
 			logger.info("SOAM Post: inside authenticate");
 			
-			logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
+	        if (context.getAuthenticationSession().getAuthNote(BROKER_REGISTERED_NEW_USER) != null) {
+	            context.attempted();
+	            return;
+	        }
 			
-			String stringSerialCtx = context.getAuthenticationSession().getAuthNote(PostBrokerLoginConstants.PBL_BROKERED_IDENTITY_CONTEXT);
-			SerializedBrokeredIdentityContext serializedCtx = JsonSerialization.readValue(stringSerialCtx, SerializedBrokeredIdentityContext.class);
-			BrokeredIdentityContext brokerContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
-			JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
+			//logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
 			
-	        logger.info("JWT token is: " + token);
-	        
-			for(String s: token.getOtherClaims().keySet()) {
-        		logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
-			}
+//			String stringSerialCtx = context.getAuthenticationSession().getAuthNote(PostBrokerLoginConstants.PBL_BROKERED_IDENTITY_CONTEXT);
+//			SerializedBrokeredIdentityContext serializedCtx = JsonSerialization.readValue(stringSerialCtx, SerializedBrokeredIdentityContext.class);
+//			BrokeredIdentityContext brokerContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
+			//JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
 			
-			UserModel existingUser = context.getSession().users().getUserByUsername(context.getUser().getUsername(), context.getRealm());
+//	        logger.info("JWT token is: " + token);
+//	        
+//			for(String s: token.getOtherClaims().keySet()) {
+//        		logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
+//			}
 			
-			context.setUser(existingUser);
+			//UserModel existingUser = context.getSession().users().getUserByUsername(context.getUser().getUsername(), context.getRealm());
+			
+			updateBasicUser(context.getUser().getUsername());
+			context.setUser(context.getUser());
 			context.success();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			if(reader != null) {
 				reader.close();
 			}
 		}
+    }
+    
+    protected void updateBasicUser(String guid) {
+    	logger.info("SOAM Post: inside updateBasicUser");
+    	logger.info("SOAM Post: performing login: " + guid);
+    	
+    	RestUtils.getInstance().performLogin("BASIC", guid, guid);
     }
  
     @Override

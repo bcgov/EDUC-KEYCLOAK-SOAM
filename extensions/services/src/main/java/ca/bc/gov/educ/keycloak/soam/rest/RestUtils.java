@@ -57,7 +57,7 @@ public class RestUtils {
 		return new OAuth2RestTemplate(resourceDetails, new DefaultOAuth2ClientContext());
 	}
 
-    public SoamLoginEntity performLogin(String identifierType, String identifierValue, String userID) {
+    public void performLogin(String identifierType, String identifierValue, String userID) {
 		RestTemplate restTemplate = getRestTemplate(null);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -72,14 +72,11 @@ public class RestUtils {
 		ResponseEntity<SoamLoginEntity> response;
 		try {
 			response = restTemplate.postForEntity(props.getSoamApiURL() + "/login",request, SoamLoginEntity.class);
-			return response.getBody();
 		} catch (final HttpClientErrorException e) {
 			
 			//ADD ERROR LOGIC!
 			e.printStackTrace();
 		}
-		
-        return null;
     }
     
     

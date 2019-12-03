@@ -13,7 +13,6 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 
-import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 /**
@@ -94,13 +93,11 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         } 
     }
 
-    protected SoamLoginEntity createOrUpdateBasicUser(String guid) {
+    protected void createOrUpdateBasicUser(String guid) {
     	logger.info("SOAM: inside checkExistingUser");
     	logger.info("SOAM: performing login: " + guid);
     	
-    	SoamLoginEntity soamLoginEntity = RestUtils.getInstance().performLogin("BASIC", guid, guid);
-    	
-        return soamLoginEntity;
+    	RestUtils.getInstance().performLogin("BASIC", guid, guid);
     }
 
 //    // Empty method by default. This exists, so subclass can override and add callback after new user is registered through social
