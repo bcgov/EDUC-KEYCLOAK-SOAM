@@ -17,7 +17,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import ca.bc.gov.educ.api.soam.model.SoamLoginEntity;
+import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
 import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
 
 /**

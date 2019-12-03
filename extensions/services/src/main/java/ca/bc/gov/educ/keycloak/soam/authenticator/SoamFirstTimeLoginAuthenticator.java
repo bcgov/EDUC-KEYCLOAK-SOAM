@@ -13,7 +13,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 
-import ca.bc.gov.educ.api.soam.model.SoamLoginEntity;
+import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 /**

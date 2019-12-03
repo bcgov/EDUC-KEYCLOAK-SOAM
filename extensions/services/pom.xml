@@ -97,11 +97,12 @@
 		    <version>4.12</version>
 		    <scope>test</scope>
 		</dependency>
-		<dependency>
+		<!--  <dependency>
 			<groupId>ca.bc.gov.educ.api.soam</groupId>
 			<artifactId>soam-api-client</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		-->
         <dependency>
             <groupId>org.springframework.security.oauth.boot</groupId>
             <artifactId>spring-security-oauth2-autoconfigure</artifactId>
