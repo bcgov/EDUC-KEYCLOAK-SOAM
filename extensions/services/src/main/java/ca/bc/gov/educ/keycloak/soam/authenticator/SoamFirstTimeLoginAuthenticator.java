@@ -80,7 +80,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			if(username == null) {
 				throw new RuntimeException("No idir_guid value was found in token");
 			}
-			break;
+			break; 
 		default:
 			throw new RuntimeException("Account type is not bcsc, bceid or idir, check IDP mappers");
 		}
