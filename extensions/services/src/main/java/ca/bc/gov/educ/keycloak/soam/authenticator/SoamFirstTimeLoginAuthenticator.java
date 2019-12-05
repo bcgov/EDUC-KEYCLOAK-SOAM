@@ -13,6 +13,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 
+import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 /**
@@ -53,7 +54,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 		String accountType = (String)token.getOtherClaims().get("account_type");
 		
 		if(accountType == null) {
-			throw new RuntimeException("Account type is null, no account type should always be available, check the IDP mappers for the hardcoded attribute");
+			throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
 		}
 		
 		String username = null;
@@ -63,7 +64,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			logger.info("SOAM: Account type bceid found");
 			username = (String)token.getOtherClaims().get("bceid_guid");
 			if(username == null) {
-				throw new RuntimeException("No bceid_guid value was found in token");
+				throw new SoamRuntimeException("No bceid_guid value was found in token");
 			}
 			createOrUpdateBasicUser(username, accountType);
 			break;
@@ -71,18 +72,18 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			logger.info("SOAM: Account type bcsc found");
 			username = (String)token.getOtherClaims().get("bcsc_did");
 			if(username == null) {
-				throw new RuntimeException("No bcsc_did value was found in token");
+				throw new SoamRuntimeException("No bcsc_did value was found in token");
 			}
 			break;
 		case "idir":
 			logger.info("SOAM: Account type idir found");
 			username = (String)token.getOtherClaims().get("idir_guid");
 			if(username == null) {
-				throw new RuntimeException("No idir_guid value was found in token");
+				throw new SoamRuntimeException("No idir_guid value was found in token");
 			}
 			break; 
 		default:
-			throw new RuntimeException("Account type is not bcsc, bceid or idir, check IDP mappers");
+			throw new SoamRuntimeException("Account type is not bcsc, bceid or idir, check IDP mappers");
 		}
         
         if(context.getSession().users().getUserByUsername(username, realm) == null) {
@@ -94,10 +95,12 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             federatedUser.setSingleAttribute("first_name", brokerContext.getFirstName());
             federatedUser.setSingleAttribute("last_name", brokerContext.getLastName());
             federatedUser.setSingleAttribute("email_address", brokerContext.getEmail());
-            federatedUser.setSingleAttribute("display_name", brokerContext.getFirstName() + " " + brokerContext.getLastName());
-            federatedUser.setSingleAttribute("middle_names", "FIX WHEN CAP SERVICE IS IN");
-            federatedUser.setSingleAttribute("account_type", brokerContext.getEmail());
-
+            
+            if(accountType.equals("bceid")) {
+	            federatedUser.setSingleAttribute("display_name", brokerContext.getFirstName() + " " + brokerContext.getLastName());
+	            federatedUser.setSingleAttribute("middle_names", "FIX WHEN CAP SERVICE IS IN");
+            }
+            
             for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
                 federatedUser.setAttribute(attr.getKey(), attr.getValue());
             }
@@ -117,7 +120,12 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
     	logger.info("SOAM: createOrUpdateBasicUser");
     	logger.info("SOAM: performing login for " + accountType + " user: " + guid);
     	
-    	RestUtils.getInstance().performLogin("BASIC", guid, guid);
+    	try {
+			RestUtils.getInstance().performLogin("BASIC", guid, guid);
+		} catch (Exception e) {
+			logger.error("Exception occurred within SOAM while processing login" + e.getMessage());
+			throw new SoamRuntimeException("Exception occurred within SOAM while processing login, check downstream logs for digital ID API service");
+		}
     }
     
     @Override
