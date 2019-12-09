@@ -88,7 +88,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         if(context.getSession().users().getUserByUsername(username, realm) == null) {
             logger.infof("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
-                    username, brokerContext.getIdpConfig().getAlias());
+                    username, brokerContext.getIdpConfig().getAlias()); 
 
             UserModel federatedUser = session.users().addUser(realm, username);
             federatedUser.setEnabled(true);
