@@ -11,6 +11,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
+import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 
@@ -21,8 +22,6 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 
     @Override
     protected void actionImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-    	logger.info("SOAM Post: inside actionImpl");
-        
     }
     
     @Override
@@ -36,14 +35,47 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				context.success();
 	            return;
 	        }
+	        
+			String accountType = context.getUser().getFirstAttribute("account_type");
 			
-			//logger.info("User GUID: " + context.getUser().getFirstAttribute("GUID"));
+			if(accountType == null) {
+				throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
+			}
+			
+			String username = null;
+			
+			switch (accountType) {
+			case "bceid":
+				logger.info("SOAM Post: Account type bceid found");
+				username = context.getUser().getUsername();
+				if(username == null) {
+					throw new SoamRuntimeException("No bceid_guid value was found in token");
+				}
+				updateBasicUser(username, accountType);
+				break;
+			case "bcsc":
+				logger.info("SOAM Post: Account type bcsc found");
+				username = context.getUser().getUsername();
+				if(username == null) {
+					throw new SoamRuntimeException("No bcsc_did value was found in token");
+				}
+				break;
+			case "idir":
+				logger.info("SOAM Post: Account type idir found");
+				username = context.getUser().getUsername();
+				if(username == null) {
+					throw new SoamRuntimeException("No idir_guid value was found in token");
+				}
+				break; 
+			default:
+				throw new SoamRuntimeException("Account type is not bcsc, bceid or idir, check IDP mappers");
+			}
 			
 //			String stringSerialCtx = context.getAuthenticationSession().getAuthNote(PostBrokerLoginConstants.PBL_BROKERED_IDENTITY_CONTEXT);
 //			SerializedBrokeredIdentityContext serializedCtx = JsonSerialization.readValue(stringSerialCtx, SerializedBrokeredIdentityContext.class);
 //			BrokeredIdentityContext brokerContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
-			//JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
-			
+//			JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
+//			
 //	        logger.info("JWT token is: " + token);
 //	        
 //			for(String s: token.getOtherClaims().keySet()) {
@@ -52,11 +84,10 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 			
 			//UserModel existingUser = context.getSession().users().getUserByUsername(context.getUser().getUsername(), context.getRealm());
 			
-			updateBasicUser(context.getUser().getUsername());
 			context.setUser(context.getUser());
 			context.success();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new SoamRuntimeException(e);
 		} finally {
 			if(reader != null) {
 				reader.close();
@@ -64,11 +95,16 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 		}
     }
     
-    protected void updateBasicUser(String guid) {
-    	logger.info("SOAM Post: inside updateBasicUser");
-    	logger.info("SOAM Post: performing login: " + guid);
+    protected void updateBasicUser(String guid, String accountType) {
+    	logger.info("SOAM Post: updateBasicUser");
+    	logger.info("SOAM Post: performing login for " + accountType + " user: " + guid);
     	
-    	RestUtils.getInstance().performLogin("BASIC", guid, guid);
+    	try {
+			RestUtils.getInstance().performLogin("BASIC", guid, guid);
+		} catch (Exception e) {
+			logger.error("Exception occurred within SOAM while processing login" + e.getMessage());
+			throw new SoamRuntimeException("Exception occurred within SOAM while processing login, check downstream logs for digital ID API service");
+		}
     }
  
     @Override

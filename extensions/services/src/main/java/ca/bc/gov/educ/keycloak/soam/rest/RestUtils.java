@@ -8,7 +8,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
@@ -69,13 +68,10 @@ public class RestUtils {
 		
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 	
-		ResponseEntity<SoamLoginEntity> response;
 		try {
-			response = restTemplate.postForEntity(props.getSoamApiURL() + "/login",request, SoamLoginEntity.class);
+			restTemplate.postForEntity(props.getSoamApiURL() + "/login",request, SoamLoginEntity.class);
 		} catch (final HttpClientErrorException e) {
-			
-			//ADD ERROR LOGIC!
-			e.printStackTrace();
+			throw new RuntimeException("Could not complete login call: " + e.getMessage());
 		}
     }
     
@@ -87,11 +83,7 @@ public class RestUtils {
 		try {
 			return restTemplate.exchange(props.getSoamApiURL() + "/" + identifierType + "/" + identifierValue, HttpMethod.GET, new HttpEntity<>("parameters", headers), SoamLoginEntity.class).getBody();
 		} catch (final HttpClientErrorException e) {
-			
-			//ADD ERROR LOGIC!
-			e.printStackTrace();
+			throw new RuntimeException("Could not complete getSoamLoginEntity call: " + e.getMessage());
 		}
-		
-        return null;
     }
 }

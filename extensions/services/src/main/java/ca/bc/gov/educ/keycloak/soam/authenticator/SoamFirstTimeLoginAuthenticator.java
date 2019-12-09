@@ -13,6 +13,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 
+import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 /**
@@ -50,60 +51,82 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
     		logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
 		}
         
-        //Username will be a generated GUID when the DB is setup
-        String username = (String)token.getOtherClaims().get("bceid_guid");
+		String accountType = (String)token.getOtherClaims().get("account_type");
+		
+		if(accountType == null) {
+			throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
+		}
+		
+		String username = null;
+		
+		switch (accountType) {
+		case "bceid":
+			logger.info("SOAM: Account type bceid found");
+			username = (String)token.getOtherClaims().get("bceid_guid");
+			if(username == null) {
+				throw new SoamRuntimeException("No bceid_guid value was found in token");
+			}
+			createOrUpdateBasicUser(username, accountType);
+			break;
+		case "bcsc":
+			logger.info("SOAM: Account type bcsc found");
+			username = (String)token.getOtherClaims().get("bcsc_did");
+			if(username == null) {
+				throw new SoamRuntimeException("No bcsc_did value was found in token");
+			}
+			break;
+		case "idir":
+			logger.info("SOAM: Account type idir found");
+			username = (String)token.getOtherClaims().get("idir_guid");
+			if(username == null) {
+				throw new SoamRuntimeException("No idir_guid value was found in token");
+			}
+			break; 
+		default:
+			throw new SoamRuntimeException("Account type is not bcsc, bceid or idir, check IDP mappers");
+		}
         
-        if(username == null) {
-        	throw new RuntimeException("No BCeID guid was found in token");
-        }
-
-        createOrUpdateBasicUser(username);
-        
-        //Temporary change
         if(context.getSession().users().getUserByUsername(username, realm) == null) {
-        //if (!userExists) {
             logger.infof("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
                     username, brokerContext.getIdpConfig().getAlias());
 
             UserModel federatedUser = session.users().addUser(realm, username);
             federatedUser.setEnabled(true);
-            //federatedUser.setEmail(brokerContext.getEmail());
-            //federatedUser.setFirstName(brokerContext.getFirstName());
-            //federatedUser.setLastName(brokerContext.getLastName());
-            //This random value will be the actual BCeID GUID when the DB is ready
             federatedUser.setSingleAttribute("first_name", brokerContext.getFirstName());
             federatedUser.setSingleAttribute("last_name", brokerContext.getLastName());
             federatedUser.setSingleAttribute("email_address", brokerContext.getEmail());
-            federatedUser.setSingleAttribute("display_name", (String)token.getOtherClaims().get("display_name"));
-            federatedUser.setSingleAttribute("middle_names", "FIX WHEN CAP SERVICE IS IN");
-
+            
+            if(accountType.equals("bceid")) {
+	            federatedUser.setSingleAttribute("display_name", brokerContext.getFirstName() + " " + brokerContext.getLastName());
+	            federatedUser.setSingleAttribute("middle_names", "FIX WHEN CAP SERVICE IS IN");
+            }
+            
             for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
                 federatedUser.setAttribute(attr.getKey(), attr.getValue());
             }
-
-            //userRegisteredSuccess(context, federatedUser, serializedCtx, brokerContext);
 
             context.setUser(federatedUser);
             context.getAuthenticationSession().setAuthNote(BROKER_REGISTERED_NEW_USER, "true");
             context.success();
         } else {
+        	logger.info("SOAM: Existing " + accountType + " user found with username: " + username);
         	UserModel existingUser = context.getSession().users().getUserByUsername(username, realm);
         	context.setUser(existingUser);
         	context.success();
         } 
     }
 
-    protected void createOrUpdateBasicUser(String guid) {
-    	logger.info("SOAM: inside checkExistingUser");
-    	logger.info("SOAM: performing login: " + guid);
+    protected void createOrUpdateBasicUser(String guid, String accountType) {
+    	logger.info("SOAM: createOrUpdateBasicUser");
+    	logger.info("SOAM: performing login for " + accountType + " user: " + guid);
     	
-    	RestUtils.getInstance().performLogin("BASIC", guid, guid);
+    	try {
+			RestUtils.getInstance().performLogin("BASIC", guid, guid);
+		} catch (Exception e) {
+			logger.error("Exception occurred within SOAM while processing login" + e.getMessage());
+			throw new SoamRuntimeException("Exception occurred within SOAM while processing login, check downstream logs for digital ID API service");
+		}
     }
-
-//    // Empty method by default. This exists, so subclass can override and add callback after new user is registered through social
-//    protected void userRegisteredSuccess(AuthenticationFlowContext context, UserModel registeredUser, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-//
-//    }
     
     @Override
     public boolean requiresUser() {
