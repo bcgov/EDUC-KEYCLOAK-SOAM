@@ -15,7 +15,7 @@ public class SoamLoginEntity {
 		this.student = student;
 	}
 
-	public UUID getDigitalIdentityID() {
+	public UUID getDigitalIdentityID() { 
 		return digitalIdentityID;
 	}
 
