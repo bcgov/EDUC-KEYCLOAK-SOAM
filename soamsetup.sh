@@ -70,6 +70,7 @@ echo Creating mappers for IDP...
 $kcadmFolder/kcadm.sh create identity-provider/instances/keycloak_bcdevexchange/mappers -r master --body "{\"name\" : \"account_type\",\"identityProviderAlias\" : \"keycloak_bcdevexchange\",\"identityProviderMapper\" : \"oidc-user-attribute-idp-mapper\",\"config\" : {\"claim\" : \"account_type\",\"user.attribute\" : \"account_type\"}}"
 $kcadmFolder/kcadm.sh create identity-provider/instances/keycloak_bcdevexchange/mappers -r master --body "{\"name\" : \"BCeID GUID\",\"identityProviderAlias\" : \"keycloak_bcdevexchange\",\"identityProviderMapper\" : \"oidc-user-attribute-idp-mapper\",\"config\" : {\"claim\" : \"bceid_userid\",\"user.attribute\" : \"bceid_guid\"}}"
 $kcadmFolder/kcadm.sh create identity-provider/instances/keycloak_bcdevexchange/mappers -r master --body "{\"name\" : \"IDIR GUID\",\"identityProviderAlias\" : \"keycloak_bcdevexchange\",\"identityProviderMapper\" : \"oidc-user-attribute-idp-mapper\",\"config\" : {\"claim\" : \"idir_userid\",\"user.attribute\" : \"idir_guid\"}}"
+$kcadmFolder/kcadm.sh create identity-provider/instances/keycloak_bcdevexchange/mappers -r master --body "{\"name\" : \"BCSC DID\",\"identityProviderAlias\" : \"keycloak_bcdevexchange\",\"identityProviderMapper\" : \"oidc-user-attribute-idp-mapper\",\"config\" : {\"claim\" : \"did\",\"user.attribute\" : \"bcsc_did\"}}"
 
 #Clients----------------------------------------------------------
 echo Creating clients
