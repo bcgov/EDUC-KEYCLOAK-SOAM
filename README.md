@@ -19,13 +19,13 @@ Run the following command where:
 ```
 
 # Setup
-##Requirements
+## Requirements
 In order to complete the automated setup, the keycloak binaries are required. They need to be downloaded (unzipped) into a folder on your machine:
 
 [Keycloak Downloads](https://www.keycloak.org/downloads.html)
 (Please select Server Standalone Distribution)
 
-##Completing Setup
+## Completing Setup
 Once Keycloak & Patroni are deployed and running, log into the administrator console following the application URL (found on the OpenShift console). Once logged in using the admin credentials (found in the Secrets), proceed with adding a new user:
 
 * Named `loaduser`
@@ -39,7 +39,7 @@ Once Keycloak & Patroni are deployed and running, log into the administrator con
 ```
 
 # Cleanup
-##NOTE THIS WILL REMOVE YOUR ENTIRE ENVIRONMENT AND DATA!!!!
+## NOTE THIS WILL REMOVE YOUR ENTIRE ENVIRONMENT AND DATA!!!!
 Switch to the correct project/namespace
 
 ```
