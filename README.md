@@ -28,7 +28,7 @@ In order to complete the automated setup, the keycloak binaries are required. Th
 ## Completing Setup
 Once Keycloak & Patroni are deployed and running, log into the administrator console following the application URL (found on the OpenShift console). Once logged in using the admin credentials (found in the Secrets), proceed with adding a new user:
 
-* Named `loaduser`
+* Username: `loaduser`
 * Add the `admin` role to the user
 * Create a password for the user and ensure it is not temporary
 * Run the following script to setup the environment for SOAM (follow the prompts)  
