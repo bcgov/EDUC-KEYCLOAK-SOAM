@@ -18,6 +18,7 @@ Run the following command where:
 ./npmw deploy -- --pr=71 --env=dev
 ```
 
+The application should now be deployed and running in your target namespace environment.
 # Setup
 ## Requirements
 In order to complete the automated setup, the keycloak binaries are required. They need to be downloaded (unzipped) into a folder on your machine:
@@ -32,8 +33,8 @@ Navigate to the `/setup` folder from the root. Edit the `setup.properties` file.
 
 | Property  | Description |
 | ------------- | ------------- |
-| SOAM_KC_LOAD_USER_ADMIN  | Contains the username of the admin user used for load in the SOAM KC environment. The initially created admin user info can be found in the `Secrets` area of your OpenShift namespace environment, in the secret named `sso-admin-env`.  |
-| DEVEXCHANGE_KC_LOAD_USER_ADMIN  | Contains the username of the admin user used for load in your DevExchange realm. This user must be created before this script will function (user is used to complete the kcadm functions). It will need to be configured with a password and the admin role or group.   |
+| SOAM_KC_LOAD_USER_ADMIN  | Contains the username of the admin user used for load in the SOAM Keycloak instance. The initially created admin user info can be found in the `Secrets` area of your OpenShift namespace environment, in the secret named `sso-admin-env`.  |
+| DEVEXCHANGE_KC_LOAD_USER_ADMIN  | Contains the username of the admin user used for load in your DevExchange realm. This user must be created before this script will function (user is used to complete the `kcadm` functions). It will need to be configured with a password and the `admin` role or group.   |
 | KCADM_FILE_BIN_FOLDER  | This is the `bin` folder found on your disk which contains the `kcadm.sh` script. [Download a fresh version of Keycloak](https://www.keycloak.org/downloads.html) if you do not have the binaries.  |
 | SOAM_KC_REALM_ID  | Your SOAM keycloak realm ID [e.g. `master`]  |
 | DEVEXCHANGE_KC_REALM_ID  | The BCDevExchange realm ID for your application [e.g. `v15rh2ab`]  |
