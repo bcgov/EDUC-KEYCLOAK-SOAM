@@ -29,7 +29,7 @@ In order to complete the automated setup, the keycloak binaries are required. Th
 ### Create user
 Once Keycloak & Patroni are deployed and running, log into the administrator console following the application URL (found on the OpenShift console). Once logged in using the admin credentials (found in the Secrets), proceed with adding a new user:
 
-* Username: <your choice>
+* Username is your choice
 * Add the `admin` role to the user
 * Create a password for the user and ensure it is not temporary
 * Run the following script to setup the environment for SOAM (follow the prompts)  
@@ -41,13 +41,13 @@ Navigate to the /setup folder from the root. Edit the `setup.properties` file. T
 | ------------- | ------------- |
 | KC_LOAD_USER_ADMIN  | Contains the username of the admin user used for load. This user must be manually created before this script will function (user is used to complete the kcadm functions). It will need to be configured with a password and the admin role or group.  |
 | KCADM_FILE_BIN_FOLDER  | This is the `bin` folder found on your disk which contains the `kcadm.sh` script. [Download a fresh version of Keycloak](https://www.keycloak.org/downloads.html) if you do not have the binaries.  |
-| SOAM_KC_REALM_ID  | Your SOAM keycloak realm ID [e.g. master]  |
-| DEVEXCHANGE_KC_REALM_ID  | The BCDevExchange realm ID for your application [e.g. v15rh2ab]  |
-| OPENSHIFT_NAMESPACE  | This is the namespace of your OpenShift environment e.g. d2vwrs  |
+| SOAM_KC_REALM_ID  | Your SOAM keycloak realm ID [e.g. `master`]  |
+| DEVEXCHANGE_KC_REALM_ID  | The BCDevExchange realm ID for your application [e.g. `v15rh2ab`]  |
+| OPENSHIFT_NAMESPACE  | This is the namespace of your OpenShift environment e.g. `d2vwrs`  |
 
 ### Run the setup for the Keycloak DevExchange realm
 ```
-#Navigate to the /setup folder
+#Navigate to the /setup folder, run the following and follow the prompts
 ./devexchange-keycloak-setup.sh
 ```
 
@@ -77,7 +77,8 @@ Logging into https://sso-yourenv.pathfinder.gov.bc.ca/auth as user abcuser of re
 Enter password: ********
 Updating realm details
 Removing BCSC IDP if exists...
-Resource not found for url: https://sso-yourenv.pathfinder.gov.bc.ca/auth/admin/realms/yourrealm/identity-provider/instances/bcsc
+Resource not found for url: 
+https://sso-yourenv.pathfinder.gov.bc.ca/auth/admin/realms/yourrealm/identity-provider/instances/bcsc
 Creating BC Services Card IDP...
 Created new instance with id 'bcsc'
 Creating mappers for BC Services Card DevExchange IDP...
@@ -113,7 +114,7 @@ Complete.
 ### Run the setup for the SOAM Keycloak Instance
 
 ```
-#Navigate to the /setup folder
+#Navigate to the /setup folder, run the following and follow the prompts
 ./soam-keycloak-setup.sh
 ```
 
