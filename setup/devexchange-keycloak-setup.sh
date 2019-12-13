@@ -1,6 +1,3 @@
-#########################################################################################
-#Create Admin user first via the UI!!!!! This script will not function without this user. 
-#########################################################################################
 FILE=./setup.properties
 
 KC_LOAD_USER_ADMIN=$(grep -i 'KC_LOAD_USER_ADMIN' $FILE  | cut -f2 -d'=')
@@ -20,7 +17,7 @@ echo -----------------------------------------------------------
 #########################################################################################
 
 echo This script will setup the target keycloak instance for SOAM configuration
-echo Note a user will need to be created in the UI prior to running this script [see properties file]
+echo Note a user will need to be created prior to running this script [see properties file]
 echo  
 echo DevExhange Realm defined in property file is: $DEVEXCHANGE_KC_REALM_ID
 echo Which keycloak environment would you like to update? [dev,test,prod]
