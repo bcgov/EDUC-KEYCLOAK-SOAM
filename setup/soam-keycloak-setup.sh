@@ -20,7 +20,7 @@ echo Note a user will need to be created prior to running this script
 echo  
 echo Which keycloak environment would you like to update? [dev,test,prod]
 read envValue
-echo Please enter client secret for soam user in SSO BCDevExchange:
+echo Please enter client secret for soam user in your BCDevExchange Keycloak realm:
 read -s soamClientSecret
 echo Thank you.
 
