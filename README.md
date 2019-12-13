@@ -28,11 +28,11 @@ In order to complete the automated setup, the keycloak binaries are required. Th
 ## Completing Setup
 
 ### Setup Property File
-Navigate to the /setup folder from the root. Edit the `setup.properties` file. The following values should be modified for your environment:
+Navigate to the `/setup` folder from the root. Edit the `setup.properties` file. The following values should be modified for your environment:
 
 | Property  | Description |
 | ------------- | ------------- |
-| KC_LOAD_USER_ADMIN  | Contains the username of the admin user used for load. This user must be created before this script will function (user is used to complete the kcadm functions). It will need to be configured with a password and the admin role or group.  |
+| KC_LOAD_USER_ADMIN  | Contains the username of the admin user used for load. This user must be created before this script will function (user is used to complete the kcadm functions). It will need to be configured with a password and the admin role or group. The initially created admin user info can be found in the `Secrets` area of your OpenShift environment, in the secret named `sso-admin-env`  |
 | KCADM_FILE_BIN_FOLDER  | This is the `bin` folder found on your disk which contains the `kcadm.sh` script. [Download a fresh version of Keycloak](https://www.keycloak.org/downloads.html) if you do not have the binaries.  |
 | SOAM_KC_REALM_ID  | Your SOAM keycloak realm ID [e.g. `master`]  |
 | DEVEXCHANGE_KC_REALM_ID  | The BCDevExchange realm ID for your application [e.g. `v15rh2ab`]  |
