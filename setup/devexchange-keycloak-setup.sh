@@ -1,6 +1,9 @@
+#########################################################################################
+#Create Admin user first via the UI!!!!! This script will not function without this user. 
+#########################################################################################
 FILE=./setup.properties
 
-KC_LOAD_USER_ADMIN=$(grep -i 'KC_LOAD_USER_ADMIN' $FILE  | cut -f2 -d'=')
+DEVEXCHANGE_KC_LOAD_USER_ADMIN=$(grep -i 'DEVEXCHANGE_KC_LOAD_USER_ADMIN' $FILE  | cut -f2 -d'=')
 KCADM_FILE_BIN_FOLDER=$(grep -i 'KCADM_FILE_BIN_FOLDER' $FILE  | cut -f2 -d'=')
 SOAM_KC_REALM_ID=$(grep -i 'SOAM_KC_REALM_ID' $FILE  | cut -f2 -d'=')
 OPENSHIFT_NAMESPACE=$(grep -i 'OPENSHIFT_NAMESPACE' $FILE  | cut -f2 -d'=')
@@ -8,7 +11,7 @@ DEVEXCHANGE_KC_REALM_ID=$(grep -i 'DEVEXCHANGE_KC_REALM_ID' $FILE  | cut -f2 -d'
 
 echo Properties Defined
 echo -----------------------------------------------------------
-echo KC_LOAD_USER_ADMIN: $KC_LOAD_USER_ADMIN
+echo DEVEXCHANGE_KC_LOAD_USER_ADMIN: $DEVEXCHANGE_KC_LOAD_USER_ADMIN
 echo KCADM_FILE_BIN_FOLDER: $KCADM_FILE_BIN_FOLDER
 echo SOAM_KC_REALM_ID: $SOAM_KC_REALM_ID
 echo OPENSHIFT_NAMESPACE: $OPENSHIFT_NAMESPACE
@@ -17,7 +20,7 @@ echo -----------------------------------------------------------
 #########################################################################################
 
 echo This script will setup the target keycloak instance for SOAM configuration
-echo Note a user will need to be created prior to running this script [see properties file]
+echo Note a user will need to be created in the UI prior to running this script [see properties file]
 echo  
 echo DevExhange Realm defined in property file is: $DEVEXCHANGE_KC_REALM_ID
 echo Which keycloak environment would you like to update? [dev,test,prod]
@@ -28,7 +31,7 @@ echo Please enter BC Services Card client secret for SSO BCDevExchange:
 read -s bcscClientSecret
 
 echo Logging in
-$KCADM_FILE_BIN_FOLDER/kcadm.sh config credentials --server https://sso-$envValue.pathfinder.gov.bc.ca/auth --realm $DEVEXCHANGE_KC_REALM_ID --user $KC_LOAD_USER_ADMIN
+$KCADM_FILE_BIN_FOLDER/kcadm.sh config credentials --server https://sso-$envValue.pathfinder.gov.bc.ca/auth --realm $DEVEXCHANGE_KC_REALM_ID --user $DEVEXCHANGE_KC_LOAD_USER_ADMIN
 
 echo Updating realm details
 $KCADM_FILE_BIN_FOLDER/kcadm.sh update realms/$DEVEXCHANGE_KC_REALM_ID --body "{\"loginWithEmailAllowed\" : false, \"duplicateEmailsAllowed\" : true}"
