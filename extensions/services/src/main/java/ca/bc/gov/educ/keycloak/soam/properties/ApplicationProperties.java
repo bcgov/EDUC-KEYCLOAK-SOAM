@@ -19,10 +19,10 @@ public class ApplicationProperties {
 
 	public ApplicationProperties() {
 		logger.info("SOAM: Building application properties");
-		soamApiURL = System.getenv().getOrDefault("soamApiURL", "MissingSoamURL");
-		tokenURL = System.getenv().getOrDefault("tokenURL", "MissingSoamTokenURL");
-		clientID = System.getenv().getOrDefault("clientID", "MissingSoamClientID");
-		clientSecret = System.getenv().getOrDefault("clientSecret", "MissingSoamClientSecret");
+		soamApiURL = System.getenv().getOrDefault("SOAMAPIURL", "MissingSoamURL");
+		tokenURL = System.getenv().getOrDefault("TOKENURL", "MissingSoamTokenURL");
+		clientID = System.getenv().getOrDefault("CLIENTID", "MissingSoamClientID");
+		clientSecret = System.getenv().getOrDefault("CLIENTSECRET", "MissingSoamClientSecret");
 	}
 
 	public String getSoamApiURL() {
