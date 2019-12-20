@@ -36,7 +36,6 @@ getPublicKey(){
 }
 
 echo Fetching public key from SOAM
-soamPublicKey=$(getPublicKey)
 soamFullPublicKey="-----BEGIN PUBLIC KEY----- $(getPublicKey) -----END PUBLIC KEY-----"
 
 ###########################################################
