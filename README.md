@@ -2,7 +2,7 @@
 
 ## Building
 * Switch to the correct project/namespace (tools)
-* Navigate to /.pipeline folder in project
+* Navigate to `/.pipeline` folder in project
 * Run the following command where the `--pr` value is the latest known working pull request
 
 ```
