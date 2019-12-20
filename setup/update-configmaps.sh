@@ -22,6 +22,8 @@ echo -----------------------------------------------------------
 echo Which keycloak environment would you like to update? [dev,test,prod]
 read envValue
 
+oc project $OPENSHIFT_NAMESPACE-$envValue
+
 echo Logging in
 $KCADM_FILE_BIN_FOLDER/kcadm.sh config credentials --server https://$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca/auth --realm $SOAM_KC_REALM_ID --user $SOAM_KC_LOAD_USER_ADMIN
 
