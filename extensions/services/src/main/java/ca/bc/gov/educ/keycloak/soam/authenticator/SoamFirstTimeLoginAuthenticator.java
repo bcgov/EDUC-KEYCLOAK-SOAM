@@ -98,7 +98,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             
             if(accountType.equals("bceid")) {
 	            federatedUser.setSingleAttribute("display_name", brokerContext.getFirstName() + " " + brokerContext.getLastName());
-	            federatedUser.setSingleAttribute("middle_names", "FIX WHEN CAP SERVICE IS IN");
+	            //federatedUser.setSingleAttribute("middle_names", "FIX WHEN CAP SERVICE IS IN");
             }
             
             for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
