@@ -23,7 +23,7 @@ echo DEVEXCHANGE_KC_REALM_ID: $DEVEXCHANGE_KC_REALM_ID
 echo DB properties omitted. 
 echo -----------------------------------------------------------
 #########################################################################################
-echo Which keycloak environment would you like to update? [dev,test,prod]
+echo Which keycloak environment would you like to setup/update? [dev,test,prod]
 read envValue
 
 oc project $OPENSHIFT_NAMESPACE-$envValue
