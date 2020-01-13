@@ -1,4 +1,4 @@
-FILE=./setup.properties
+FILE=./properties/setup-tools.properties
 
 OPENSHIFT_NAMESPACE=$(grep -i 'OPENSHIFT_NAMESPACE' $FILE  | cut -f2 -d'=')
 CHES_CLIENT_ID=$(grep -i 'CHES_CLIENT_ID' $FILE  | cut -f2 -d'=')

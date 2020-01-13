@@ -1,4 +1,7 @@
-FILE=./setup.properties
+echo Which keycloak environment would you like to setup/update? [dev,test,prod]
+read envValue
+
+FILE=./properties/setup-$envValue.properties
 
 SOAM_KC_LOAD_USER_ADMIN=$(grep -i 'SOAM_KC_LOAD_USER_ADMIN' $FILE  | cut -f2 -d'=')
 KCADM_FILE_BIN_FOLDER=$(grep -i 'KCADM_FILE_BIN_FOLDER' $FILE  | cut -f2 -d'=')
@@ -23,8 +26,6 @@ echo DEVEXCHANGE_KC_REALM_ID: $DEVEXCHANGE_KC_REALM_ID
 echo DB properties omitted. 
 echo -----------------------------------------------------------
 #########################################################################################
-echo Which keycloak environment would you like to setup/update? [dev,test,prod]
-read envValue
 
 oc project $OPENSHIFT_NAMESPACE-$envValue
 

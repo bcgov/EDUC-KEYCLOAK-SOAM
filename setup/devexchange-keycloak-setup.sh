@@ -1,7 +1,15 @@
 #########################################################################################
 #Create Admin user first via the UI!!!!! This script will not function without this user. 
 #########################################################################################
-FILE=./setup.properties
+
+echo This script will setup the target keycloak instance for SOAM configuration
+echo Note a user will need to be created in the UI prior to running this script [see properties file]
+echo  
+echo DevExhange Realm defined in property file is: $DEVEXCHANGE_KC_REALM_ID
+echo Which keycloak environment would you like to update? [dev,test,prod]
+read envValue
+
+FILE=./properties/setup-$envValue.properties
 
 DEVEXCHANGE_KC_LOAD_USER_ADMIN=$(grep -i 'DEVEXCHANGE_KC_LOAD_USER_ADMIN' $FILE  | cut -f2 -d'=')
 KCADM_FILE_BIN_FOLDER=$(grep -i 'KCADM_FILE_BIN_FOLDER' $FILE  | cut -f2 -d'=')
@@ -19,12 +27,6 @@ echo DEVEXCHANGE_KC_REALM_ID: $DEVEXCHANGE_KC_REALM_ID
 echo -----------------------------------------------------------
 #########################################################################################
 
-echo This script will setup the target keycloak instance for SOAM configuration
-echo Note a user will need to be created in the UI prior to running this script [see properties file]
-echo  
-echo DevExhange Realm defined in property file is: $DEVEXCHANGE_KC_REALM_ID
-echo Which keycloak environment would you like to update? [dev,test,prod]
-read envValue
 echo Please enter BC Services Card client ID for SSO BCDevExchange:
 read bcscClientID
 echo Please enter BC Services Card client secret for SSO BCDevExchange:
