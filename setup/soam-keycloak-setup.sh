@@ -1,4 +1,10 @@
-FILE=./setup.properties
+echo This script will setup the target keycloak instance for SOAM configuration
+echo Note a user will need to be created prior to running this script
+echo  
+echo Which keycloak environment would you like to update? [dev,test,prod]
+read envValue
+
+FILE=./properties/setup-$envValue.properties
 
 SOAM_KC_LOAD_USER_ADMIN=$(grep -i 'SOAM_KC_LOAD_USER_ADMIN' $FILE  | cut -f2 -d'=')
 KCADM_FILE_BIN_FOLDER=$(grep -i 'KCADM_FILE_BIN_FOLDER' $FILE  | cut -f2 -d'=')
@@ -15,11 +21,7 @@ echo OPENSHIFT_NAMESPACE: $OPENSHIFT_NAMESPACE
 echo DEVEXCHANGE_KC_REALM_ID: $DEVEXCHANGE_KC_REALM_ID
 echo -----------------------------------------------------------
 #########################################################################################
-echo This script will setup the target keycloak instance for SOAM configuration
-echo Note a user will need to be created prior to running this script
-echo  
-echo Which keycloak environment would you like to update? [dev,test,prod]
-read envValue
+
 echo Please enter client secret for soam user in your BCDevExchange Keycloak realm:
 read -s soamClientSecret
 echo Thank you.
