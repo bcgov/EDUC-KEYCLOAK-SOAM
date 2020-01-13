@@ -92,14 +92,14 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 
             UserModel federatedUser = session.users().addUser(realm, username);
             federatedUser.setEnabled(true);
-            federatedUser.setSingleAttribute("first_name", brokerContext.getFirstName());
-            federatedUser.setSingleAttribute("last_name", brokerContext.getLastName());
-            federatedUser.setSingleAttribute("email_address", brokerContext.getEmail());
+            federatedUser.setSingleAttribute("first_name", "");
+            federatedUser.setSingleAttribute("last_name", "");
+            federatedUser.setSingleAttribute("email_address", "");
             
-            if(accountType.equals("bceid")) {
-	            federatedUser.setSingleAttribute("display_name", brokerContext.getFirstName() + " " + brokerContext.getLastName());
+           // if(accountType.equals("bceid")) {
+	          // federatedUser.setSingleAttribute("display_name", brokerContext.getFirstName() + " " + brokerContext.getLastName());
 	            //federatedUser.setSingleAttribute("middle_names", "FIX WHEN CAP SERVICE IS IN");
-            }
+            //}
             
             for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
                 federatedUser.setAttribute(attr.getKey(), attr.getValue());
