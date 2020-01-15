@@ -110,6 +110,29 @@ echo Setting environment variables for pen-request-api-$SOAM_KC_REALM_ID applica
 oc set env --from=configmap/pen-request-api-config-map dc/pen-request-api-$SOAM_KC_REALM_ID
 
 ###########################################################
+#Setup for document-api-config-map
+###########################################################
+getDocumentAPIServiceClientID(){
+    executorID= $KCADM_FILE_BIN_FOLDER/kcadm.sh get clients -r $SOAM_KC_REALM_ID --fields 'id,clientId' | python3 -c "import sys, json; data = json.load(sys.stdin); output_dict = [x for x in data if x['clientId'] == 'document-api-service'];  print(output_dict)" | grep -Po "(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
+}
+
+getDocumentAPIServiceClientSecret(){
+    executorID= $KCADM_FILE_BIN_FOLDER/kcadm.sh get clients/$documentAPIServiceClientID/client-secret -r $SOAM_KC_REALM_ID | grep -Po "(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
+}
+echo
+echo Fetching client ID for document-api-service client
+documentAPIServiceClientID=$(getDocumentAPIServiceClientID)
+echo Fetching client secret for document-api-service client
+DOC_API_CLIENT_SECRET=$(getDocumentAPIServiceClientSecret)
+
+echo
+echo Creating config map document-api-config-map
+oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap document-api-config-map --from-literal=JDBC_URL=$DB_JDBC_CONNECT_STRING --from-literal=ORACLE_USERNAME=$DB_CONNECT_USER --from-literal=ORACLE_PASSWORD=$DB_CONNECT_PASS --from-literal=KEYCLOAK_PUBLIC_KEY="$soamFullPublicKey" --from-literal=SPRING_SECURITY_LOG_LEVEL=INFO --from-literal=SPRING_WEB_LOG_LEVEL=INFO --from-literal=APP_LOG_LEVEL=INFO --from-literal=SPRING_BOOT_AUTOCONFIG_LOG_LEVEL=INFO --from-literal=CLIENT_ID=document-api-service --from-literal=CLIENT_SECRET=$DOC_API_CLIENT_SECRET --from-literal=CODETABLE_URL=https://codetable-api-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=FILE_EXTENSIONS="jpeg,jpg,png,pdf" --from-literal=FILE_MAXSIZE=10485760 --from-literal=HIBERNATE_LOG_LEVEL=INFO --from-literal=TOKEN_URL=https://$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca/auth/realms/$SOAM_KC_REALM_ID/protocol/openid-connect/token --dry-run -o yaml | oc apply -f -
+echo
+echo Setting environment variables for pen-request-api-$SOAM_KC_REALM_ID application
+oc set env --from=configmap/document-api-config-map dc/document-api-$SOAM_KC_REALM_ID
+
+###########################################################
 #Setup for pen-request-email-api-config-map
 ###########################################################
 

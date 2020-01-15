@@ -29,7 +29,7 @@ In order to complete the automated setup, the keycloak binaries are required. Th
 ## Completing Setup
 
 ### Setup Property File
-Navigate to the `/setup` folder from the root. Edit the `setup.properties` file. The following values should be modified for your environment:
+Navigate to the `/setup` folder from the root. Edit the `setup-$env.properties` files found in the `properties` sub-folder. The following values should be modified for your environment:
 
 | Property  | Description |
 | ------------- | ------------- |

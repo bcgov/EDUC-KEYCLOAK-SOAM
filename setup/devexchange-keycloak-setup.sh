@@ -38,6 +38,14 @@ $KCADM_FILE_BIN_FOLDER/kcadm.sh config credentials --server https://sso-$envValu
 echo Updating realm details
 $KCADM_FILE_BIN_FOLDER/kcadm.sh update realms/$DEVEXCHANGE_KC_REALM_ID --body "{\"loginWithEmailAllowed\" : false, \"duplicateEmailsAllowed\" : true}"
 
+echo Updating First Broker Login executers
+getFirstBrokerLoginRegistrationExecuterID(){
+    executorID= $KCADM_FILE_BIN_FOLDER/kcadm.sh get -r $DEVEXCHANGE_KC_REALM_ID authentication/flows/first%20broker%20login/executions | jq -r ".[] | select(.providerId == \"idp-review-profile\") | .id"
+}
+
+FIRST_BROKER_EXECUTER_ID=$(getFirstBrokerLoginRegistrationExecuterID)
+$KCADM_FILE_BIN_FOLDER/kcadm.sh update authentication/flows/first%20broker%20login/executions -r $DEVEXCHANGE_KC_REALM_ID --body "{ \"id\" : \"$FIRST_BROKER_EXECUTER_ID\", \"requirement\" : \"DISABLED\", \"displayName\" : \"Review Profile\", \"alias\" : \"review profile config\", \"requirementChoices\" : [ \"REQUIRED\", \"DISABLED\" ], \"configurable\" : true, \"providerId\" : \"idp-review-profile\", \"authenticationConfig\" : \"0ee684cd-7ce1-4278-9477-d40d1a3486bf\", \"level\" : 0, \"index\" : 0}" 
+
 echo Removing BCSC IDP if exists...
 $KCADM_FILE_BIN_FOLDER/kcadm.sh delete identity-provider/instances/bcsc -r $DEVEXCHANGE_KC_REALM_ID
 
