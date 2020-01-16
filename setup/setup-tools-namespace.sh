@@ -40,6 +40,8 @@ echo Creating Code Table API token
 SONAR_TOKEN_CODETABLE_API=$(curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=Code Table API" "$SONARQUBE_URL/api/user_tokens/generate" | jq '.token')
 echo Creating Digital ID API token
 SONAR_TOKEN_DIGITALID_API=$(curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=Digital ID API" "$SONARQUBE_URL/api/user_tokens/generate" | jq '.token')
+echo Creating Document API token
+SONAR_TOKEN_DOCUMENT_API=$(curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=Document API" "$SONARQUBE_URL/api/user_tokens/generate" | jq '.token')
 echo Creating PEN Request token
 SONAR_TOKEN_PEN_REQUEST=$(curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=PEN Request" "$SONARQUBE_URL/api/user_tokens/generate" | jq '.token')
 echo Creating PEN Request API token
@@ -55,6 +57,10 @@ echo
 echo Re-creating code-table-api-secrets
 oc delete secret code-table-api-secrets
 oc create secret generic code-table-api-secrets --from-literal=sonarqube-token=${SONAR_TOKEN_CODETABLE_API//\"} --from-literal=sonarqube-host=$SONARQUBE_URL
+
+echo Re-creating document-api-secrets
+oc delete secret document-api-secrets
+oc create secret generic document-api-secrets --from-literal=sonarqube-token=${SONAR_TOKEN_DOCUMENT_API//\"} --from-literal=sonarqube-host=$SONARQUBE_URL
 
 echo Re-creating digitalid-api-secrets
 oc delete secret digitalid-api-secrets
