@@ -45,8 +45,6 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
         
-        logger.info("JWT token is: " + token);
-        
 		for(String s: token.getOtherClaims().keySet()) {
     		logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
 		}
@@ -76,7 +74,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			}
 			createOrUpdateUser(username, accountType, "BCSC");
 			break;
-		case "idir":
+		case "idir": 
 			logger.info("SOAM: Account type idir found");
 			username = (String)token.getOtherClaims().get("idir_guid");
 			if(username == null) {
