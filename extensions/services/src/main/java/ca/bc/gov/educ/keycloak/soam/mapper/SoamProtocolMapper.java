@@ -67,10 +67,10 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	} 
 
 	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
+		logger.info("Protocol Mapper Claims list: ");
 		for(String s: token.getOtherClaims().keySet()) {
     		logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
 		}
-		
 		
 		String accountType = userSession.getUser().getFirstAttribute("account_type");
 		

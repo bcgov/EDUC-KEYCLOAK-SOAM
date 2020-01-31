@@ -51,7 +51,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				if(username == null) {
 					throw new SoamRuntimeException("No bceid_guid value was found in token");
 				}
-				updateBasicUser(username, accountType);
+				updateUserInfo(username, accountType, "BASIC");
 				break;
 			case "bcsc":
 				logger.info("SOAM Post: Account type bcsc found");
@@ -59,6 +59,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				if(username == null) {
 					throw new SoamRuntimeException("No bcsc_did value was found in token");
 				}
+				updateUserInfo(username, accountType, "BCSC");
 				break;
 			case "idir":
 				logger.info("SOAM Post: Account type idir found");
@@ -95,15 +96,15 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 		}
     }
     
-    protected void updateBasicUser(String guid, String accountType) {
-    	logger.info("SOAM Post: updateBasicUser");
-    	logger.info("SOAM Post: performing login for " + accountType + " user: " + guid);
+    protected void updateUserInfo(String guid, String accountType, String credType) {
+    	logger.info("SOAM: createOrUpdateUser");
+    	logger.info("SOAM: performing login for " + accountType + " user: " + guid);
     	
     	try {
-			RestUtils.getInstance().performLogin("BASIC", guid, guid);
+			RestUtils.getInstance().performLogin(credType, guid, guid);
 		} catch (Exception e) {
 			logger.error("Exception occurred within SOAM while processing login" + e.getMessage());
-			throw new SoamRuntimeException("Exception occurred within SOAM while processing login, check downstream logs for digital ID API service");
+			throw new SoamRuntimeException("Exception occurred within SOAM while processing login, check downstream logs for SOAM API service");
 		}
     }
  
