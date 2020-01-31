@@ -76,7 +76,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			}
 			createOrUpdateUser(username, accountType, "BCSC");
 			break;
-		case "idir":
+		case "idir": 
 			logger.info("SOAM: Account type idir found");
 			username = (String)token.getOtherClaims().get("idir_guid");
 			if(username == null) {
