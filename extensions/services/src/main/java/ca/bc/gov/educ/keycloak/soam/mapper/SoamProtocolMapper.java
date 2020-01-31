@@ -73,46 +73,64 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		if(accountType == null) {
 			throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
 		}
+
+		String userGUID = userSession.getUser().getUsername();
 		
-		if(accountType.equals("bceid")) {
-			String userBasicGUID = userSession.getUser().getUsername();
+		if(accountType.equals("bceid")){
+			logger.info("SOAM Fetching BCEID Claims");
 			
-			logger.info("SOAM Injecting claims");
-			SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BASIC",userBasicGUID);
+			SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BASIC", userGUID);
+			token.getOtherClaims().put("accountType", "BCEID");
 			
-			//In this case we have a student, provide the full stack of claims until the configuration API is complete
-			if(soamLoginEntity.getStudent() != null) {
-				token.getOtherClaims().put("studentID", soamLoginEntity.getStudent().getStudentID());
-				token.getOtherClaims().put("legalFirstName", soamLoginEntity.getStudent().getLegalFirstName());
-				token.getOtherClaims().put("legalMiddleNames", soamLoginEntity.getStudent().getLegalMiddleNames());
-				token.getOtherClaims().put("legalLastName", soamLoginEntity.getStudent().getLegalLastName());
-				token.getOtherClaims().put("dob", soamLoginEntity.getStudent().getDob());
-				token.getOtherClaims().put("pen", soamLoginEntity.getStudent().getPen());
-				token.getOtherClaims().put("sexCode", soamLoginEntity.getStudent().getSexCode());
-				token.getOtherClaims().put("dataSourceCode", soamLoginEntity.getStudent().getDataSourceCode());
-				token.getOtherClaims().put("usualFirstName", soamLoginEntity.getStudent().getUsualFirstName());
-				token.getOtherClaims().put("usualMiddleNames", soamLoginEntity.getStudent().getUsualMiddleNames());
-				token.getOtherClaims().put("usualLastName", soamLoginEntity.getStudent().getUsualLastName());
-				token.getOtherClaims().put("email", soamLoginEntity.getStudent().getEmail());
-				token.getOtherClaims().put("deceasedDate", soamLoginEntity.getStudent().getDeceasedDate());
-				token.getOtherClaims().put("createUser", soamLoginEntity.getStudent().getCreateUser());
-				token.getOtherClaims().put("createDate", soamLoginEntity.getStudent().getCreateDate());
-				token.getOtherClaims().put("updateUser", soamLoginEntity.getStudent().getUpdateUser());
-				token.getOtherClaims().put("updateDate", soamLoginEntity.getStudent().getUpdateDate());
-				token.getOtherClaims().put("displayName", soamLoginEntity.getStudent().getLegalFirstName() + " " + soamLoginEntity.getStudent().getLegalLastName());
-			}
-			//In this case we have a digital identity; someone that has logged in but does not have an associated student record
-			else if(soamLoginEntity.getDigitalIdentityID() != null) {
-				token.getOtherClaims().put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID()); 
-				token.getOtherClaims().put("displayName", userSession.getUser().getFirstAttribute("display_name"));
-			}
-			//This is an exception since we have no data at all
-			else {
-				throw new RuntimeException("No student or digital ID data found in SoamLoginEntity");
-			}
+			setStandardSoamLoginClaims(token, soamLoginEntity, userSession);
+		}else if(accountType.equals("bcsc")){
+			logger.info("SOAM Fetching BCSC Claims");
 			
-		    token.getOtherClaims().put("accountType", "BCEID");
+			SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BCSC", userGUID);
+			token.getOtherClaims().put("accountType", "BCSC");
+			
+			setStandardSoamLoginClaims(token, soamLoginEntity, userSession);	
 		}
+	}
+
+	private void setStandardSoamLoginClaims(IDToken token, SoamLoginEntity soamLoginEntity, UserSessionModel userSession) {
+		if(soamLoginEntity.getStudent() != null) {
+			populateStudentClaims(token, soamLoginEntity);
+		}
+		//In this case we have a digital identity; someone that has logged in but does not have an associated student record
+		else if(soamLoginEntity.getDigitalIdentityID() != null) {
+			populateDigitalIDClaims(token, soamLoginEntity, userSession);
+		}
+		//This is an exception since we have no data at all
+		else {
+			throw new RuntimeException("No student or digital ID data found in SoamLoginEntity");
+		}
+	}
+	
+	private void populateDigitalIDClaims(IDToken token, SoamLoginEntity soamLoginEntity, UserSessionModel userSession) {
+		token.getOtherClaims().put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID()); 
+		token.getOtherClaims().put("displayName", userSession.getUser().getFirstAttribute("display_name"));
+	}
+	
+	private void populateStudentClaims(IDToken token, SoamLoginEntity soamLoginEntity) {
+		token.getOtherClaims().put("studentID", soamLoginEntity.getStudent().getStudentID());
+		token.getOtherClaims().put("legalFirstName", soamLoginEntity.getStudent().getLegalFirstName());
+		token.getOtherClaims().put("legalMiddleNames", soamLoginEntity.getStudent().getLegalMiddleNames());
+		token.getOtherClaims().put("legalLastName", soamLoginEntity.getStudent().getLegalLastName());
+		token.getOtherClaims().put("dob", soamLoginEntity.getStudent().getDob());
+		token.getOtherClaims().put("pen", soamLoginEntity.getStudent().getPen());
+		token.getOtherClaims().put("sexCode", soamLoginEntity.getStudent().getSexCode());
+		token.getOtherClaims().put("dataSourceCode", soamLoginEntity.getStudent().getDataSourceCode());
+		token.getOtherClaims().put("usualFirstName", soamLoginEntity.getStudent().getUsualFirstName());
+		token.getOtherClaims().put("usualMiddleNames", soamLoginEntity.getStudent().getUsualMiddleNames());
+		token.getOtherClaims().put("usualLastName", soamLoginEntity.getStudent().getUsualLastName());
+		token.getOtherClaims().put("email", soamLoginEntity.getStudent().getEmail());
+		token.getOtherClaims().put("deceasedDate", soamLoginEntity.getStudent().getDeceasedDate());
+		token.getOtherClaims().put("createUser", soamLoginEntity.getStudent().getCreateUser());
+		token.getOtherClaims().put("createDate", soamLoginEntity.getStudent().getCreateDate());
+		token.getOtherClaims().put("updateUser", soamLoginEntity.getStudent().getUpdateUser());
+		token.getOtherClaims().put("updateDate", soamLoginEntity.getStudent().getUpdateDate());
+		token.getOtherClaims().put("displayName", soamLoginEntity.getStudent().getLegalFirstName() + " " + soamLoginEntity.getStudent().getLegalLastName());
 	}
 
 	public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
