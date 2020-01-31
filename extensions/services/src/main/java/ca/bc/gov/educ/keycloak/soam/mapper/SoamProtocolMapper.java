@@ -102,7 +102,6 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 			token.getOtherClaims().put("gender", userSession.getUser().getFirstAttribute("gender"));
 			token.getOtherClaims().put("displayName", userSession.getUser().getFirstAttribute("first_name") + " " + userSession.getUser().getFirstAttribute("last_name"));
 			
-			
 			setStandardSoamLoginClaims(token, soamLoginEntity, userSession);	
 		}
 	}
