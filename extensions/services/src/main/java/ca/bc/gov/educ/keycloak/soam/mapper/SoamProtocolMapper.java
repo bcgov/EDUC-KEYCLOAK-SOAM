@@ -19,6 +19,7 @@ import org.keycloak.representations.IDToken;
 
 import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
 import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
+import ca.bc.gov.educ.keycloak.soam.model.SoamStudent;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 /**
@@ -113,24 +114,25 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	}
 	
 	private void populateStudentClaims(IDToken token, SoamLoginEntity soamLoginEntity) {
-		token.getOtherClaims().put("studentID", soamLoginEntity.getStudent().getStudentID());
-		token.getOtherClaims().put("legalFirstName", soamLoginEntity.getStudent().getLegalFirstName());
-		token.getOtherClaims().put("legalMiddleNames", soamLoginEntity.getStudent().getLegalMiddleNames());
-		token.getOtherClaims().put("legalLastName", soamLoginEntity.getStudent().getLegalLastName());
-		token.getOtherClaims().put("dob", soamLoginEntity.getStudent().getDob());
-		token.getOtherClaims().put("pen", soamLoginEntity.getStudent().getPen());
-		token.getOtherClaims().put("sexCode", soamLoginEntity.getStudent().getSexCode());
-		token.getOtherClaims().put("dataSourceCode", soamLoginEntity.getStudent().getDataSourceCode());
-		token.getOtherClaims().put("usualFirstName", soamLoginEntity.getStudent().getUsualFirstName());
-		token.getOtherClaims().put("usualMiddleNames", soamLoginEntity.getStudent().getUsualMiddleNames());
-		token.getOtherClaims().put("usualLastName", soamLoginEntity.getStudent().getUsualLastName());
-		token.getOtherClaims().put("email", soamLoginEntity.getStudent().getEmail());
-		token.getOtherClaims().put("deceasedDate", soamLoginEntity.getStudent().getDeceasedDate());
-		token.getOtherClaims().put("createUser", soamLoginEntity.getStudent().getCreateUser());
-		token.getOtherClaims().put("createDate", soamLoginEntity.getStudent().getCreateDate());
-		token.getOtherClaims().put("updateUser", soamLoginEntity.getStudent().getUpdateUser());
-		token.getOtherClaims().put("updateDate", soamLoginEntity.getStudent().getUpdateDate());
-		token.getOtherClaims().put("displayName", soamLoginEntity.getStudent().getLegalFirstName() + " " + soamLoginEntity.getStudent().getLegalLastName());
+		SoamStudent student = soamLoginEntity.getStudent();
+		token.getOtherClaims().put("studentID", student.getStudentID());
+		token.getOtherClaims().put("legalFirstName", student.getLegalFirstName());
+		token.getOtherClaims().put("legalMiddleNames", student.getLegalMiddleNames());
+		token.getOtherClaims().put("legalLastName", student.getLegalLastName());
+		token.getOtherClaims().put("dob", student.getDob());
+		token.getOtherClaims().put("pen", student.getPen()); 
+		token.getOtherClaims().put("sexCode", student.getSexCode());
+		token.getOtherClaims().put("dataSourceCode", student.getDataSourceCode());
+		token.getOtherClaims().put("usualFirstName", student.getUsualFirstName());
+		token.getOtherClaims().put("usualMiddleNames", student.getUsualMiddleNames());
+		token.getOtherClaims().put("usualLastName", student.getUsualLastName());
+		token.getOtherClaims().put("email", student.getEmail());
+		token.getOtherClaims().put("deceasedDate", student.getDeceasedDate());
+		token.getOtherClaims().put("createUser", student.getCreateUser());
+		token.getOtherClaims().put("createDate", student.getCreateDate());
+		token.getOtherClaims().put("updateUser", student.getUpdateUser());
+		token.getOtherClaims().put("updateDate", student.getUpdateDate());
+		token.getOtherClaims().put("displayName", student.getLegalFirstName() + " " + soamLoginEntity.getStudent().getLegalLastName());
 	}
 
 	public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
