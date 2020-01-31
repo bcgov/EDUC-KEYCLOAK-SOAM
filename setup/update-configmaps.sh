@@ -109,7 +109,6 @@ echo
 echo Setting environment variables for pen-request-api-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/pen-request-api-config-map dc/pen-request-api-$SOAM_KC_REALM_ID
 
-
 ###########################################################
 #Setup for pen-request-email-api-config-map
 ###########################################################
