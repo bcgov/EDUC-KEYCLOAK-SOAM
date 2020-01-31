@@ -67,6 +67,11 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	} 
 
 	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
+		for(String s: token.getOtherClaims().keySet()) {
+    		logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
+		}
+		
+		
 		String accountType = userSession.getUser().getFirstAttribute("account_type");
 		
 		logger.info("Protocol Mapper - User Account Type is: " + accountType);
@@ -89,6 +94,14 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 			
 			SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BCSC", userGUID);
 			token.getOtherClaims().put("accountType", "BCSC");
+			token.getOtherClaims().put("emailAddress", userSession.getUser().getFirstAttribute("email_address"));
+			token.getOtherClaims().put("legalFirstName", userSession.getUser().getFirstAttribute("first_name"));
+			token.getOtherClaims().put("legalMiddleNames", userSession.getUser().getFirstAttribute("last_name"));
+			token.getOtherClaims().put("legalLastName", userSession.getUser().getFirstAttribute("middle_names"));
+			token.getOtherClaims().put("dob", userSession.getUser().getFirstAttribute("dob"));
+			token.getOtherClaims().put("gender", userSession.getUser().getFirstAttribute("gender"));
+			token.getOtherClaims().put("displayName", userSession.getUser().getFirstAttribute("first_name") + " " + userSession.getUser().getFirstAttribute("last_name"));
+			
 			
 			setStandardSoamLoginClaims(token, soamLoginEntity, userSession);	
 		}
