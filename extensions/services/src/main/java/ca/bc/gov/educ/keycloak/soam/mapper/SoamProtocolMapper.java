@@ -103,7 +103,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		}
 		//This is an exception since we have no data at all
 		else {
-			throw new RuntimeException("No student or digital ID data found in SoamLoginEntity");
+			throw new SoamRuntimeException("No student or digital ID data found in SoamLoginEntity");
 		}
 	}
 	
