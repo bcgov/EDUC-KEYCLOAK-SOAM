@@ -79,10 +79,19 @@ oc set env --from=configmap/codetable-api-config-map dc/codetable-api-$SOAM_KC_R
 ###########################################################
 #Setup for digitalid-api-config-map
 ###########################################################
+getDigitalIdAPIServiceClientID(){
+      executorID=$KCADM_FILE_BIN_FOLDER/kcadm.sh get clients -r "$SOAM_KC_REALM_ID" --fields 'id,clientId' | python3 -c "import sys, json; data = json.load(sys.stdin); output_dict = [x for x in data if x['clientId'] == 'digitalid-api-service'];  print(output_dict)" | grep -Po "(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
+}
+getDigitalIdAPIServiceClientSecret(){
+    executorID=$KCADM_FILE_BIN_FOLDER/kcadm.sh get clients/"$(getDigitalIdAPIServiceClientID)"/client-secret -r "$SOAM_KC_REALM_ID" | grep -Po "(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
+}
 
 echo
+echo Fetching client ID for student-api-service client
+digitalIdAPIServiceClientSecret=$(getDigitalIdAPIServiceClientSecret)
+echo
 echo Creating config map digitalid-api-config-map 
-oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap digitalid-api-config-map --from-literal=JDBC_URL=$DB_JDBC_CONNECT_STRING --from-literal=ORACLE_USERNAME=$DB_CONNECT_USER --from-literal=ORACLE_PASSWORD=$DB_CONNECT_PASS --from-literal=KEYCLOAK_PUBLIC_KEY="$soamFullPublicKey" --from-literal=SPRING_SECURITY_LOG_LEVEL=INFO --from-literal=SPRING_WEB_LOG_LEVEL=INFO --from-literal=APP_LOG_LEVEL=INFO --from-literal=SPRING_BOOT_AUTOCONFIG_LOG_LEVEL=INFO --dry-run -o yaml | oc apply -f -
+oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap digitalid-api-config-map --from-literal=CLIENT_ID=digitalid-api-service --from-literal=CLIENT_SECRET="$digitalIdAPIServiceClientSecret" --from-literal=CODETABLE_URL=https://codetable-api-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=JDBC_URL=$DB_JDBC_CONNECT_STRING --from-literal=ORACLE_USERNAME=$DB_CONNECT_USER --from-literal=ORACLE_PASSWORD=$DB_CONNECT_PASS --from-literal=KEYCLOAK_PUBLIC_KEY="$soamFullPublicKey" --from-literal=SPRING_SECURITY_LOG_LEVEL=INFO --from-literal=SPRING_WEB_LOG_LEVEL=INFO --from-literal=APP_LOG_LEVEL=INFO --from-literal=SPRING_BOOT_AUTOCONFIG_LOG_LEVEL=INFO --from-literal=TOKEN_URL=https://$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca/auth/realms/$SOAM_KC_REALM_ID/protocol/openid-connect/token --dry-run -o yaml | oc apply -f -
 echo
 echo Setting environment variables for digitalid-api-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/digitalid-api-config-map dc/digitalid-api-$SOAM_KC_REALM_ID
@@ -91,9 +100,20 @@ oc set env --from=configmap/digitalid-api-config-map dc/digitalid-api-$SOAM_KC_R
 #Setup for student-api-config-map
 ###########################################################
 
+getStudentAPIServiceClientID(){
+      executorID=$KCADM_FILE_BIN_FOLDER/kcadm.sh get clients -r "$SOAM_KC_REALM_ID" --fields 'id,clientId' | python3 -c "import sys, json; data = json.load(sys.stdin); output_dict = [x for x in data if x['clientId'] == 'student-api-service'];  print(output_dict)" | grep -Po "(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
+}
+getStudentAPIServiceClientSecret(){
+    executorID=$KCADM_FILE_BIN_FOLDER/kcadm.sh get clients/"$(getStudentAPIServiceClientID)"/client-secret -r "$SOAM_KC_REALM_ID" | grep -Po "(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
+}
+
+echo
+echo Fetching client ID for student-api-service client
+studentAPIServiceClientSecret=$(getStudentAPIServiceClientSecret)
+
 echo
 echo Creating config map student-api-config-map
-oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap student-api-config-map --from-literal=JDBC_URL=$DB_JDBC_CONNECT_STRING --from-literal=ORACLE_USERNAME=$DB_CONNECT_USER --from-literal=ORACLE_PASSWORD=$DB_CONNECT_PASS --from-literal=KEYCLOAK_PUBLIC_KEY="$soamFullPublicKey" --from-literal=SPRING_SECURITY_LOG_LEVEL=INFO --from-literal=SPRING_WEB_LOG_LEVEL=INFO --from-literal=APP_LOG_LEVEL=INFO --from-literal=SPRING_BOOT_AUTOCONFIG_LOG_LEVEL=INFO --dry-run -o yaml | oc apply -f -
+oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap student-api-config-map --from-literal=CLIENT_ID=student-api-service --from-literal=CLIENT_SECRET="$studentAPIServiceClientSecret" --from-literal=CODETABLE_URL=https://codetable-api-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=JDBC_URL=$DB_JDBC_CONNECT_STRING --from-literal=ORACLE_USERNAME=$DB_CONNECT_USER --from-literal=ORACLE_PASSWORD=$DB_CONNECT_PASS --from-literal=KEYCLOAK_PUBLIC_KEY="$soamFullPublicKey" --from-literal=SPRING_SECURITY_LOG_LEVEL=INFO --from-literal=SPRING_WEB_LOG_LEVEL=INFO --from-literal=APP_LOG_LEVEL=INFO --from-literal=SPRING_BOOT_AUTOCONFIG_LOG_LEVEL=INFO --from-literal=TOKEN_URL=https://$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca/auth/realms/$SOAM_KC_REALM_ID/protocol/openid-connect/token --dry-run -o yaml | oc apply -f -
 echo
 echo Setting environment variables for student-api-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/student-api-config-map dc/student-api-$SOAM_KC_REALM_ID
