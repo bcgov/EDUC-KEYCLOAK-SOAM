@@ -46,10 +46,11 @@ soamFullPublicKey="-----BEGIN PUBLIC KEY----- $(getPublicKey) -----END PUBLIC KE
 ###########################################################
 #setup for jwt token to be used by PEN-REQUEST-EMAIL-API and PEN-REQUEST-BACKEND
 ###########################################################
-JWT_SECRET_KEY=$(getSecret)
 getSecret(){
 head /dev/urandom | tr -dc A-Za-z0-9 | head -c 5000 | base64
 }
+JWT_SECRET_KEY=$(getSecret)
+
 #Setup for soam-sso-config-map
 ###########################################################
 getSoamKCServiceClientID(){
