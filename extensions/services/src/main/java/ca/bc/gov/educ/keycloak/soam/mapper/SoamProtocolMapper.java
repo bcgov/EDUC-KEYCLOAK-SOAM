@@ -162,7 +162,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		token.getOtherClaims().put("updateDate", servicesCard.getUpdateDate());
 		token.getOtherClaims().put("updateUser", servicesCard.getUpdateUser());
 		token.getOtherClaims().put("displayName", servicesCard.getUserDisplayName());
-	}
+	} 
 
 	public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
 			String consentText, boolean accessToken, boolean idToken) {
