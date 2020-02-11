@@ -14,6 +14,7 @@ import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 
 import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
+import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
 /**
@@ -45,11 +46,12 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
         
-		for(String s: token.getOtherClaims().keySet()) {
-    		logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
+        Map<String, Object> otherClaims = token.getOtherClaims();
+		for(String s: otherClaims.keySet()) {
+    		logger.info("Key: " + s + " Value: " + otherClaims.get(s));
 		}
         
-		String accountType = (String)token.getOtherClaims().get("account_type");
+		String accountType = (String)otherClaims.get("account_type");
 		
 		if(accountType == null) {
 			throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
@@ -60,23 +62,38 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 		switch (accountType) {
 		case "bceid":
 			logger.info("SOAM: Account type bceid found");
-			username = (String)token.getOtherClaims().get("bceid_guid");
+			username = (String)otherClaims.get("bceid_guid");
 			if(username == null) {
 				throw new SoamRuntimeException("No bceid_guid value was found in token");
 			}
-			createOrUpdateUser(username, accountType, "BASIC");
+			createOrUpdateUser(username, accountType, "BASIC", null);
 			break;
 		case "bcsc":
 			logger.info("SOAM: Account type bcsc found");
-			username = (String)token.getOtherClaims().get("bcsc_did");
+			username = (String)otherClaims.get("bcsc_did");
 			if(username == null) {
 				throw new SoamRuntimeException("No bcsc_did value was found in token");
 			}
-			createOrUpdateUser(username, accountType, "BCSC");
+				
+			SoamServicesCard servicesCard = new SoamServicesCard();
+			servicesCard.setBirthDate((String)otherClaims.get("birthdate"));
+			servicesCard.setCity((String)otherClaims.get("city"));
+			servicesCard.setCountry((String)otherClaims.get("country"));
+			servicesCard.setDid((String)otherClaims.get("did"));
+			servicesCard.setEmail((String)otherClaims.get("email"));
+			servicesCard.setGender((String)otherClaims.get("gender"));
+			servicesCard.setGivenName((String)otherClaims.get("givenName"));
+			servicesCard.setGivenNames((String)otherClaims.get("givenNames"));
+			servicesCard.setPostalCode((String)otherClaims.get("postalCode"));
+			servicesCard.setProvince((String)otherClaims.get("province"));
+			servicesCard.setStreetAddress((String)otherClaims.get("streetAddress"));
+			servicesCard.setSurname((String)otherClaims.get("surname"));
+			servicesCard.setUserDisplayName((String)otherClaims.get("userDisplayName"));
+			createOrUpdateUser(username, accountType, "BCSC", servicesCard);
 			break;
 		case "idir": 
 			logger.info("SOAM: Account type idir found");
-			username = (String)token.getOtherClaims().get("idir_guid");
+			username = (String)otherClaims.get("idir_guid");
 			if(username == null) {
 				throw new SoamRuntimeException("No idir_guid value was found in token");
 			}
@@ -93,9 +110,9 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             federatedUser.setEnabled(true);
             
             if(accountType.equals("bceid")) {
-	           federatedUser.setSingleAttribute("display_name", (String)token.getOtherClaims().get("display_name"));
+	           federatedUser.setSingleAttribute("display_name", (String)otherClaims.get("display_name"));
             }else if(accountType.equals("idir")) {
- 	           federatedUser.setSingleAttribute("idir_username", ((String)token.getOtherClaims().get("preferred_username")).replaceFirst("@idir", "").toUpperCase());
+ 	           federatedUser.setSingleAttribute("idir_username", ((String)otherClaims.get("preferred_username")).replaceFirst("@idir", "").toUpperCase());
              }
             
             for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
@@ -113,12 +130,12 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         } 
     }
 
-    protected void createOrUpdateUser(String guid, String accountType, String credType) {
+    protected void createOrUpdateUser(String guid, String accountType, String credType, SoamServicesCard servicesCard) {
     	logger.info("SOAM: createOrUpdateUser");
     	logger.info("SOAM: performing login for " + accountType + " user: " + guid);
     	
     	try {
-			RestUtils.getInstance().performLogin(credType, guid, guid);
+			RestUtils.getInstance().performLogin(credType, guid, guid, servicesCard);
 		} catch (Exception e) {
 			logger.error("Exception occurred within SOAM while processing login" + e.getMessage());
 			throw new SoamRuntimeException("Exception occurred within SOAM while processing login, check downstream logs for SOAM API service");

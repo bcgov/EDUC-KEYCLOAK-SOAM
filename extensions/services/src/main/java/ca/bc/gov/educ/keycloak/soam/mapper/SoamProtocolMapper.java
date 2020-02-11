@@ -19,6 +19,7 @@ import org.keycloak.representations.IDToken;
 
 import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
 import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
+import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
 import ca.bc.gov.educ.keycloak.soam.model.SoamStudent;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 
@@ -46,22 +47,18 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		return configProperties;
 	}
 
-	@Override
 	public String getId() {
 		return PROVIDER_ID;
 	}
 
-	@Override
 	public String getDisplayType() {
 		return "Soam Protocol Mapper";
 	}
 
-	@Override
 	public String getDisplayCategory() {
 		return TOKEN_MAPPER_CATEGORY;
 	}
 
-	@Override
 	public String getHelpText() {
 		return "Map SOAM claims";
 	} 
@@ -94,13 +91,6 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 			
 			SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BCSC", userGUID);
 			token.getOtherClaims().put("accountType", "BCSC");
-			token.getOtherClaims().put("emailAddress", userSession.getUser().getFirstAttribute("email_address"));
-			token.getOtherClaims().put("legalFirstName", userSession.getUser().getFirstAttribute("first_name"));
-			token.getOtherClaims().put("legalMiddleNames", userSession.getUser().getFirstAttribute("last_name"));
-			token.getOtherClaims().put("legalLastName", userSession.getUser().getFirstAttribute("middle_names"));
-			token.getOtherClaims().put("dob", userSession.getUser().getFirstAttribute("dob"));
-			token.getOtherClaims().put("gender", userSession.getUser().getFirstAttribute("gender"));
-			token.getOtherClaims().put("displayName", userSession.getUser().getFirstAttribute("first_name") + " " + userSession.getUser().getFirstAttribute("last_name"));
 			
 			setStandardSoamLoginClaims(token, soamLoginEntity, userSession);	
 		}
@@ -110,10 +100,15 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		if(soamLoginEntity.getStudent() != null) {
 			populateStudentClaims(token, soamLoginEntity);
 		}
+		//In this case we have a services card
+		else if(soamLoginEntity.getServiceCard() != null) {
+			populateServicesCardClaims(token, soamLoginEntity);
+		}
 		//In this case we have a digital identity; someone that has logged in but does not have an associated student record
 		else if(soamLoginEntity.getDigitalIdentityID() != null) {
 			populateDigitalIDClaims(token, soamLoginEntity, userSession);
 		}
+		
 		//This is an exception since we have no data at all
 		else {
 			throw new SoamRuntimeException("No student or digital ID data found in SoamLoginEntity");
@@ -145,6 +140,28 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		token.getOtherClaims().put("updateUser", student.getUpdateUser());
 		token.getOtherClaims().put("updateDate", student.getUpdateDate());
 		token.getOtherClaims().put("displayName", student.getLegalFirstName() + " " + soamLoginEntity.getStudent().getLegalLastName());
+	}
+
+	private void populateServicesCardClaims(IDToken token, SoamLoginEntity soamLoginEntity) {
+		SoamServicesCard servicesCard = soamLoginEntity.getServiceCard();
+		token.getOtherClaims().put("birthDate", servicesCard.getBirthDate());
+		token.getOtherClaims().put("city", servicesCard.getCity());
+		token.getOtherClaims().put("country", servicesCard.getCountry());
+		token.getOtherClaims().put("createDate", servicesCard.getCreateDate());
+		token.getOtherClaims().put("createUser", servicesCard.getCreateUser());
+		token.getOtherClaims().put("did", servicesCard.getDid()); 
+		token.getOtherClaims().put("email", servicesCard.getEmail());
+		token.getOtherClaims().put("gender", servicesCard.getGender());
+		token.getOtherClaims().put("givenName", servicesCard.getGivenName());
+		token.getOtherClaims().put("givenNames", servicesCard.getGivenNames());
+		token.getOtherClaims().put("postalCode", servicesCard.getPostalCode());
+		token.getOtherClaims().put("province", servicesCard.getProvince());
+		token.getOtherClaims().put("servicesCardInfoID", servicesCard.getServicesCardInfoID());
+		token.getOtherClaims().put("streetAddress", servicesCard.getStreetAddress());
+		token.getOtherClaims().put("surname", servicesCard.getSurname());
+		token.getOtherClaims().put("updateDate", servicesCard.getUpdateDate());
+		token.getOtherClaims().put("updateUser", servicesCard.getUpdateUser());
+		token.getOtherClaims().put("displayName", servicesCard.getUserDisplayName());
 	}
 
 	public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
