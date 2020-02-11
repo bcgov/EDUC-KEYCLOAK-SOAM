@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
+import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
 import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
 
 /**
@@ -56,7 +57,7 @@ public class RestUtils {
 		return new OAuth2RestTemplate(resourceDetails, new DefaultOAuth2ClientContext());
 	}
 
-    public void performLogin(String identifierType, String identifierValue, String userID) {
+    public void performLogin(String identifierType, String identifierValue, String userID, SoamServicesCard servicesCard) {
 		RestTemplate restTemplate = getRestTemplate(null);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -65,6 +66,22 @@ public class RestUtils {
 		map.add("identifierType", identifierType);
 		map.add("identifierValue", identifierValue);
 		map.add("userID", userID);
+		
+		if(servicesCard != null) {
+			map.add("birthDate",servicesCard.getBirthDate());
+			map.add("city",servicesCard.getCity());
+			map.add("country",servicesCard.getCountry());
+			map.add("did",servicesCard.getDid());
+			map.add("email",servicesCard.getEmail());
+			map.add("gender",servicesCard.getGender());
+			map.add("givenName",servicesCard.getGivenName());
+			map.add("givenNames",servicesCard.getGivenNames());
+			map.add("postalCode",servicesCard.getPostalCode());
+			map.add("province",servicesCard.getProvince());
+			map.add("streetAddress",servicesCard.getStreetAddress());
+			map.add("surname",servicesCard.getSurname());
+			map.add("userDisplayName",servicesCard.getUserDisplayName());
+		}
 		
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 	
