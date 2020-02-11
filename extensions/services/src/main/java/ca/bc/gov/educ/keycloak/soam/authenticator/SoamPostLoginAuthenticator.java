@@ -79,7 +79,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				servicesCard.setBirthDate((String)otherClaims.get("birthdate"));
 				servicesCard.setCity((String)otherClaims.get("city"));
 				servicesCard.setCountry((String)otherClaims.get("country"));
-				servicesCard.setDid((String)otherClaims.get("did"));
+				servicesCard.setDid((String)otherClaims.get("bcsc_did"));
 				servicesCard.setEmail((String)otherClaims.get("email"));
 				servicesCard.setGender((String)otherClaims.get("gender"));
 				servicesCard.setGivenName((String)otherClaims.get("givenName"));
@@ -113,7 +113,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				reader.close();
 			}
 		}
-    }
+    } 
     
     protected void updateUserInfo(String guid, String accountType, String credType, SoamServicesCard servicesCard) {
     	logger.info("SOAM: createOrUpdateUser");
