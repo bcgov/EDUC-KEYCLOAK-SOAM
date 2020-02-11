@@ -113,7 +113,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				reader.close();
 			}
 		}
-    }
+    } 
     
     protected void updateUserInfo(String guid, String accountType, String credType, SoamServicesCard servicesCard) {
     	logger.info("SOAM: createOrUpdateUser");
