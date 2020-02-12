@@ -153,6 +153,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		token.getOtherClaims().put("email", servicesCard.getEmail());
 		token.getOtherClaims().put("gender", servicesCard.getGender());
 		token.getOtherClaims().put("givenName", servicesCard.getGivenName());
+		token.getOtherClaims().put("identityAssuranceLevel", servicesCard.getIdentityAssuranceLevel());
 		token.getOtherClaims().put("givenNames", servicesCard.getGivenNames());
 		token.getOtherClaims().put("postalCode", servicesCard.getPostalCode());
 		token.getOtherClaims().put("province", servicesCard.getProvince());

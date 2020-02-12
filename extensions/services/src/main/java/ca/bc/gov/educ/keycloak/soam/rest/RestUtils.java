@@ -76,6 +76,7 @@ public class RestUtils {
 			map.add("gender",servicesCard.getGender());
 			map.add("givenName",servicesCard.getGivenName());
 			map.add("givenNames",servicesCard.getGivenNames());
+			map.add("identityAssuranceLevel",servicesCard.getIdentityAssuranceLevel());
 			map.add("postalCode",servicesCard.getPostalCode());
 			map.add("province",servicesCard.getProvince());
 			map.add("streetAddress",servicesCard.getStreetAddress());
