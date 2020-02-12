@@ -120,7 +120,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
     	logger.info("SOAM: createOrUpdateUser");
     	logger.info("SOAM: performing login for " + accountType + " user: " + guid);
     	
-    	try {
+    	try { 
 			RestUtils.getInstance().performLogin(credType, guid, guid, servicesCard);
 		} catch (Exception e) {
 			logger.error("Exception occurred within SOAM while processing login" + e.getMessage());
