@@ -82,14 +82,14 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				servicesCard.setDid((String)otherClaims.get("bcsc_did"));
 				servicesCard.setEmail((String)otherClaims.get("email"));
 				servicesCard.setGender((String)otherClaims.get("gender"));
-				servicesCard.setGivenName((String)otherClaims.get("givenName"));
-				servicesCard.setGivenNames((String)otherClaims.get("givenNames"));
-				servicesCard.setIdentityAssuranceLevel((String)otherClaims.get("acr"));
-				servicesCard.setPostalCode((String)otherClaims.get("postalCode"));
+				servicesCard.setGivenName((String)otherClaims.get("given_name"));
+				servicesCard.setGivenNames((String)otherClaims.get("given_names"));
+				servicesCard.setIdentityAssuranceLevel((String)otherClaims.get("identity_assurance_level"));
+				servicesCard.setPostalCode((String)otherClaims.get("postal_code"));
 				servicesCard.setProvince((String)otherClaims.get("province"));
 				servicesCard.setStreetAddress((String)otherClaims.get("streetAddress"));
-				servicesCard.setSurname((String)otherClaims.get("surname"));
-				servicesCard.setUserDisplayName((String)otherClaims.get("userDisplayName"));
+				servicesCard.setSurname((String)otherClaims.get("family_name"));
+				servicesCard.setUserDisplayName((String)otherClaims.get("name"));
 				updateUserInfo(username, accountType, "BCSC", servicesCard);
 				break;
 			case "idir":
