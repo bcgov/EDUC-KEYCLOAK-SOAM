@@ -153,6 +153,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		token.getOtherClaims().put("email", servicesCard.getEmail());
 		token.getOtherClaims().put("gender", servicesCard.getGender());
 		token.getOtherClaims().put("givenName", servicesCard.getGivenName());
+		token.getOtherClaims().put("identityAssuranceLevel", servicesCard.getIdentityAssuranceLevel());
 		token.getOtherClaims().put("givenNames", servicesCard.getGivenNames());
 		token.getOtherClaims().put("postalCode", servicesCard.getPostalCode());
 		token.getOtherClaims().put("province", servicesCard.getProvince());
@@ -162,7 +163,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		token.getOtherClaims().put("updateDate", servicesCard.getUpdateDate());
 		token.getOtherClaims().put("updateUser", servicesCard.getUpdateUser());
 		token.getOtherClaims().put("displayName", servicesCard.getUserDisplayName());
-	}
+	} 
 
 	public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
 			String consentText, boolean accessToken, boolean idToken) {

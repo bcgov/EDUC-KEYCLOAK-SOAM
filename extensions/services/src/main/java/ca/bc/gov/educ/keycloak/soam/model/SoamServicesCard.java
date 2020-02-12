@@ -14,6 +14,7 @@ public class SoamServicesCard {
 	private String gender;
 	private String email;
 	private String streetAddress;
+	private String identityAssuranceLevel;
 	private String city;
 	private String province;
 	private String country;
@@ -22,6 +23,14 @@ public class SoamServicesCard {
 	private Date createDate;
 	private String updateUser;
 	private Date updateDate;
+
+	public String getIdentityAssuranceLevel() {
+		return identityAssuranceLevel;
+	}
+
+	public void setIdentityAssuranceLevel(String identityAssuranceLevel) {
+		this.identityAssuranceLevel = identityAssuranceLevel;
+	}
 
 	public UUID getServicesCardInfoID() {
 		return servicesCardInfoID;

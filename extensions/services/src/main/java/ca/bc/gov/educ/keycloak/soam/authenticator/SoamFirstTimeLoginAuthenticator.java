@@ -84,6 +84,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			servicesCard.setGender((String)otherClaims.get("gender"));
 			servicesCard.setGivenName((String)otherClaims.get("givenName"));
 			servicesCard.setGivenNames((String)otherClaims.get("givenNames"));
+			servicesCard.setIdentityAssuranceLevel((String)otherClaims.get("acr"));
 			servicesCard.setPostalCode((String)otherClaims.get("postalCode"));
 			servicesCard.setProvince((String)otherClaims.get("province"));
 			servicesCard.setStreetAddress((String)otherClaims.get("streetAddress"));
