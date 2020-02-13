@@ -255,6 +255,17 @@ echo
 echo Setting environment variables for student-admin-frontend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/student-admin-frontend-config-map dc/student-admin-frontend-$SOAM_KC_REALM_ID
 
+###########################################################
+#Setup for pen-demog-api-config-map
+###########################################################
+
+echo
+echo Creating config map pen-demog-api-config-map
+oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap pen-demog-api-config-map --from-literal=JDBC_URL=$DB_JDBC_CONNECT_STRING --from-literal=ORACLE_USERNAME=$DB_CONNECT_USER --from-literal=ORACLE_PASSWORD=$DB_CONNECT_PASS --from-literal=KEYCLOAK_PUBLIC_KEY="$soamFullPublicKey" --from-literal=SPRING_SECURITY_LOG_LEVEL=INFO --from-literal=HIBERNATE_STATISTICS=false --from-literal=SPRING_WEB_LOG_LEVEL=INFO --from-literal=APP_LOG_LEVEL=INFO --from-literal=SPRING_BOOT_AUTOCONFIG_LOG_LEVEL=INFO --dry-run -o yaml | oc apply -f -
+echo
+echo Setting environment variables for pen-demog-api-$SOAM_KC_REALM_ID application
+oc set env --from=configmap/pen-demog-api-config-map dc/pen-demog-api-$SOAM_KC_REALM_ID
+
 echo Complete.
 
 

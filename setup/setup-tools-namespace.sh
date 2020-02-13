@@ -35,6 +35,7 @@ curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=PEN Request 
 curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=SOAM API" "$SONARQUBE_URL/api/user_tokens/revoke"
 curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=Student API" "$SONARQUBE_URL/api/user_tokens/revoke"
 curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=Services Card API" "$SONARQUBE_URL/api/user_tokens/revoke"
+curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=PEN Demog API" "$SONARQUBE_URL/api/user_tokens/revoke"
 
 echo Creating SonarQube tokens
 echo Creating Code Table API token
@@ -53,6 +54,8 @@ echo Creating Student API token
 SONAR_TOKEN_STUDENT_API=$(curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=Student API" "$SONARQUBE_URL/api/user_tokens/generate" | jq '.token')
 echo Creating Services Card API token
 SONAR_TOKEN_SERVICES_CARD_API=$(curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=Services Card API" "$SONARQUBE_URL/api/user_tokens/generate" | jq '.token')
+echo Creating PEN Demog API token
+SONAR_TOKEN_PEN_DEMOG_API=$(curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=PEN Demog API" "$SONARQUBE_URL/api/user_tokens/generate" | jq '.token')
 
 
 echo
@@ -87,6 +90,10 @@ oc create secret generic student-api-secrets --from-literal=sonarqube-token=${SO
 echo Re-creating services-card-api-secrets
 oc delete secret services-card-api-secrets
 oc create secret generic services-card-api-secrets --from-literal=sonarqube-token=${SONAR_TOKEN_SERVICES_CARD_API//\"} --from-literal=sonarqube-host=$SONARQUBE_URL
+
+echo Re-creating pen-demographics-api-secrets
+oc delete secret pen-demographics-api-secrets
+oc create secret generic pen-demographics-api-secrets --from-literal=sonarqube-token="${SONAR_TOKEN_PEN_DEMOG_API//\"}" --from-literal=sonarqube-host=$SONARQUBE_URL
 
 echo Complete.
 
