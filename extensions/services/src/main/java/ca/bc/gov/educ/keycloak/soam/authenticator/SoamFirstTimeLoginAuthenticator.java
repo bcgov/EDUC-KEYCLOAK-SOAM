@@ -77,7 +77,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 				
 			SoamServicesCard servicesCard = new SoamServicesCard();
 			servicesCard.setBirthDate((String)otherClaims.get("birthdate"));
-			servicesCard.setCity((String)otherClaims.get("city"));
+			servicesCard.setCity((String)otherClaims.get("locality"));
 			servicesCard.setCountry((String)otherClaims.get("country"));
 			servicesCard.setDid((String)otherClaims.get("bcsc_did"));
 			servicesCard.setEmail((String)otherClaims.get("email"));
@@ -86,8 +86,8 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			servicesCard.setGivenNames((String)otherClaims.get("given_names"));
 			servicesCard.setIdentityAssuranceLevel((String)otherClaims.get("identity_assurance_level"));
 			servicesCard.setPostalCode((String)otherClaims.get("postal_code"));
-			servicesCard.setProvince((String)otherClaims.get("province"));
-			servicesCard.setStreetAddress((String)otherClaims.get("streetAddress"));
+			servicesCard.setProvince((String)otherClaims.get("region"));
+			servicesCard.setStreetAddress((String)otherClaims.get("street_address"));
 			servicesCard.setSurname((String)otherClaims.get("family_name"));
 			servicesCard.setUserDisplayName((String)otherClaims.get("name"));
 			createOrUpdateUser(username, accountType, "BCSC", servicesCard);
