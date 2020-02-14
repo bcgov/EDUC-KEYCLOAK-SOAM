@@ -122,6 +122,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	
 	private void populateStudentClaims(IDToken token, SoamLoginEntity soamLoginEntity) {
 		SoamStudent student = soamLoginEntity.getStudent();
+		token.getOtherClaims().put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID()); 
 		token.getOtherClaims().put("studentID", student.getStudentID());
 		token.getOtherClaims().put("legalFirstName", student.getLegalFirstName());
 		token.getOtherClaims().put("legalMiddleNames", student.getLegalMiddleNames());
