@@ -74,25 +74,25 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		logger.info("Protocol Mapper - User Account Type is: " + accountType);
 		
 		if(accountType == null) {
-			throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
-		}
-
-		String userGUID = userSession.getUser().getUsername();
-		
-		if(accountType.equals("bceid")){
-			logger.info("SOAM Fetching BCEID Claims");
+			//This is a client credential call
+		}else {
+			String userGUID = userSession.getUser().getUsername();
 			
-			SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BASIC", userGUID);
-			token.getOtherClaims().put("accountType", "BCEID");
-			
-			setStandardSoamLoginClaims(token, soamLoginEntity, userSession);
-		}else if(accountType.equals("bcsc")){
-			logger.info("SOAM Fetching BCSC Claims");
-			
-			SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BCSC", userGUID);
-			token.getOtherClaims().put("accountType", "BCSC");
-			
-			setStandardSoamLoginClaims(token, soamLoginEntity, userSession);	
+			if(accountType.equals("bceid")){
+				logger.info("SOAM Fetching BCEID Claims");
+				
+				SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BASIC", userGUID);
+				token.getOtherClaims().put("accountType", "BCEID");
+				
+				setStandardSoamLoginClaims(token, soamLoginEntity, userSession);
+			}else if(accountType.equals("bcsc")){
+				logger.info("SOAM Fetching BCSC Claims");
+				
+				SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BCSC", userGUID);
+				token.getOtherClaims().put("accountType", "BCSC");
+				
+				setStandardSoamLoginClaims(token, soamLoginEntity, userSession);	
+			}
 		}
 	}
 
@@ -122,6 +122,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	
 	private void populateStudentClaims(IDToken token, SoamLoginEntity soamLoginEntity) {
 		SoamStudent student = soamLoginEntity.getStudent();
+		token.getOtherClaims().put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID()); 
 		token.getOtherClaims().put("studentID", student.getStudentID());
 		token.getOtherClaims().put("legalFirstName", student.getLegalFirstName());
 		token.getOtherClaims().put("legalMiddleNames", student.getLegalMiddleNames());
