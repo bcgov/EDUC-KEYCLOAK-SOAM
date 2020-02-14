@@ -40,7 +40,7 @@ $KCADM_FILE_BIN_FOLDER/kcadm.sh update realms/$DEVEXCHANGE_KC_REALM_ID --body "{
 
 echo Updating First Broker Login executers
 getFirstBrokerLoginRegistrationExecuterID(){
-    executorID= $KCADM_FILE_BIN_FOLDER/kcadm.sh get -r $DEVEXCHANGE_KC_REALM_ID authentication/flows/first%20broker%20login/executions | jq -r ".[] | select(.providerId == \"idp-review-profile\") | .id"
+    executorID=$KCADM_FILE_BIN_FOLDER/kcadm.sh get -r $DEVEXCHANGE_KC_REALM_ID authentication/flows/first%20broker%20login/executions | jq -r ".[] | select(.providerId == \"idp-review-profile\") | .id"
 }
 
 FIRST_BROKER_EXECUTER_ID=$(getFirstBrokerLoginRegistrationExecuterID)
