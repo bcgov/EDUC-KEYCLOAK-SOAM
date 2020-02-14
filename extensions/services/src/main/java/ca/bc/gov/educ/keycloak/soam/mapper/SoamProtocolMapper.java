@@ -145,7 +145,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 
 	private void populateServicesCardClaims(IDToken token, SoamLoginEntity soamLoginEntity) {
 		SoamServicesCard servicesCard = soamLoginEntity.getServiceCard();
-		token.getOtherClaims().put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID()); 
+		token.getOtherClaims().put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID());  
 		token.getOtherClaims().put("birthDate", servicesCard.getBirthDate());
 		token.getOtherClaims().put("city", servicesCard.getCity());
 		token.getOtherClaims().put("country", servicesCard.getCountry());
