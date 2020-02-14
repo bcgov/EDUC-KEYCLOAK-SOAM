@@ -92,5 +92,4 @@ oc create secret generic services-card-api-secrets --from-literal=sonarqube-toke
 echo Re-creating pen-demographics-api-secrets
 oc delete secret pen-demographics-api-secrets
 oc create secret generic pen-demographics-api-secrets --from-literal=sonarqube-token="${SONAR_TOKEN_PEN_DEMOG_API//\"}" --from-literal=sonarqube-host=$SONARQUBE_URL
-
 echo Complete.
