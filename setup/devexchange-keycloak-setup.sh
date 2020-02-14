@@ -89,7 +89,7 @@ $KCADM_FILE_BIN_FOLDER/kcadm.sh create identity-provider/instances/bcsc/mappers 
 
 $KCADM_FILE_BIN_FOLDER/kcadm.sh create identity-provider/instances/bcsc/mappers -r $DEVEXCHANGE_KC_REALM_ID --body "{\"name\" : \"Last Name\",\"identityProviderAlias\" : \"bcsc\",\"identityProviderMapper\" : \"oidc-user-attribute-idp-mapper\",\"config\" : {\"claim\" : \"family_name\",\"user.attribute\" : \"lastName\"}}"
 
-echo Creating mappers for IDIR DevExchange IDP if not exist...
+echo Creating mappers for IDIR DevExchange IDP if not exist... 
 
 $KCADM_FILE_BIN_FOLDER/kcadm.sh create identity-provider/instances/idir/mappers -r $DEVEXCHANGE_KC_REALM_ID --body "{\"name\" : \"account_type\",\"identityProviderAlias\" : \"idir\",\"identityProviderMapper\" : \"hardcoded-attribute-idp-mapper\",\"config\" : {\"attribute.value\" : \"idir\",\"attribute\" : \"account_type\"}}"
 
