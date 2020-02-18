@@ -91,7 +91,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			servicesCard.setSurname((String)otherClaims.get("family_name"));
 			servicesCard.setUserDisplayName((String)otherClaims.get("name"));
 			createOrUpdateUser(username, accountType, "BCSC", servicesCard);
-			break;
+			break; 
 		case "idir": 
 			logger.info("SOAM: Account type idir found");
 			username = (String)otherClaims.get("idir_guid");
