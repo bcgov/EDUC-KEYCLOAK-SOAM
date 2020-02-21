@@ -41,9 +41,8 @@ getPublicKey(){
 }
 echo Fetching public key from SOAM
 soamFullPublicKey="-----BEGIN PUBLIC KEY----- $(getPublicKey) -----END PUBLIC KEY-----"
-publicKey=$(getPublicKey)
 newline=$'\n'
-formattedPublicKey="${publicKey:0:27}${newline}${publicKey:27:63}${newline}${publicKey:90:63}${newline}${publicKey:153:63}${newline}${publicKey:216:63}${newline}${publicKey:279:63}${newline}${publicKey:342:63}${newline}${publicKey:405:14}${newline}${publicKey:419}"
+formattedPublicKey="${soamFullPublicKey:0:27}${newline}${soamFullPublicKey:27:63}${newline}${soamFullPublicKey:90:63}${newline}${soamFullPublicKey:153:63}${newline}${soamFullPublicKey:216:63}${newline}${soamFullPublicKey:279:63}${newline}${soamFullPublicKey:342:63}${newline}${soamFullPublicKey:405:14}${newline}${soamFullPublicKey:419}"
 
 ###########################################################
 #setup for jwt token to be used by PEN-REQUEST-EMAIL-API and PEN-REQUEST-BACKEND
