@@ -5,7 +5,6 @@
 echo This script will setup the target keycloak instance for SOAM configuration
 echo Note a user will need to be created in the UI prior to running this script [see properties file]
 echo  
-echo DevExhange Realm defined in property file is: $DEVEXCHANGE_KC_REALM_ID
 echo Which keycloak environment would you like to update? [dev,test,prod]
 read envValue
 
