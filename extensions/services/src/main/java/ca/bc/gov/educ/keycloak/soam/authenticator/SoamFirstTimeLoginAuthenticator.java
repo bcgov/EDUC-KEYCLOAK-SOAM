@@ -115,7 +115,9 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             }else if(accountType.equals("idir")) {
  	           federatedUser.setSingleAttribute("idir_username", ((String)otherClaims.get("preferred_username")).replaceFirst("@idir", "").toUpperCase());
  	           federatedUser.setSingleAttribute("display_name", ((String)otherClaims.get("name")));
-             }
+   	           federatedUser.setFirstName(((String)otherClaims.get("given_name"))); 
+  	           federatedUser.setLastName(((String)otherClaims.get("family_name"))); 
+            }
             
             for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
                 federatedUser.setAttribute(attr.getKey(), attr.getValue());

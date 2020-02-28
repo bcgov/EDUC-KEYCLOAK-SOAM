@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.logging.Logger;
+import org.keycloak.models.AuthenticatedClientSessionModel;
+import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
@@ -15,6 +17,7 @@ import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
 import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
+import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.IDToken;
 
 import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
@@ -61,7 +64,37 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 
 	public String getHelpText() {
 		return "Map SOAM claims";
-	} 
+	}
+	
+	
+
+	@Override
+	public AccessToken transformUserInfoToken(AccessToken token, ProtocolMapperModel mappingModel,
+			KeycloakSession session, UserSessionModel userSession, AuthenticatedClientSessionModel clientSession) {
+		logger.info("transforming user token");
+		return super.transformUserInfoToken(token, mappingModel, session, userSession, clientSession);
+	}
+
+	@Override
+	public AccessToken transformAccessToken(AccessToken token, ProtocolMapperModel mappingModel,
+			KeycloakSession session, UserSessionModel userSession, AuthenticatedClientSessionModel clientSession) {
+		logger.info("transforming access token");
+		return super.transformAccessToken(token, mappingModel, session, userSession, clientSession);
+	}
+
+	@Override
+	public IDToken transformIDToken(IDToken token, ProtocolMapperModel mappingModel, KeycloakSession session,
+			UserSessionModel userSession, AuthenticatedClientSessionModel clientSession) {
+		logger.info("transforming ID token");
+		return super.transformIDToken(token, mappingModel, session, userSession, clientSession);
+	}
+
+	@Override
+	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession,
+			KeycloakSession keycloakSession) {
+		logger.info("setClaim with keycloak session");
+		super.setClaim(token, mappingModel, userSession, keycloakSession);
+	}
 
 	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
 		logger.info("Protocol Mapper Claims list: ");
