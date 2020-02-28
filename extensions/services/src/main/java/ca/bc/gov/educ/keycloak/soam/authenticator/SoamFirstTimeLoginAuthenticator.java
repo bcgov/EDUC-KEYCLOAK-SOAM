@@ -36,7 +36,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
     @Override
     protected void authenticateImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
     	logger.info("SOAM: inside authenticateImpl");
-        KeycloakSession session = context.getSession();
+        KeycloakSession session = context.getSession(); 
         RealmModel realm = context.getRealm();
 
         if (context.getAuthenticationSession().getAuthNote(EXISTING_USER_INFO) != null) {

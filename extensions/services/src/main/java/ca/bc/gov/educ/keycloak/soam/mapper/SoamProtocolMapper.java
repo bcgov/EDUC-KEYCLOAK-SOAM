@@ -25,6 +25,7 @@ import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
 import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
 import ca.bc.gov.educ.keycloak.soam.model.SoamStudent;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
+import ca.bc.gov.educ.keycloak.soam.utils.MaxSizeHashMap;
 
 /**
  * SOAM Protocol Mapper Will be used to set Education specific claims for our
@@ -44,6 +45,8 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SoamProtocolMapper.class);
 	}
 
+	private MaxSizeHashMap<String, SoamLoginEntity> loginDetailCache = new MaxSizeHashMap<String, SoamLoginEntity>(10);
+	
 	public static final String PROVIDER_ID = "oidc-soam-mapper";
 
 	public List<ProviderConfigProperty> getConfigProperties() {
@@ -66,42 +69,18 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		return "Map SOAM claims";
 	}
 	
-	
-
-	@Override
-	public AccessToken transformUserInfoToken(AccessToken token, ProtocolMapperModel mappingModel,
-			KeycloakSession session, UserSessionModel userSession, AuthenticatedClientSessionModel clientSession) {
-		logger.info("transforming user token");
-		return super.transformUserInfoToken(token, mappingModel, session, userSession, clientSession);
-	}
-
-	@Override
-	public AccessToken transformAccessToken(AccessToken token, ProtocolMapperModel mappingModel,
-			KeycloakSession session, UserSessionModel userSession, AuthenticatedClientSessionModel clientSession) {
-		logger.info("transforming access token");
-		return super.transformAccessToken(token, mappingModel, session, userSession, clientSession);
-	}
-
-	@Override
-	public IDToken transformIDToken(IDToken token, ProtocolMapperModel mappingModel, KeycloakSession session,
-			UserSessionModel userSession, AuthenticatedClientSessionModel clientSession) {
-		logger.info("transforming ID token");
-		return super.transformIDToken(token, mappingModel, session, userSession, clientSession);
-	}
-
-	@Override
-	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession,
-			KeycloakSession keycloakSession) {
-		logger.info("setClaim with keycloak session");
-		super.setClaim(token, mappingModel, userSession, keycloakSession);
-	}
-
-	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
-		logger.info("Protocol Mapper Claims list: ");
-		for(String s: token.getOtherClaims().keySet()) {
-    		logger.info("Key: " + s + " Value: " + token.getOtherClaims().get(s));
+	private SoamLoginEntity fetchSoamLoginEntity(String type, String userGUID) {
+		if(loginDetailCache.containsKey(userGUID)) {
+			return loginDetailCache.get(userGUID);
 		}
+		logger.info("SOAM Fetching " + type + " Claims");
+		SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BASIC", userGUID);
+		loginDetailCache.put(userGUID, soamLoginEntity);
 		
+		return soamLoginEntity;
+	}
+	
+	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
 		String accountType = userSession.getUser().getFirstAttribute("account_type");
 		
 		logger.info("Protocol Mapper - User Account Type is: " + accountType);
@@ -112,16 +91,12 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 			String userGUID = userSession.getUser().getUsername();
 			
 			if(accountType.equals("bceid")){
-				logger.info("SOAM Fetching BCEID Claims");
-				
-				SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BASIC", userGUID);
+				SoamLoginEntity soamLoginEntity = fetchSoamLoginEntity("BASIC", userGUID);
 				token.getOtherClaims().put("accountType", "BCEID");
 				
 				setStandardSoamLoginClaims(token, soamLoginEntity, userSession);
 			}else if(accountType.equals("bcsc")){
-				logger.info("SOAM Fetching BCSC Claims");
-				
-				SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BCSC", userGUID);
+				SoamLoginEntity soamLoginEntity = fetchSoamLoginEntity("BCSC", userGUID);
 				token.getOtherClaims().put("accountType", "BCSC");
 				
 				setStandardSoamLoginClaims(token, soamLoginEntity, userSession);	
