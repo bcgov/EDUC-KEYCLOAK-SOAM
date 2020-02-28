@@ -21,4 +21,4 @@ public class MaxSizeHashMap<K, V> extends LinkedHashMap<K, V> {
     	logger.info("MaxSizeHashMap removing eldest entry, current map size: " + size());
         return size() > maxSize;
     }
-}
+} 
