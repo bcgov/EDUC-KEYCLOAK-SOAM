@@ -45,7 +45,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SoamProtocolMapper.class);
 	}
 
-	private MaxSizeHashMap<String, SoamLoginEntity> loginDetailCache = new MaxSizeHashMap<String, SoamLoginEntity>(10);
+	private MaxSizeHashMap<String, SoamLoginEntity> loginDetailCache = new MaxSizeHashMap<String, SoamLoginEntity>(2);
 	
 	public static final String PROVIDER_ID = "oidc-soam-mapper";
 
