@@ -145,7 +145,6 @@ Updating realm details
 Creating STUDENT_ADMIN role
 Created new role with id 'STUDENT_ADMIN'
 Creating Client Scopes
-Created new client-scope with id 'READ_CODETABLE_SET'
 Created new client-scope with id 'READ_DIGITALID'
 Created new client-scope with id 'WRITE_DIGITALID'
 Created new client-scope with id 'READ_PEN_REQUEST'
