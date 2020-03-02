@@ -36,8 +36,6 @@ curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=Services Car
 curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=PEN Demog API" "$SONARQUBE_URL/api/user_tokens/revoke"
 
 echo Creating SonarQube tokens
-echo Creating Code Table API token
-SONAR_TOKEN_CODETABLE_API=$(curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=Code Table API" "$SONARQUBE_URL/api/user_tokens/generate" | jq '.token')
 echo Creating Digital ID API token
 SONAR_TOKEN_DIGITALID_API=$(curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X POST --data "name=Digital ID API" "$SONARQUBE_URL/api/user_tokens/generate" | jq '.token')
 echo Creating PEN Request token
@@ -57,10 +55,6 @@ SONAR_TOKEN_PEN_DEMOG_API=$(curl --silent -u $SONARQUBE_USER:$SONARQUBE_PW -X PO
 
 
 echo
-echo Re-creating code-table-api-secrets
-oc delete secret code-table-api-secrets
-oc create secret generic code-table-api-secrets --from-literal=sonarqube-token=${SONAR_TOKEN_CODETABLE_API//\"} --from-literal=sonarqube-host=$SONARQUBE_URL
-
 echo Re-creating digitalid-api-secrets
 oc delete secret digitalid-api-secrets
 oc create secret generic digitalid-api-secrets --from-literal=sonarqube-token=${SONAR_TOKEN_DIGITALID_API//\"} --from-literal=sonarqube-host=$SONARQUBE_URL
