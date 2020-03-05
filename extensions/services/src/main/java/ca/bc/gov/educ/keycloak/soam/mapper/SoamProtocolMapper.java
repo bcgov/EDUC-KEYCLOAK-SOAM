@@ -74,7 +74,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 			return loginDetailCache.get(userGUID);
 		}
 		logger.info("SOAM Fetching " + type + " Claims");
-		SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity("BASIC", userGUID);
+		SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity(type, userGUID);
 		loginDetailCache.put(userGUID, soamLoginEntity);
 		
 		return soamLoginEntity;
