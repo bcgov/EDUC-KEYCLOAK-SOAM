@@ -105,13 +105,15 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	}
 
 	private void setStandardSoamLoginClaims(IDToken token, SoamLoginEntity soamLoginEntity, UserSessionModel userSession) {
-		if(soamLoginEntity.getStudent() != null) {
-			populateStudentClaims(token, soamLoginEntity);
-		}
 		//In this case we have a services card
-		else if(soamLoginEntity.getServiceCard() != null) {
+		if(soamLoginEntity.getServiceCard() != null) {
 			populateServicesCardClaims(token, soamLoginEntity);
 		}
+		
+		else if(soamLoginEntity.getStudent() != null) {
+			populateStudentClaims(token, soamLoginEntity);
+		}
+
 		//In this case we have a digital identity; someone that has logged in but does not have an associated student record
 		else if(soamLoginEntity.getDigitalIdentityID() != null) {
 			populateDigitalIDClaims(token, soamLoginEntity, userSession);
