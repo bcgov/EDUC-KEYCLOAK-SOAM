@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.logging.Logger;
-import org.keycloak.models.AuthenticatedClientSessionModel;
-import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
@@ -17,7 +15,6 @@ import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
 import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
-import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.IDToken;
 
 import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
@@ -25,7 +22,8 @@ import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
 import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
 import ca.bc.gov.educ.keycloak.soam.model.SoamStudent;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
-import ca.bc.gov.educ.keycloak.soam.utils.MaxSizeHashMap;
+import ca.bc.gov.educ.keycloak.soam.utils.ExpiringConcurrentHashMap;
+import ca.bc.gov.educ.keycloak.soam.utils.ExpiringConcurrentHashMapListener;
 
 /**
  * SOAM Protocol Mapper Will be used to set Education specific claims for our
@@ -45,7 +43,20 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, SoamProtocolMapper.class);
 	}
 
-	private MaxSizeHashMap<String, SoamLoginEntity> loginDetailCache = new MaxSizeHashMap<String, SoamLoginEntity>(2);
+	//Create hashmap with 30 second expiry. 
+	private ExpiringConcurrentHashMap<String, SoamLoginEntity> loginDetailCache = new ExpiringConcurrentHashMap<>(30000, new ExpiringConcurrentHashMapListener<String, SoamLoginEntity>() {
+
+		@Override
+		public void notifyOnAdd(String key, SoamLoginEntity value) {
+			logger.info("Adding SoamLoginEntity to SOAM cache, key: " + key);
+		}
+
+		@Override
+		public void notifyOnRemoval(String key, SoamLoginEntity value) {
+			logger.info("Removing SoamLoginEntity from SOAM cache, key: " + key);
+			logger.info("Current cache size on this node: " + loginDetailCache.size());
+		}
+	});
 	
 	public static final String PROVIDER_ID = "oidc-soam-mapper";
 
