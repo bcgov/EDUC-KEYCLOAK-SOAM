@@ -3,6 +3,11 @@ package ca.bc.gov.educ.keycloak.soam.utils;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+import org.jboss.logging.Logger;
+
+import ca.bc.gov.educ.keycloak.soam.mapper.SoamProtocolMapper;
 
 /**
  * An expiring concurrent hash map solution which stores the keys and values only for a specific amount of time, and then expires after that
@@ -13,6 +18,7 @@ public class ExpiringConcurrentHashMap<K, V> extends ConcurrentHashMap<K, V> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static Logger logger = Logger.getLogger(SoamProtocolMapper.class);
 	private Map<K, Long> timeMap = new ConcurrentHashMap<K, Long>();
 	private ExpiringConcurrentHashMapListener<K, V> listener;
 	private long expiryInMillis;
@@ -99,9 +105,9 @@ public class ExpiringConcurrentHashMap<K, V> extends ConcurrentHashMap<K, V> {
 			while (mapAlive) {
 				cleanMap();
 				try {
-					Thread.sleep(expiryInMillis / 2);
+					TimeUnit.MILLISECONDS.sleep(expiryInMillis / 2);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					logger.error("Error occurred running thread sleep");
 				}
 			}
 		}
