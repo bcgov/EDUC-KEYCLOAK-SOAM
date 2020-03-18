@@ -107,7 +107,7 @@ public class ExpiringConcurrentHashMap<K, V> extends ConcurrentHashMap<K, V> {
 				try {
 					TimeUnit.MILLISECONDS.sleep(expiryInMillis / 2);
 				} catch (InterruptedException e) {
-					logger.error("Error occurred running thread sleep");
+					logger.error("Error occurred running thread sleep: " + e.getMessage());
 				}
 			}
 		}
