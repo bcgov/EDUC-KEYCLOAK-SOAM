@@ -204,8 +204,16 @@ oc set env --from=configmap/pen-request-backend-config-map dc/pen-request-backen
 ###########################################################
 #Setup for pen-request-frontend-config-map
 ###########################################################
+bceid_reg_url=""
+if [ "$envValue" = "dev" ] || [ "$envValue" = "test"  ]
+then
+    bceid_reg_url="https://www.test.bceid.ca/os/?7081&SkipTo=Basic#action"
+else
+    bceid_reg_url="https://www.bceid.ca/os/?7081&SkipTo=Basic#action"
+fi
+
 echo Creating config map pen-request-frontend-config-map
-oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap pen-request-frontend-config-map --from-literal=HOST_ROUTE=pen-request-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca   --dry-run -o yaml | oc apply -f -
+oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap pen-request-frontend-config-map --from-literal=HOST_ROUTE=pen-request-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=BCEID_REG_URL="$bceid_reg_url"  --dry-run -o yaml | oc apply -f -
 echo
 echo Setting environment variables for pen-request-frontend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/pen-request-frontend-config-map dc/pen-request-frontend-$SOAM_KC_REALM_ID
