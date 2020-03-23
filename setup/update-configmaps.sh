@@ -222,8 +222,14 @@ else
     bceid_reg_url="https://www.bceid.ca/os/?7081&SkipTo=Basic#action"
 fi
 
+regConfig = "var config = (() => {
+  return {
+    \"VUE_APP_BCEID_REG_URL\" : \"$bceid_reg_url\"
+  };
+})();"
+
 echo Creating config map pen-request-frontend-config-map
-oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap pen-request-frontend-config-map --from-literal=HOST_ROUTE=pen-request-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=BCEID_REG_URL="$bceid_reg_url"  --dry-run -o yaml | oc apply -f -
+oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap pen-request-frontend-config-map --from-literal=HOST_ROUTE=pen-request-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=config.js="$regConfig"  --dry-run -o yaml | oc apply -f -
 echo
 echo Setting environment variables for pen-request-frontend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/pen-request-frontend-config-map dc/pen-request-frontend-$SOAM_KC_REALM_ID
