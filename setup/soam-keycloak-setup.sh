@@ -25,7 +25,7 @@ echo KCADM_FILE_BIN_FOLDER: $KCADM_FILE_BIN_FOLDER
 echo SOAM_KC_REALM_ID: $SOAM_KC_REALM_ID
 echo OPENSHIFT_NAMESPACE: $OPENSHIFT_NAMESPACE
 echo DEVEXCHANGE_KC_REALM_ID: $DEVEXCHANGE_KC_REALM_ID
-echo SERVER_FRONTEND: $DEVEXCHANGE_KC_REALM_ID
+echo SERVER_FRONTEND: $SERVER_FRONTEND
 echo -----------------------------------------------------------
 #########################################################################################
 
