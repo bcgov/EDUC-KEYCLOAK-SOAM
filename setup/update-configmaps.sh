@@ -222,7 +222,7 @@ else
     bceid_reg_url="https://www.bceid.ca/os/?7081&SkipTo=Basic#action"
 fi
 
-regConfig = "var config = (() => {
+regConfig="var config = (function() {
   return {
     \"VUE_APP_BCEID_REG_URL\" : \"$bceid_reg_url\"
   };
