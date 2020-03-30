@@ -205,16 +205,22 @@ oc set env --from=configmap/pen-request-backend-config-map dc/pen-request-backen
 #Setup for pen-request-frontend-config-map
 ###########################################################
 bceid_reg_url=""
+journey_builder_url=""
 if [ "$envValue" = "dev" ] || [ "$envValue" = "test"  ]
 then
     bceid_reg_url="https://www.test.bceid.ca/os/?7081&SkipTo=Basic#action"
+    journey_builder_url="https://www2.qa.gov.bc.ca/gov/content/education-training/k-12/support/pen"
 else
     bceid_reg_url="https://www.bceid.ca/os/?7081&SkipTo=Basic#action"
+    journey_builder_url="https://www2.gov.bc.ca/gov/content?id=74E29C67215B4988ABCD778F453A3129"
 fi
+
+
 
 regConfig = "var config = (() => {
   return {
-    \"VUE_APP_BCEID_REG_URL\" : \"$bceid_reg_url\"
+    \"VUE_APP_BCEID_REG_URL\" : \"$bceid_reg_url\",
+    \"VUE_APP_JOURNEY_BUILDER\": \"$journey_builder_url\"
   };
 })();"
 
