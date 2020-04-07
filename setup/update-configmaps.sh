@@ -215,6 +215,7 @@ oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap pen-request-backend-config
 echo
 echo Setting environment variables for pen-request-backend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/pen-request-backend-config-map dc/pen-request-backend-$SOAM_KC_REALM_ID
+oc set env --from=secret/redis dc/pen-request-backend-$SOAM_KC_REALM_ID
 ###########################################################
 #Setup for pen-request-frontend-config-map
 ###########################################################
@@ -270,6 +271,7 @@ oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap student-admin-backend-conf
 echo
 echo Setting environment variables for student-admin-backend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/student-admin-backend-config-map dc/student-admin-backend-$SOAM_KC_REALM_ID
+oc set env --from=secret/redis dc/student-admin-backend-$SOAM_KC_REALM_ID
 ###########################################################
 #Setup for student-admin-frontend-config-map
 ###########################################################
