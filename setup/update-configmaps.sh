@@ -278,8 +278,13 @@ oc set env --from=secret/redis dc/student-admin-backend-$SOAM_KC_REALM_ID
 ###########################################################
 #Setup for student-admin-frontend-config-map
 ###########################################################
+regConfigStaff="var config = (function() {
+  return {
+    \"VUE_APP_IDLE_TIMEOUT_IN_MILLIS\" : \"1800000\"
+  };
+})();"
 echo Creating config map student-admin-frontend-config-map
-oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap student-admin-frontend-config-map --from-literal=TZ=$TZVALUE --from-literal=HOST_ROUTE=student-admin-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca  --from-literal=BACKEND_ROOT=https://student-admin-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca  --dry-run -o yaml | oc apply -f -
+oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap student-admin-frontend-config-map --from-literal=TZ=$TZVALUE --from-literal=HOST_ROUTE=student-admin-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca  --from-literal=BACKEND_ROOT=https://student-admin-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=config.js="$regConfigStaff"  --dry-run -o yaml | oc apply -f -
 echo
 echo Setting environment variables for student-admin-frontend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/student-admin-frontend-config-map dc/student-admin-frontend-$SOAM_KC_REALM_ID
