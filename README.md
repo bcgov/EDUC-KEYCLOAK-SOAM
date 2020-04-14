@@ -33,7 +33,7 @@ Navigate to the `/setup` folder from the root. Edit the `setup-$env.properties` 
 
 | Property  | Description |
 | ------------- | ------------- |
-| SOAM_KC_LOAD_USER_ADMIN | This user must be created before this script will function. The user is used to complete the kcadm functions. It will need to be configured with a password and the admin role or group. |
+| SOAM_KC_LOAD_USER_ADMIN | This user is created automatically and can be found in the OpenShift secrets area. |
 | DEVEXCHANGE_KC_LOAD_USER_ADMIN | This user must be created via the ui before this script will function. The user is used to complete the kcadm functions. It will need to be configured with a password and the admin role or group. |
 | KCADM_FILE_BIN_FOLDER | This is the bin folder found on your disk which contains the kcadm.sh script. Download a fresh version of Keycloak if you do not have the binaries. |
 | SOAM_KC_REALM_ID | Your SOAM keycloak realm ID [e.g. master] |
