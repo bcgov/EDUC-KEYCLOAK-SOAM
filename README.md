@@ -33,18 +33,28 @@ Navigate to the `/setup` folder from the root. Edit the `setup-$env.properties` 
 
 | Property  | Description |
 | ------------- | ------------- |
-| SOAM_KC_LOAD_USER_ADMIN  | Contains the username of the admin user used for load in the SOAM Keycloak instance. The initially created admin user info can be found in the `Secrets` area of your OpenShift namespace environment, in the secret named `sso-admin-env`.  |
-| DEVEXCHANGE_KC_LOAD_USER_ADMIN  | Contains the username of the admin user used for load in your DevExchange realm. This user must be created before this script will function (user is used to complete the `kcadm` functions). It will need to be configured with a password and the `admin` role or group.   |
-| KCADM_FILE_BIN_FOLDER  | This is the `bin` folder found on your disk which contains the `kcadm.sh` script. [Download a fresh version of Keycloak](https://www.keycloak.org/downloads.html) if you do not have the binaries.  |
-| SOAM_KC_REALM_ID  | Your SOAM keycloak realm ID [e.g. `master`]  |
-| DEVEXCHANGE_KC_REALM_ID  | The BCDevExchange realm ID for your application [e.g. `v15rh2ab`]  |
-| DB_JDBC_CONNECT_STRING  | This is the namespace of your OpenShift environment e.g. `d2vwrs`  |
-| DB_CONNECT_USER  | Contains the DB connection user  |
-| DB_CONNECT_PASS  | Contains the DB connection PW  |
-| CHES_CLIENT_ID  | Contains the CHES client ID  |
-| CHES_CLIENT_SECRET  | Contains the CHES client secret  |
-| CHES_TOKEN_URL  | Contains the CHES token endpoint  |
-| CHES_ENDPOINT_URL  | Contains the CHES endpoint  |
+| SOAM_KC_REALM_ID | Your SOAM keycloak realm ID [e.g. master] |
+| DEVEXCHANGE_KC_REALM_ID | The BCDevExchange realm ID for your application [e.g. v15rh2ab] |
+| OPENSHIFT_NAMESPACE | This is the URL of your OpenShift environment e.g. d2vwrs |
+| DB_JDBC_CONNECT_STRING | This is the connection JDBC string to the database |
+| CHES_CLIENT_ID | Contains the CHES client ID |
+| CHES_CLIENT_SECRET | Contains the CHES client secret |
+| CHES_TOKEN_URL | Contains the CHES token endpoint |
+| CHES_ENDPOINT_URL | Contains the CHES endpoint |
+| DB_USER_API_STUDENT | DB User for student api |
+| DB_PWD_API_STUDENT | DB pwd for student api |
+| DB_USER_API_DIGITALID | DB User for digitalid api |
+| DB_PWD_API_DIGITALID | DB pwd for digitalid api |
+| DB_USER_API_PEN_REQUEST | DB User for pen-request api |
+| DB_PWD_API_PEN_REQUEST | DB pwd for pen-request api |
+| DB_USER_API_PEN_DEMOGRAPHICS | DB User for pen-demographics api |
+| DB_PWD_API_PEN_DEMOGRAPHICS | DB pwd for pen-demographics api |
+| DB_USER_API_SERVICES_CARD | DB User for services card api |
+| DB_PWD_API_SERVICES_CARD | DB pwd for services card api |
+| SERVER_FRONTEND | PROD ONLY! This is the frontend(GETMYPEN app) url in production, which will be used for user redirection. |
+| URL_LOGIN_BASIC | PROD ONLY! This is the BCEID login url in production, which will be used for routing users to specific login page from the email they receive. |
+| URL_LOGIN_BCSC | PROD ONLY! This is the Services card login url in production, which will be used for routing users to specific login page from the email they receive. |
+
 
 ### Run the setup for the Keycloak DevExchange realm
 ```
