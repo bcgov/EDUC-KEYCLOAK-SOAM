@@ -233,6 +233,29 @@ else
     journey_builder_url="https://www2.gov.bc.ca/gov/content?id=74E29C67215B4988ABCD778F453A3129"
 fi
 
+snowplow="
+ 	// <!-- Snowplow starts plowing - Standalone vA.2.10.2 -->
+;(function(p,l,o,w,i,n,g){if(!p[i]){p.GlobalSnowplowNamespace=p.GlobalSnowplowNamespace||[];
+    p.GlobalSnowplowNamespace.push(i);p[i]=function(){(p[i].q=p[i].q||[]).push(arguments)
+    };p[i].q=p[i].q||[];n=l.createElement(o);g=l.getElementsByTagName(o)[0];n.async=1;
+    n.src=w;g.parentNode.insertBefore(n,g)}}(window,document,\"script\",\"https://sp-js.apps.gov.bc.ca/MDWay3UqFnIiGVLIo7aoMi4xMC4y.js\",\"snowplow\")); 
+  const collector = 'spm.gov.bc.ca';
+  window.snowplow('newTracker','rt',collector, {
+    appId: \"Snowplow_standalone\",
+    platform: 'web',
+    post: true,
+    forceSecureTracker: true,
+    contexts: {
+      webPage: true,
+      performanceTiming: true
+    }
+  });
+  window.snowplow('enableActivityTracking', 30, 30); // Ping every 30 seconds after 30 seconds
+  window.snowplow('enableLinkClickTracking');
+  window.snowplow('trackPageView');
+  //  <!-- Snowplow stop plowing -->
+"
+
 regConfig="var config = (function() {
   return {
     \"VUE_APP_BCEID_REG_URL\" : \"$bceid_reg_url\",
@@ -242,7 +265,7 @@ regConfig="var config = (function() {
 })();"
 
 echo Creating config map pen-request-frontend-config-map
-oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap pen-request-frontend-config-map --from-literal=TZ=$TZVALUE --from-literal=HOST_ROUTE=pen-request-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=config.js="$regConfig"  --dry-run -o yaml | oc apply -f -
+oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap pen-request-frontend-config-map --from-literal=TZ=$TZVALUE --from-literal=HOST_ROUTE=pen-request-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca --from-literal=config.js="$regConfig" --from-literal=snowplow.js="$snowplow"  --dry-run -o yaml | oc apply -f -
 echo
 echo Setting environment variables for pen-request-frontend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/pen-request-frontend-config-map dc/pen-request-frontend-$SOAM_KC_REALM_ID
