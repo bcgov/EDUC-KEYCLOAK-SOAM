@@ -14,11 +14,13 @@ DEVEXCHANGE_KC_REALM_ID=$(grep -i 'DEVEXCHANGE_KC_REALM_ID' $FILE  | cut -f2 -d'
 SERVER_FRONTEND=$(grep -i 'SERVER_FRONTEND' $FILE  | cut -f2 -d'=')
 
 SSO_ENV=sso.pathfinder.gov.bc.ca
+SOAM_KC=$OPENSHIFT_NAMESPACE.pathfinder.gov.bc.ca
 
 if [ "$envValue" != "prod" ]
 then
     SERVER_FRONTEND=https://pen-request-$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca
     SSO_ENV=sso-$envValue.pathfinder.gov.bc.ca
+    SOAM_KC=$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca
 fi
 
 echo Properties Defined
@@ -37,7 +39,7 @@ read -s soamClientSecret
 echo Thank you.
 
 echo Logging in
-$KCADM_FILE_BIN_FOLDER/kcadm.sh config credentials --server https://$OPENSHIFT_NAMESPACE-$envValue.pathfinder.gov.bc.ca/auth --realm $SOAM_KC_REALM_ID --user $SOAM_KC_LOAD_USER_ADMIN
+$KCADM_FILE_BIN_FOLDER/kcadm.sh config credentials --server https://$SOAM_KC/auth --realm $SOAM_KC_REALM_ID --user $SOAM_KC_LOAD_USER_ADMIN
 
 echo Updating realm details
 $KCADM_FILE_BIN_FOLDER/kcadm.sh update realms/$SOAM_KC_REALM_ID --body "{\"loginWithEmailAllowed\" : false, \"duplicateEmailsAllowed\" : true, \"accessTokenLifespan\" : 1800}"
