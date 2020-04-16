@@ -48,13 +48,13 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 
 		@Override
 		public void notifyOnAdd(String key, SoamLoginEntity value) {
-			logger.info("Adding SoamLoginEntity to SOAM cache, key: " + key);
+			logger.debug("Adding SoamLoginEntity to SOAM cache, key: " + key);
 		}
 
 		@Override
 		public void notifyOnRemoval(String key, SoamLoginEntity value) {
-			logger.info("Removing SoamLoginEntity from SOAM cache, key: " + key);
-			logger.info("Current cache size on this node: " + loginDetailCache.size());
+			logger.debug("Removing SoamLoginEntity from SOAM cache, key: " + key);
+			logger.debug("Current cache size on this node: " + loginDetailCache.size());
 		}
 	});
 	
@@ -84,7 +84,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		if(loginDetailCache.containsKey(userGUID)) {
 			return loginDetailCache.get(userGUID);
 		}
-		logger.info("SOAM Fetching " + type + " Claims");
+		logger.debug("SOAM Fetching " + type + " Claims");
 		SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity(type, userGUID);
 		loginDetailCache.put(userGUID, soamLoginEntity);
 		
@@ -94,7 +94,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
 		String accountType = userSession.getUser().getFirstAttribute("account_type");
 		
-		logger.info("Protocol Mapper - User Account Type is: " + accountType);
+		logger.debug("Protocol Mapper - User Account Type is: " + accountType);
 		
 		if(accountType == null) {
 			//This is a client credential call
