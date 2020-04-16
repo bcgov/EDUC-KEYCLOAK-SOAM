@@ -1,0 +1,33 @@
+pipeline {
+    agent none
+    options {
+        disableResume()
+    }
+    stages {
+        stage('SOAM Setup'){
+            agent any
+            steps{
+                script{
+                    dir('setup'){
+                        echo 'Starting BC Dev Exchange Keycloak Setup...'
+                        sh './devexchange-keycloak-setup.sh'
+                        echo 'Starting SOAM Setup...'
+                        sh './soam-keycloak-setup.sh'
+                    }
+                }
+            }
+        }
+        stage('Update Config Maps'){
+            agent any
+            steps{
+                script{
+                    dir('setup'){
+                        echo 'Updating config maps... '
+                        sh './update-configmaps.sh'
+                    }
+                }
+            }
+
+        }
+    }
+}
