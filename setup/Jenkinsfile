@@ -10,9 +10,9 @@ pipeline {
                 script{
                     dir('setup'){
                         echo 'Starting BC Dev Exchange Keycloak Setup...'
-                        sh(script: './devexchange-keycloak-setup.sh')
+                        sh 'bash ./devexchange-keycloak-setup.sh'
                         echo 'Starting SOAM Setup...'
-                        sh(script: './soam-keycloak-setup.sh')
+                        sh 'bash ./soam-keycloak-setup.sh'
                     }
                 }
             }
@@ -23,7 +23,7 @@ pipeline {
                 script{
                     dir('setup'){
                         echo 'Updating config maps... '
-                        sh(script: './update-configmaps.sh')
+                        sh'bash ./update-configmaps.sh'
                     }
                 }
             }
