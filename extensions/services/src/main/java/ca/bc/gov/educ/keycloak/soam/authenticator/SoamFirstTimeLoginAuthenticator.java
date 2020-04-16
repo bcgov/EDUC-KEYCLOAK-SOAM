@@ -49,7 +49,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         Map<String, Object> otherClaims = token.getOtherClaims();
 		for(String s: otherClaims.keySet()) {
     		logger.debug("Key: " + s + " Value: " + otherClaims.get(s));
-		}
+		} 
         
 		String accountType = (String)otherClaims.get("account_type");
 		
