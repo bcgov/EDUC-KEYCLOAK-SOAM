@@ -89,6 +89,20 @@ objects:
       termination: reencrypt
     to:
       name: ${NAME}${SUFFIX}
+- apiVersion: autoscaling/v1
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: ${NAME}${SUFFIX}-cpu-autoscaler
+  spec:
+    scaleTargetRef:
+      apiVersion: apps.openshift.io/v1
+      kind: DeploymentConfig
+      name: ${NAME}${SUFFIX}
+      subresource: scale
+    minReplicas: 3
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 90
+
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
