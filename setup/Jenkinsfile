@@ -18,7 +18,6 @@ pipeline {
                         // )
                         echo 'Starting SOAM Setup...'
                          sh(
-                            returnStdout: true,
                             script: "bash ./soam-keycloak-setup.sh \"${env.TARGET_ENV}\""
                         )
                     }
