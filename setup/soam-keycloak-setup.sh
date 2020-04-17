@@ -4,6 +4,13 @@ echo
 echo Which keycloak environment would you like to update? [dev,test,prod]
 read envValue
 
+ENV_FILE=./properties/setup-jenkins.properties
+
+if [! -z "$envValue"]
+then
+    envValue=$(grep -i 'ENV_VALUE' $ENV_FILE | cut -f2 -d '=')
+fi
+
 FILE=./properties/setup-$envValue.properties
 
 SOAM_KC_LOAD_USER_ADMIN=$(grep -i 'SOAM_KC_LOAD_USER_ADMIN' $FILE  | cut -f2 -d'=')
