@@ -8,8 +8,6 @@ echo
 echo Which keycloak environment would you like to update? [dev,test,prod]
 read envValue
 
-ENV_FILE=./properties/setup-jenkins.properties
-
 if [ -z "$envValue" ]
 then
     echo "Environment value set by user"
