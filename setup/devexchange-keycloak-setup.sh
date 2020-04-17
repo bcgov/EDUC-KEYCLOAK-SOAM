@@ -10,12 +10,12 @@ read envValue
 
 ENV_FILE=./properties/setup-jenkins.properties
 
-if [! -z "$envValue"]
+if [ -z "$envValue" ]
 then
+    echo "Environment value set by user"
+else
     envValue=$1
     echo $envValue
-else
-    echo "Environment value set by user"
 fi
 
 FILE=./properties/setup-$envValue.properties
