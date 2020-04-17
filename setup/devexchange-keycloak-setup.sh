@@ -12,8 +12,10 @@ ENV_FILE=./properties/setup-jenkins.properties
 
 if [! -z "$envValue"]
 then
-    envValue=$(grep -i 'ENV_VALUE' $ENV_FILE | cut -f2 -d '=')
-    echo Running setup from Jenkins on $envValue  environment
+    envValue=$1
+    echo $envValue
+else
+    echo "Environment value set by user"
 fi
 
 FILE=./properties/setup-$envValue.properties
