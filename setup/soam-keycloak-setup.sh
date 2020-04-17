@@ -4,12 +4,12 @@ echo
 echo Which keycloak environment would you like to update? [dev,test,prod]
 read envValue
 
-if [ -z "$envValue" ]
+if [ -n "$envValue" ]
 then
-    echo "Environment value set by user"
-else
     envValue=$1
     echo $envValue
+else
+    echo "Environment value set by user"
 fi
 
 FILE=./properties/setup-$envValue.properties
