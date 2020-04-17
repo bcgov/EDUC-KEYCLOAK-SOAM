@@ -4,7 +4,9 @@ echo
 echo Which keycloak environment would you like to update? [dev,test,prod]
 read envValue
 
-if [ -n "$envValue" ]
+echo "Env Value: ${envValue}"
+
+if [ ! -n "$envValue" ]
 then
     envValue=$1
     echo $envValue
