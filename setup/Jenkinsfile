@@ -12,13 +12,12 @@ pipeline {
                         echo 'Starting BC Dev Exchange Keycloak Setup...'
                         env.TARGET_ENV = input message: 'User input required', ok: 'Release!',
                             parameters: [choice(name: 'TARGET_ENV', choices: 'dev\ntest\nprod', description: 'Choose the target env for setup')]
-                        sh "echo ENV_VALUE=${env.TARGET_ENV} > ./properties/setup-jenkins.properties"
                         sh(
                             returnStdout: true,
-                            script: 'bash ./devexchange-keycloak-setup.sh'
+                            script: "bash ./devexchange-keycloak-setup.sh ${env.TARGET_ENV}"
                         )
-                        echo 'Starting SOAM Setup...'
-                        sh 'bash ./soam-keycloak-setup.sh'
+                        // echo 'Starting SOAM Setup...'
+                        // sh 'bash ./soam-keycloak-setup.sh'
                     }
                 }
             }
