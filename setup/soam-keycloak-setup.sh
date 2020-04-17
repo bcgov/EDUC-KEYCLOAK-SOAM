@@ -6,7 +6,7 @@ read envValue
 
 echo "Env Value: ${envValue}"
 
-if [ ! -n "$envValue" ]
+if [ ! -z "$1" ]
 then
     envValue=$1
     echo $envValue
