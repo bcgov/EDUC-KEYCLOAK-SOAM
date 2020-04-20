@@ -127,9 +127,9 @@ pipeline {
                         def rFile = readFile "properties/setup-${env.TARGET_ENV}.properties"
                         echo "Property file content: ${rFile}"
                         echo 'Starting BC Dev Exchange Keycloak Setup...'
-                        sh(
-                            script: "bash ./devexchange-keycloak-setup.sh \"${env.TARGET_ENV}\""
-                        )
+                        // sh(
+                        //     script: "bash ./devexchange-keycloak-setup.sh \"${env.TARGET_ENV}\""
+                        // )
                         echo 'Starting SOAM Setup...'
                         sh(
                             script: "bash ./soam-keycloak-setup.sh \"${env.TARGET_ENV}\""
