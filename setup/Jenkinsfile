@@ -6,6 +6,14 @@ pipeline {
         disableResume()
     }
     stages {
+        stage('Download setup files'){
+            agent any
+            steps{
+                scripts{
+                    sh 'curl --version'
+                }
+            }
+        }
         stage('SOAM Setup'){
             agent any
             steps{
