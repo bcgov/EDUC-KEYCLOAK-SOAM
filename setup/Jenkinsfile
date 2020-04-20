@@ -109,11 +109,34 @@ pipeline {
                             env.setupProperties.URL_LOGIN_BASIC = prodOnly.URL_LOGIN_BASIC;
                             env.setupProperties.URL_LOGIN_BCSC = prodOnly.URL_LOGIN_BCSC;
                         }
+                        def properties = "SOAM_KC_LOAD_USER_ADMIN=${env.setupProperties.SOAM_KC_LOAD_USER_ADMIN}
+                                            DEVEXCHANGE_KC_LOAD_USER_ADMIN=${env.setupProperties.DEVEXCHANGE_KC_LOAD_USER_ADMIN}
+                                            KCADM_FILE_BIN_FOLDER=${env.setupProperties.KCADM_FILE_BIN_FOLDER}
+                                            SOAM_KC_REALM_ID=${env.setupProperties.SOAM_KC_REALM_ID}
+                                            DEVEXCHANGE_KC_REALM_ID=${env.setupProperties. DEVEXCHANGE_KC_REALM_ID}
+                                            OPENSHIFT_NAMESPACE=${env.setupProperties.OPENSHIFT_NAMESPACE}
+                                            DB_JDBC_CONNECT_STRING=${env.setupProperties.DB_JDBC_CONNECT_STRING}
+                                            DB_CONNECT_USER=${env.setupProperties.DB_CONNECT_USER}
+                                            DB_CONNECT_PASS=${env.setupProperties.DB_CONNECT_PASS}
+                                            CHES_CLIENT_ID=${env.setupProperties.CHES_CLIENT_ID}
+                                            CHES_CLIENT_SECRET=${env.setupProperties.CHES_CLIENT_SECRET}
+                                            CHES_TOKEN_URL=${env.setupProperties.CHES_TOKEN_URL}
+                                            CHES_ENDPOINT_URL=${env.setupProperties.CHES_ENDPOINT_URL}
+                                            DB_USER_API_STUDENT=${env.setupProperties.DB_USER_API_STUDENT}
+                                            DB_PWD_API_STUDENT=${env.setupProperties.DB_PWD_API_STUDENT}
+                                            DB_USER_API_DIGITALID=${env.setupProperties.DB_USER_API_DIGITALID}
+                                            DB_PWD_API_DIGITALID=${env.setupProperties.DB_PWD_API_DIGITALID}
+                                            DB_USER_API_PEN_REQUEST=${env.setupProperties.DB_USER_API_PEN_REQUEST}
+                                            DB_PWD_API_PEN_REQUEST=${env.setupProperties.DB_PWD_API_PEN_REQUEST}
+                                            DB_USER_API_PEN_DEMOGRAPHICS=${env.setupProperties.DB_USER_API_PEN_DEMOGRAPHICS}
+                                            DB_PWD_API_PEN_DEMOGRAPHICS=${env.setupProperties.DB_PWD_API_PEN_DEMOGRAPHICS}
+                                            DB_USER_API_SERVICES_CARD=${env.setupProperties.DB_USER_API_SERVICES_CARD}
+                                            DB_PWD_API_SERVICES_CARD=${env.setupProperties.DB_PWD_API_SERVICES_CARD}
+                                            DB_USER_API_SAGA=${env.setupProperties.DB_USER_API_SAGA}
+                                            DB_PWD_API_SAGA=${env.setupProperties.DB_PWD_API_SAGA}"
                         writeFile(file:"properties/setup-${env.TARGET_ENV}.properties", text: env.setupProperties)
                         // writeFile file: "properties/setup-${env.TARGET_ENV}.properties", text: 
                         def rFile = readFile "properties/setup-${env.TARGET_ENV}.properties"
-                        rFile.replaceAll(~/,/ , "\n")
-                        writeFile(file:"properties/setup-${env.TARGET_ENV}.properties", text: rFile)
                         echo "Property file content: ${rFile}"
                         echo 'Starting BC Dev Exchange Keycloak Setup...'
                         sh(
