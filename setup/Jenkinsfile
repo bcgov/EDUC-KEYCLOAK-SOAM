@@ -110,7 +110,7 @@ pipeline {
                             env.setupProperties.URL_LOGIN_BCSC = prodOnly.URL_LOGIN_BCSC;
                         }
                         echo "Setup properties: ${env.setupProperties}"
-                        writeFile(file:"properties/setup-${env.setupProperties}.properties", text: env.setupProperties)
+                        writeFile(file:"properties/setup-${env.TARGET_ENV}.properties", text: env.setupProperties)
                         // writeFile file: "properties/setup-${env.TARGET_ENV}.properties", text: 
                         echo 'Starting BC Dev Exchange Keycloak Setup...'
                         sh(
