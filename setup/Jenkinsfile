@@ -9,7 +9,7 @@ pipeline {
         stage('Download setup files'){
             agent any
             steps{
-                scripts{
+                script{
                     sh 'curl --version'
                 }
             }
