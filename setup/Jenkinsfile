@@ -10,7 +10,9 @@ pipeline {
             agent any
             steps{
                 script{
-                    sh 'bash ./download-kc.sh'
+                    dir('setup'){
+                        sh 'bash ./download-kc.sh'
+                    }
                 }
             }
         }
