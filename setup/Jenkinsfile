@@ -11,7 +11,7 @@ pipeline {
                     dir('setup'){
                         env.TARGET_ENV = input message: 'User input required', ok: 'Release!',
                         parameters: [choice(name: 'TARGET_ENV', choices: 'dev\ntest\nprod', description: 'Choose the target env for setup')]
-                        env.setupProperties = input(
+                        env.SETUP_PROPERTIES = input(
                             id: 'setupInput', message: 'Please enter the properties required to setup soam, keycloak, and config maps:',
                             parameters: [
                                 string(defaultValue: "",
@@ -105,12 +105,12 @@ pipeline {
                                         name: 'URL_LOGIN_BCSC'),
                                 ]
                             )
-                            env.setupProperties.SERVER_FRONTEND = prodOnly.SERVER_FRONTEND;
-                            env.setupProperties.URL_LOGIN_BASIC = prodOnly.URL_LOGIN_BASIC;
-                            env.setupProperties.URL_LOGIN_BCSC = prodOnly.URL_LOGIN_BCSC;
+                            env.SETUP_PROPERTIES.SERVER_FRONTEND = prodOnly.SERVER_FRONTEND;
+                            env.SETUP_PROPERTIES.URL_LOGIN_BASIC = prodOnly.URL_LOGIN_BASIC;
+                            env.SETUP_PROPERTIES.URL_LOGIN_BCSC = prodOnly.URL_LOGIN_BCSC;
                         }
-                        def properties = "SOAM_KC_LOAD_USER_ADMIN=${env.setupProperties.SOAM_KC_LOAD_USER_ADMIN}\nDEVEXCHANGE_KC_LOAD_USER_ADMIN=${env.setupProperties.DEVEXCHANGE_KC_LOAD_USER_ADMIN}\nKCADM_FILE_BIN_FOLDER=${env.setupProperties.KCADM_FILE_BIN_FOLDER}\nSOAM_KC_REALM_ID=${env.setupProperties.SOAM_KC_REALM_ID}\nDEVEXCHANGE_KC_REALM_ID=${env.setupProperties. DEVEXCHANGE_KC_REALM_ID}\nOPENSHIFT_NAMESPACE=${env.setupProperties.OPENSHIFT_NAMESPACE}\nDB_JDBC_CONNECT_STRING=${env.setupProperties.DB_JDBC_CONNECT_STRING}\nDB_CONNECT_USER=${env.setupProperties.DB_CONNECT_USER}\nDB_CONNECT_PASS=${env.setupProperties.DB_CONNECT_PASS}\nCHES_CLIENT_ID=${env.setupProperties.CHES_CLIENT_ID}\nCHES_CLIENT_SECRET=${env.setupProperties.CHES_CLIENT_SECRET}\nCHES_TOKEN_URL=${env.setupProperties.CHES_TOKEN_URL}\nCHES_ENDPOINT_URL=${env.setupProperties.CHES_ENDPOINT_URL}\nDB_USER_API_STUDENT=${env.setupProperties.DB_USER_API_STUDENT}\nDB_PWD_API_STUDENT=${env.setupProperties.DB_PWD_API_STUDENT}\nDB_USER_API_DIGITALID=${env.setupProperties.DB_USER_API_DIGITALID}\nDB_PWD_API_DIGITALID=${env.setupProperties.DB_PWD_API_DIGITALID}\nDB_USER_API_PEN_REQUEST=${env.setupProperties.DB_USER_API_PEN_REQUEST}\nDB_PWD_API_PEN_REQUEST=${env.setupProperties.DB_PWD_API_PEN_REQUEST}\nDB_USER_API_PEN_DEMOGRAPHICS=${env.setupProperties.DB_USER_API_PEN_DEMOGRAPHICS}\nDB_PWD_API_PEN_DEMOGRAPHICS=${env.setupProperties.DB_PWD_API_PEN_DEMOGRAPHICS}\nDB_USER_API_SERVICES_CARD=${env.setupProperties.DB_USER_API_SERVICES_CARD}\nDB_PWD_API_SERVICES_CARD=${env.setupProperties.DB_PWD_API_SERVICES_CARD}\nDB_USER_API_SAGA=${env.setupProperties.DB_USER_API_SAGA}\nDB_PWD_API_SAGA=${env.setupProperties.DB_PWD_API_SAGA}"
-                        writeFile(file:"properties/setup-${env.TARGET_ENV}.properties", text: env.setupProperties)
+                        def properties = "SOAM_KC_LOAD_USER_ADMIN=${env.SETUP_PROPERTIES.SOAM_KC_LOAD_USER_ADMIN}\nDEVEXCHANGE_KC_LOAD_USER_ADMIN=${env.SETUP_PROPERTIES.DEVEXCHANGE_KC_LOAD_USER_ADMIN}\nKCADM_FILE_BIN_FOLDER=${env.SETUP_PROPERTIES.KCADM_FILE_BIN_FOLDER}\nSOAM_KC_REALM_ID=${env.SETUP_PROPERTIES.SOAM_KC_REALM_ID}\nDEVEXCHANGE_KC_REALM_ID=${env.SETUP_PROPERTIES. DEVEXCHANGE_KC_REALM_ID}\nOPENSHIFT_NAMESPACE=${env.SETUP_PROPERTIES.OPENSHIFT_NAMESPACE}\nDB_JDBC_CONNECT_STRING=${env.SETUP_PROPERTIES.DB_JDBC_CONNECT_STRING}\nDB_CONNECT_USER=${env.SETUP_PROPERTIES.DB_CONNECT_USER}\nDB_CONNECT_PASS=${env.SETUP_PROPERTIES.DB_CONNECT_PASS}\nCHES_CLIENT_ID=${env.SETUP_PROPERTIES.CHES_CLIENT_ID}\nCHES_CLIENT_SECRET=${env.SETUP_PROPERTIES.CHES_CLIENT_SECRET}\nCHES_TOKEN_URL=${env.SETUP_PROPERTIES.CHES_TOKEN_URL}\nCHES_ENDPOINT_URL=${env.SETUP_PROPERTIES.CHES_ENDPOINT_URL}\nDB_USER_API_STUDENT=${env.SETUP_PROPERTIES.DB_USER_API_STUDENT}\nDB_PWD_API_STUDENT=${env.SETUP_PROPERTIES.DB_PWD_API_STUDENT}\nDB_USER_API_DIGITALID=${env.SETUP_PROPERTIES.DB_USER_API_DIGITALID}\nDB_PWD_API_DIGITALID=${env.SETUP_PROPERTIES.DB_PWD_API_DIGITALID}\nDB_USER_API_PEN_REQUEST=${env.SETUP_PROPERTIES.DB_USER_API_PEN_REQUEST}\nDB_PWD_API_PEN_REQUEST=${env.SETUP_PROPERTIES.DB_PWD_API_PEN_REQUEST}\nDB_USER_API_PEN_DEMOGRAPHICS=${env.SETUP_PROPERTIES.DB_USER_API_PEN_DEMOGRAPHICS}\nDB_PWD_API_PEN_DEMOGRAPHICS=${env.SETUP_PROPERTIES.DB_PWD_API_PEN_DEMOGRAPHICS}\nDB_USER_API_SERVICES_CARD=${env.SETUP_PROPERTIES.DB_USER_API_SERVICES_CARD}\nDB_PWD_API_SERVICES_CARD=${env.SETUP_PROPERTIES.DB_PWD_API_SERVICES_CARD}\nDB_USER_API_SAGA=${env.SETUP_PROPERTIES.DB_USER_API_SAGA}\nDB_PWD_API_SAGA=${env.SETUP_PROPERTIES.DB_PWD_API_SAGA}"
+                        writeFile(file:"properties/setup-${env.TARGET_ENV}.properties", text: properties)
                         // writeFile file: "properties/setup-${env.TARGET_ENV}.properties", text: 
                         def rFile = readFile "properties/setup-${env.TARGET_ENV}.properties"
                         echo "Property file content: ${rFile}"
