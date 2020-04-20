@@ -1,6 +1,16 @@
 echo Which keycloak environment would you like to setup/update? [dev,test,prod]
 read -r envValue
 
+echo "Env Value: ${envValue}"
+
+if [ ! -z "$1" ]
+then
+    envValue=$1
+    echo $envValue
+else
+    echo "Environment value set by user"
+fi
+
 FILE=./properties/setup-$envValue.properties
 
 SOAM_KC_LOAD_USER_ADMIN=$(grep -i 'SOAM_KC_LOAD_USER_ADMIN' $FILE  | cut -f2 -d'=')

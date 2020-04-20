@@ -9,13 +9,114 @@ pipeline {
             steps{
                 script{
                     dir('setup'){
-                        echo 'Starting BC Dev Exchange Keycloak Setup...'
                         env.TARGET_ENV = input message: 'User input required', ok: 'Release!',
-                            parameters: [choice(name: 'TARGET_ENV', choices: 'dev\ntest\nprod', description: 'Choose the target env for setup')]
-                        // sh(
-                        //     returnStdout: true,
-                        //     script: "bash ./devexchange-keycloak-setup.sh ${env.TARGET_ENV}"
-                        // )
+                        parameters: [choice(name: 'TARGET_ENV', choices: 'dev\ntest\nprod', description: 'Choose the target env for setup')]
+                        env.setupProperties = input(
+                            id: 'setupInput', message: 'Please enter the properties required to setup soam, keycloak, and config maps:',
+                            parameters: [
+                                string(defaultValue: "",
+                                        description: 'SOAM Keycloak Admin User',
+                                        name: 'SOAM_KC_LOAD_USER_ADMIN'),
+                                string(defaultValue: "",
+                                        description: 'Dev Exchange Keyclaok Admin user',
+                                        name: 'DEVEXCHANGE_KC_LOAD_USER_ADMIN'),
+                                string(defaultValue: "",
+                                        description: 'Path to the kcadm.sh script',
+                                        name: 'KCADM_FILE_BIN_FOLDER'),
+                                string(defaultValue: "",
+                                        description: 'Your SOAM keycloak realm ID [e.g. master]',
+                                        name: 'SOAM_KC_REALM_ID'),
+                                string(defaultValue: "",
+                                        description: 'The BC Dev Exchange realm ID ',
+                                        name: 'DEVEXCHANGE_KC_REALM_ID'),
+                                string(defaultValue: "",
+                                        description: 'The name of your openshift environment e.g. d2vwrs',
+                                        name: 'OPENSHIFT_NAMESPACE'),
+                                string(defaultValue: "",
+                                        description: 'This is the connection JDBC string to the database',
+                                        name: 'DB_JDBC_CONNECT_STRING'),
+                                string(defaultValue: "",
+                                        description: 'Contains the DB connection user',
+                                        name: 'DB_CONNECT_USER'),
+                                string(defaultValue: "",
+                                        description: 'Contains the DB connection PW',
+                                        name: 'DB_CONNECT_PASS'),
+                                string(defaultValue: "",
+                                        description: 'Contains the CHES client ID',
+                                        name: 'CHES_CLIENT_ID'),
+                                string(defaultValue: "",
+                                        description: 'Contains the CHES client secret',
+                                        name: 'CHES_CLIENT_SECRET'),
+                                string(defaultValue: "",
+                                        description: 'Contains the CHES token endpoint',
+                                        name: 'CHES_TOKEN_URL'),
+                                string(defaultValue: "",
+                                        description: 'Contains the CHES endpoint',
+                                        name: 'CHES_ENDPOINT_URL'),
+                                string(defaultValue: "",
+                                        description: 'DB User for student api',
+                                        name: 'DB_USER_API_STUDENT'),
+                                string(defaultValue: "",
+                                        description: 'DB pwd for student api',
+                                        name: 'DB_PWD_API_STUDENT'),
+                                string(defaultValue: "",
+                                        description: 'DB User for digitalid api',
+                                        name: 'DB_USER_API_DIGITALID'),
+                                string(defaultValue: "",
+                                        description: 'DB pwd for digitalid api',
+                                        name: 'DB_PWD_API_DIGITALID'),
+                                string(defaultValue: "",
+                                        description: 'DB User for pen-request api',
+                                        name: 'DB_USER_API_PEN_REQUEST'),
+                                string(defaultValue: "",
+                                        description: 'DB pwd for pen-request api',
+                                        name: 'DB_PWD_API_PEN_REQUEST'),
+                                string(defaultValue: "",
+                                        description: 'DB User for pen-demographics api',
+                                        name: 'DB_USER_API_PEN_DEMOGRAPHICS'),
+                                string(defaultValue: "",
+                                        description: 'DB pwd for pen-demographics api',
+                                        name: 'DB_PWD_API_PEN_DEMOGRAPHICS'),
+                                string(defaultValue: "",
+                                        description: 'DB User for services card api',
+                                        name: 'DB_USER_API_SERVICES_CARD'),
+                                string(defaultValue: "",
+                                        description: 'DB pwd for services card api',
+                                        name: 'DB_PWD_API_SERVICES_CARD'),
+                                string(defaultValue: "",
+                                        description: 'DB User for saga api',
+                                        name: 'DB_USER_API_SAGA'),
+                                string(defaultValue: "",
+                                        description: 'DB pwd for saga api',
+                                        name: 'DB_PWD_API_SAGA'),
+                            ])
+                        if(env.TARGET_ENV == 'prod'){
+                            def prodOnly = input(
+                                id: 'setupProd', message: 'Please enter the prod specific values for setup:',
+                                parameters: [
+                                    string(defaultValue: "",
+                                        description: 'This is the frontend(GETMYPEN app) url in production, which will be used for user redirection.',
+                                        name: 'SERVER_FRONTEND'),
+                                    string(defaultValue: "",
+                                        description: 'This is the BCEID login url in production, which will be used for routing users to specific login page from the email they receive.',
+                                        name: 'URL_LOGIN_BASIC'),
+                                    string(defaultValue: "",
+                                        description: 'This is the Services card login url in production, which will be used for routing users to specific login page from the email they receive.',
+                                        name: 'URL_LOGIN_BCSC'),
+                                ]
+                            )
+                            env.setupProperties.SERVER_FRONTEND = prodOnly.SERVER_FRONTEND;
+                            env.setupProperties.URL_LOGIN_BASIC = prodOnly.URL_LOGIN_BASIC;
+                            env.setupProperties.URL_LOGIN_BCSC = prodOnly.URL_LOGIN_BCSC;
+                        }
+                        echo "Setup properties: ${env.setupProperties}"
+                        new File(build.workspace.toString() + "\\properties/setup-${env.setupProperties}.properties").write(env.setupProperties);
+                        // writeFile file: "properties/setup-${env.TARGET_ENV}.properties", text: 
+                        echo 'Starting BC Dev Exchange Keycloak Setup...'
+                        sh(
+                            returnStdout: true,
+                            script: "bash ./devexchange-keycloak-setup.sh ${env.TARGET_ENV}"
+                        )
                         echo 'Starting SOAM Setup...'
                          sh(
                             script: "bash ./soam-keycloak-setup.sh \"${env.TARGET_ENV}\""
