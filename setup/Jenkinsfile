@@ -10,7 +10,7 @@ pipeline {
             agent any
             steps{
                 script{
-                    sh 'curl https://downloads.jboss.org/keycloak/9.0.3/keycloak-9.0.3.zip'
+                    sh 'wget https://downloads.jboss.org/keycloak/9.0.3/keycloak-9.0.3.zip'
                 }
             }
         }
