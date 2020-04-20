@@ -10,8 +10,7 @@ pipeline {
             agent any
             steps{
                 script{
-                    sh 'wget https://downloads.jboss.org/keycloak/9.0.3/keycloak-9.0.3.zip'
-                    sh 'unzip keycloak-9.0.3.zip'
+                    sh 'bash ./download-kc.sh'
                 }
             }
         }
@@ -31,7 +30,7 @@ pipeline {
                                 string(defaultValue: "",
                                         description: 'Dev Exchange Keyclaok Admin user',
                                         name: 'DEVEXCHANGE_KC_LOAD_USER_ADMIN'),
-                                string(defaultValue: "",
+                                string(defaultValue: "keycloak-9.0.3/bin",
                                         description: 'Path to the kcadm.sh script',
                                         name: 'KCADM_FILE_BIN_FOLDER'),
                                 string(defaultValue: "",
