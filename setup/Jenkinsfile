@@ -109,11 +109,11 @@ pipeline {
                             env.setupProperties.URL_LOGIN_BASIC = prodOnly.URL_LOGIN_BASIC;
                             env.setupProperties.URL_LOGIN_BCSC = prodOnly.URL_LOGIN_BCSC;
                         }
-                        env.setupProperties.replaceAll(~/,/ , "\n")
-                        echo "Setup properties: ${env.setupProperties}"
                         writeFile(file:"properties/setup-${env.TARGET_ENV}.properties", text: env.setupProperties)
                         // writeFile file: "properties/setup-${env.TARGET_ENV}.properties", text: 
                         def rFile = readFile "properties/setup-${env.TARGET_ENV}.properties"
+                        rFile.replaceAll(~/,/ , "\n")
+                        writeFile(file:"properties/setup-${env.TARGET_ENV}.properties", text: rFile)
                         echo "Property file content: ${rFile}"
                         echo 'Starting BC Dev Exchange Keycloak Setup...'
                         sh(
