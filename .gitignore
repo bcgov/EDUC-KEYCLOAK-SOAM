@@ -6,3 +6,4 @@ node_modules
 .settings
 .pipeline/.node/
 .pipeline/node_modules/
+*.local.sh
