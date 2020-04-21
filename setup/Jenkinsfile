@@ -23,138 +23,83 @@ pipeline {
                     dir('setup'){
                         env.TARGET_ENV = input message: 'User input required', ok: 'Release!',
                         parameters: [choice(name: 'TARGET_ENV', choices: 'dev\ntest\nprod', description: 'Choose the target env for setup')]
-                        setupProperties = input(
-                            id: 'setupProperties', message: 'Please enter the properties required to setup soam, keycloak, and config maps:',
-                            parameters: [
-                                string(defaultValue: "",
-                                        description: 'SOAM Keycloak Admin User',
-                                        name: 'SOAM_KC_LOAD_USER_ADMIN'),
-                                string(defaultValue: "",
-                                        description: 'SOAM Keycloak Admin User',
-                                        name: 'SOAM_KC_LOAD_USER_PASS'),
-                                string(defaultValue: "",
-                                        description: 'Dev Exchange Keyclaok Admin user',
-                                        name: 'DEVEXCHANGE_KC_LOAD_USER_ADMIN'),
-                                string(defaultValue: "",
-                                        description: 'Dev Exchange Keyclaok Admin user',
-                                        name: 'DEVEXCHANGE_KC_LOAD_USER_PASS'),
-                                string(defaultValue: "keycloak-9.0.3/bin",
-                                        description: 'Path to the kcadm.sh script',
-                                        name: 'KCADM_FILE_BIN_FOLDER'),
-                                string(defaultValue: "",
-                                        description: 'Your SOAM keycloak realm ID [e.g. master]',
-                                        name: 'SOAM_KC_REALM_ID'),
-                                string(defaultValue: "",
-                                        description: 'The BC Dev Exchange realm ID ',
-                                        name: 'DEVEXCHANGE_KC_REALM_ID'),
-                                string(defaultValue: "",
-                                        description: 'The name of your openshift environment e.g. d2vwrs',
-                                        name: 'OPENSHIFT_NAMESPACE'),
-                                string(defaultValue: "",
-                                        description: 'This is the connection JDBC string to the database',
-                                        name: 'DB_JDBC_CONNECT_STRING'),
-                                string(defaultValue: "",
-                                        description: 'Contains the DB connection user',
-                                        name: 'DB_CONNECT_USER'),
-                                string(defaultValue: "",
-                                        description: 'Contains the DB connection PW',
-                                        name: 'DB_CONNECT_PASS'),
-                                string(defaultValue: "",
-                                        description: 'Contains the CHES client ID',
-                                        name: 'CHES_CLIENT_ID'),
-                                string(defaultValue: "",
-                                        description: 'Contains the CHES client secret',
-                                        name: 'CHES_CLIENT_SECRET'),
-                                string(defaultValue: "",
-                                        description: 'Contains the CHES token endpoint',
-                                        name: 'CHES_TOKEN_URL'),
-                                string(defaultValue: "",
-                                        description: 'Contains the CHES endpoint',
-                                        name: 'CHES_ENDPOINT_URL'),
-                                string(defaultValue: "",
-                                        description: 'DB User for student api',
-                                        name: 'DB_USER_API_STUDENT'),
-                                string(defaultValue: "",
-                                        description: 'DB pwd for student api',
-                                        name: 'DB_PWD_API_STUDENT'),
-                                string(defaultValue: "",
-                                        description: 'DB User for digitalid api',
-                                        name: 'DB_USER_API_DIGITALID'),
-                                string(defaultValue: "",
-                                        description: 'DB pwd for digitalid api',
-                                        name: 'DB_PWD_API_DIGITALID'),
-                                string(defaultValue: "",
-                                        description: 'DB User for pen-request api',
-                                        name: 'DB_USER_API_PEN_REQUEST'),
-                                string(defaultValue: "",
-                                        description: 'DB pwd for pen-request api',
-                                        name: 'DB_PWD_API_PEN_REQUEST'),
-                                string(defaultValue: "",
-                                        description: 'DB User for pen-demographics api',
-                                        name: 'DB_USER_API_PEN_DEMOGRAPHICS'),
-                                string(defaultValue: "",
-                                        description: 'DB pwd for pen-demographics api',
-                                        name: 'DB_PWD_API_PEN_DEMOGRAPHICS'),
-                                string(defaultValue: "",
-                                        description: 'DB User for services card api',
-                                        name: 'DB_USER_API_SERVICES_CARD'),
-                                string(defaultValue: "",
-                                        description: 'DB pwd for services card api',
-                                        name: 'DB_PWD_API_SERVICES_CARD'),
-                                string(defaultValue: "",
-                                        description: 'DB User for saga api',
-                                        name: 'DB_USER_API_SAGA'),
-                                string(defaultValue: "",
-                                        description: 'DB pwd for saga api',
-                                        name: 'DB_PWD_API_SAGA'),
-                            ])
-                        if(env.TARGET_ENV == 'prod'){
-                            def prodOnly = input(
-                                id: 'setupProd', message: 'Please enter the prod specific values for setup:',
-                                parameters: [
-                                    string(defaultValue: "",
-                                        description: 'This is the frontend(GETMYPEN app) url in production, which will be used for user redirection.',
-                                        name: 'SERVER_FRONTEND'),
-                                    string(defaultValue: "",
-                                        description: 'This is the BCEID login url in production, which will be used for routing users to specific login page from the email they receive.',
-                                        name: 'URL_LOGIN_BASIC'),
-                                    string(defaultValue: "",
-                                        description: 'This is the Services card login url in production, which will be used for routing users to specific login page from the email they receive.',
-                                        name: 'URL_LOGIN_BCSC'),
-                                ]
-                            )
-                            setupProperties.SERVER_FRONTEND = prodOnly.SERVER_FRONTEND;
-                            setupProperties.URL_LOGIN_BASIC = prodOnly.URL_LOGIN_BASIC;
-                            setupProperties.URL_LOGIN_BCSC = prodOnly.URL_LOGIN_BCSC;
-                        }
-                        def propText = "SOAM_KC_LOAD_USER_ADMIN=${setupProperties.SOAM_KC_LOAD_USER_ADMIN}\nSOAM_KC_LOAD_USER_PASS=${setupProperties.SOAM_KC_LOAD_USER_PASS}\nDEVEXCHANGE_KC_LOAD_USER_ADMIN=${setupProperties.DEVEXCHANGE_KC_LOAD_USER_ADMIN}\nDEVEXCHANGE_KC_LOAD_USER_PASS=${setupProperties.DEVEXCHANGE_KC_LOAD_USER_PASS}\nKCADM_FILE_BIN_FOLDER=${setupProperties.KCADM_FILE_BIN_FOLDER}\nSOAM_KC_REALM_ID=${setupProperties.SOAM_KC_REALM_ID}\nDEVEXCHANGE_KC_REALM_ID=${setupProperties. DEVEXCHANGE_KC_REALM_ID}\nOPENSHIFT_NAMESPACE=${setupProperties.OPENSHIFT_NAMESPACE}\nDB_JDBC_CONNECT_STRING=${setupProperties.DB_JDBC_CONNECT_STRING}\nDB_CONNECT_USER=${setupProperties.DB_CONNECT_USER}\nDB_CONNECT_PASS=${setupProperties.DB_CONNECT_PASS}\nCHES_CLIENT_ID=${setupProperties.CHES_CLIENT_ID}\nCHES_CLIENT_SECRET=${setupProperties.CHES_CLIENT_SECRET}\nCHES_TOKEN_URL=${setupProperties.CHES_TOKEN_URL}\nCHES_ENDPOINT_URL=${setupProperties.CHES_ENDPOINT_URL}\nDB_USER_API_STUDENT=${setupProperties.DB_USER_API_STUDENT}\nDB_PWD_API_STUDENT=${setupProperties.DB_PWD_API_STUDENT}\nDB_USER_API_DIGITALID=${setupProperties.DB_USER_API_DIGITALID}\nDB_PWD_API_DIGITALID=${setupProperties.DB_PWD_API_DIGITALID}\nDB_USER_API_PEN_REQUEST=${setupProperties.DB_USER_API_PEN_REQUEST}\nDB_PWD_API_PEN_REQUEST=${setupProperties.DB_PWD_API_PEN_REQUEST}\nDB_USER_API_PEN_DEMOGRAPHICS=${setupProperties.DB_USER_API_PEN_DEMOGRAPHICS}\nDB_PWD_API_PEN_DEMOGRAPHICS=${setupProperties.DB_PWD_API_PEN_DEMOGRAPHICS}\nDB_USER_API_SERVICES_CARD=${setupProperties.DB_USER_API_SERVICES_CARD}\nDB_PWD_API_SERVICES_CARD=${setupProperties.DB_PWD_API_SERVICES_CARD}\nDB_USER_API_SAGA=${setupProperties.DB_USER_API_SAGA}\nDB_PWD_API_SAGA=${setupProperties.DB_PWD_API_SAGA}"
-                        writeFile(file:"properties/setup-${env.TARGET_ENV}.properties", text: propText)
-                        // writeFile file: "properties/setup-${env.TARGET_ENV}.properties", text: 
-                        def rFile = readFile "properties/setup-${env.TARGET_ENV}.properties"
-                        echo "Property file content: ${rFile}"
-                        echo 'Starting BC Dev Exchange Keycloak Setup...'
+                        sh 'oc project dev'
+                        def soamSecret = sh "oc get secret sso-admin-${env.TARGET_ENV} -o yaml |grep password"
+                        echo "Output of SOAM Secret: ${soamSecret}"
+                        // setupProperties = input(
+                        //     id: 'setupProperties', message: 'Please enter the properties required to setup soam, keycloak, and config maps:',
+                        //     parameters: [
+                        //         string(defaultValue: "",
+                        //                 description: 'SOAM Keycloak Admin User',
+                        //                 name: 'SOAM_KC_LOAD_USER_ADMIN'),
+                        //         string(defaultValue: "",
+                        //                 description: 'SOAM Keycloak Admin User',
+                        //                 name: 'SOAM_KC_LOAD_USER_PASS'),
+                        //         string(defaultValue: "",
+                        //                 description: 'Dev Exchange Keyclaok Admin user',
+                        //                 name: 'DEVEXCHANGE_KC_LOAD_USER_ADMIN'),
+                        //         string(defaultValue: "",
+                        //                 description: 'Dev Exchange Keyclaok Admin user',
+                        //                 name: 'DEVEXCHANGE_KC_LOAD_USER_PASS'),
+                        //         string(defaultValue: "keycloak-9.0.3/bin",
+                        //                 description: 'Path to the kcadm.sh script',
+                        //                 name: 'KCADM_FILE_BIN_FOLDER'),
+                        //         string(defaultValue: "",
+                        //                 description: 'Your SOAM keycloak realm ID [e.g. master]',
+                        //                 name: 'SOAM_KC_REALM_ID'),
+                        //         string(defaultValue: "",
+                        //                 description: 'The BC Dev Exchange realm ID ',
+                        //                 name: 'DEVEXCHANGE_KC_REALM_ID'),
+                        //         string(defaultValue: "",
+                        //                 description: 'The name of your openshift environment e.g. d2vwrs',
+                        //                 name: 'OPENSHIFT_NAMESPACE'),
+                        //     ])
+                        // if(env.TARGET_ENV == 'prod'){
+                        //     def prodOnly = input(
+                        //         id: 'setupProd', message: 'Please enter the prod specific values for setup:',
+                        //         parameters: [
+                        //             string(defaultValue: "",
+                        //                 description: 'This is the frontend(GETMYPEN app) url in production, which will be used for user redirection.',
+                        //                 name: 'SERVER_FRONTEND'),
+                        //             string(defaultValue: "",
+                        //                 description: 'This is the BCEID login url in production, which will be used for routing users to specific login page from the email they receive.',
+                        //                 name: 'URL_LOGIN_BASIC'),
+                        //             string(defaultValue: "",
+                        //                 description: 'This is the Services card login url in production, which will be used for routing users to specific login page from the email they receive.',
+                        //                 name: 'URL_LOGIN_BCSC'),
+                        //         ]
+                        //     )
+                        //     setupProperties.SERVER_FRONTEND = prodOnly.SERVER_FRONTEND;
+                        //     setupProperties.URL_LOGIN_BASIC = prodOnly.URL_LOGIN_BASIC;
+                        //     setupProperties.URL_LOGIN_BCSC = prodOnly.URL_LOGIN_BCSC;
+                        // }
+                        // def propText = "SOAM_KC_LOAD_USER_ADMIN=${setupProperties.SOAM_KC_LOAD_USER_ADMIN}\nSOAM_KC_LOAD_USER_PASS=${setupProperties.SOAM_KC_LOAD_USER_PASS}\nDEVEXCHANGE_KC_LOAD_USER_ADMIN=${setupProperties.DEVEXCHANGE_KC_LOAD_USER_ADMIN}\nDEVEXCHANGE_KC_LOAD_USER_PASS=${setupProperties.DEVEXCHANGE_KC_LOAD_USER_PASS}\nKCADM_FILE_BIN_FOLDER=${setupProperties.KCADM_FILE_BIN_FOLDER}\nSOAM_KC_REALM_ID=${setupProperties.SOAM_KC_REALM_ID}\nDEVEXCHANGE_KC_REALM_ID=${setupProperties. DEVEXCHANGE_KC_REALM_ID}\nOPENSHIFT_NAMESPACE=${setupProperties.OPENSHIFT_NAMESPACE}\nDB_JDBC_CONNECT_STRING=${setupProperties.DB_JDBC_CONNECT_STRING}\nDB_CONNECT_USER=${setupProperties.DB_CONNECT_USER}\nDB_CONNECT_PASS=${setupProperties.DB_CONNECT_PASS}\nCHES_CLIENT_ID=${setupProperties.CHES_CLIENT_ID}\nCHES_CLIENT_SECRET=${setupProperties.CHES_CLIENT_SECRET}\nCHES_TOKEN_URL=${setupProperties.CHES_TOKEN_URL}\nCHES_ENDPOINT_URL=${setupProperties.CHES_ENDPOINT_URL}\nDB_USER_API_STUDENT=${setupProperties.DB_USER_API_STUDENT}\nDB_PWD_API_STUDENT=${setupProperties.DB_PWD_API_STUDENT}\nDB_USER_API_DIGITALID=${setupProperties.DB_USER_API_DIGITALID}\nDB_PWD_API_DIGITALID=${setupProperties.DB_PWD_API_DIGITALID}\nDB_USER_API_PEN_REQUEST=${setupProperties.DB_USER_API_PEN_REQUEST}\nDB_PWD_API_PEN_REQUEST=${setupProperties.DB_PWD_API_PEN_REQUEST}\nDB_USER_API_PEN_DEMOGRAPHICS=${setupProperties.DB_USER_API_PEN_DEMOGRAPHICS}\nDB_PWD_API_PEN_DEMOGRAPHICS=${setupProperties.DB_PWD_API_PEN_DEMOGRAPHICS}\nDB_USER_API_SERVICES_CARD=${setupProperties.DB_USER_API_SERVICES_CARD}\nDB_PWD_API_SERVICES_CARD=${setupProperties.DB_PWD_API_SERVICES_CARD}\nDB_USER_API_SAGA=${setupProperties.DB_USER_API_SAGA}\nDB_PWD_API_SAGA=${setupProperties.DB_PWD_API_SAGA}"
+                        // writeFile(file:"properties/setup-${env.TARGET_ENV}.properties", text: propText)
+                        // def rFile = readFile "properties/setup-${env.TARGET_ENV}.properties"
+                        // echo "Property file content: ${rFile}"
+                        // echo 'Starting BC Dev Exchange Keycloak Setup...'
                         // sh(
                         //     script: "bash ./devexchange-keycloak-setup.sh \"${env.TARGET_ENV}\""
                         // )
-                        echo 'Starting SOAM Setup...'
-                        sh(
-                            script: "bash ./soam-keycloak-setup.sh \"${env.TARGET_ENV}\""
-                        )
+                        // echo 'Starting SOAM Setup...'
+                        // sh(
+                        //     script: "bash ./soam-keycloak-setup.sh \"${env.TARGET_ENV}\""
+                        // )
                     }
                 }
             }
         }
-        stage('Update Config Maps'){
-            agent any
-            steps{
-                script{
-                    dir('setup'){
-                        echo 'Updating config maps... '
-                        // sh "bash ./update-configmaps.sh \"${env.TARGET_ENV}\""
-                    }
-                }
-            }
+        // stage('Update Config Maps'){
+        //     agent any
+        //     steps{
+        //         script{
+        //             dir('setup'){
+        //                 echo 'Updating config maps... '
+        //                 // sh "bash ./update-configmaps.sh \"${env.TARGET_ENV}\""
+        //             }
+        //         }
+        //     }
 
-        }
+        // }
     }
 }
