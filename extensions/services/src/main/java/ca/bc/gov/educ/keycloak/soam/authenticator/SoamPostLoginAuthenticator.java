@@ -34,7 +34,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
     public void authenticate(AuthenticationFlowContext context) {
     	JsonReader reader = null;
     	try {
-			logger.info("SOAM Post: inside authenticate");
+			logger.debug("SOAM Post: inside authenticate");
 			
 	        if (context.getAuthenticationSession().getAuthNote(BROKER_REGISTERED_NEW_USER) != null) {
 	        	context.setUser(context.getUser());
@@ -55,14 +55,14 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				        
 	        Map<String, Object> otherClaims = token.getOtherClaims();
 			for(String s: otherClaims.keySet()) {
-	    		logger.info("Key: " + s + " Value: " + otherClaims.get(s));
+	    		logger.debug("Key: " + s + " Value: " + otherClaims.get(s));
 			}
 			
 			String username = null;
 			
 			switch (accountType) {
 			case "bceid":
-				logger.info("SOAM Post: Account type bceid found");
+				logger.debug("SOAM Post: Account type bceid found");
 				username = context.getUser().getUsername();
 				if(username == null) {
 					throw new SoamRuntimeException("No bceid_guid value was found in token");
@@ -70,7 +70,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				updateUserInfo(username, accountType, "BASIC", null);
 				break;
 			case "bcsc":
-				logger.info("SOAM Post: Account type bcsc found");
+				logger.debug("SOAM Post: Account type bcsc found");
 				username = context.getUser().getUsername();
 				if(username == null) {
 					throw new SoamRuntimeException("No bcsc_did value was found in token");
@@ -93,7 +93,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				updateUserInfo(username, accountType, "BCSC", servicesCard);
 				break;
 			case "idir":
-				logger.info("SOAM Post: Account type idir found");
+				logger.debug("SOAM Post: Account type idir found");
 				username = context.getUser().getUsername();
 				if(username == null) {
 					throw new SoamRuntimeException("No idir_guid value was found in token");
@@ -117,8 +117,8 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
     } 
     
     protected void updateUserInfo(String guid, String accountType, String credType, SoamServicesCard servicesCard) {
-    	logger.info("SOAM: createOrUpdateUser");
-    	logger.info("SOAM: performing login for " + accountType + " user: " + guid);
+    	logger.debug("SOAM: createOrUpdateUser");
+    	logger.debug("SOAM: performing login for " + accountType + " user: " + guid);
     	
     	try { 
 			RestUtils.getInstance().performLogin(credType, guid, guid, servicesCard);
@@ -130,7 +130,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
  
     @Override
     protected void authenticateImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-    	logger.info("SOAM Post: inside returning authenticateImpl");
+    	logger.debug("SOAM Post: inside returning authenticateImpl");
     	//Not used for Post Login Authenticator
     }
     
