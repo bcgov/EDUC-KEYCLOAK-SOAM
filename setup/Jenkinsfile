@@ -24,8 +24,9 @@ pipeline {
                         env.TARGET_ENV = input message: 'User input required', ok: 'Release!',
                         parameters: [choice(name: 'TARGET_ENV', choices: 'dev\ntest\nprod', description: 'Choose the target env for setup')]
                         sh 'oc project c2mvws-dev'
-                        def soamSecret = sh( script: "oc get secret sso-admin-${env.TARGET_ENV} -o yaml |grep password", returnStdout: true)
-                        echo "Output of SOAM Secret: ${soamSecret}"
+                        def soamSecret = sh( script: "oc get secret sso-admin-${env.TARGET_ENV} -o yaml |grep password", returnStdout: true).trim()
+                        soamSecret.split('\n')
+                        echo "Output of SOAM Secret: ${soamSecret[0]}"
                         // setupProperties = input(
                         //     id: 'setupProperties', message: 'Please enter the properties required to setup soam, keycloak, and config maps:',
                         //     parameters: [
