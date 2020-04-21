@@ -29,7 +29,7 @@ pipeline {
                         def user = soamSecretUser.split('\n')[0]
                         def pword = soamSecretPass.split('\n')[0]
                         pword = pword.substring(pword.indexOf(':') + 1, pword.length()).trim()
-                        user = pword.substring(pword.indexOf(':') + 1, pword.length()).trim()
+                        user = user.substring(user.indexOf(':') + 1, user.length()).trim()
                         def soamPword = sh( script: "echo \"${pword}\" |base64 -d", returnStdout: true).trim()
                         def soamUser = sh( script: "echo \"${user}\" |base64 -d", returnStdout: true).trim()
                         echo "${soamUser}"
