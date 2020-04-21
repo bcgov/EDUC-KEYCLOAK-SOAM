@@ -35,7 +35,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
  
     @Override
     protected void authenticateImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-    	logger.info("SOAM: inside authenticateImpl");
+    	logger.debug("SOAM: inside authenticateImpl");
         KeycloakSession session = context.getSession(); 
         RealmModel realm = context.getRealm();
 
@@ -48,8 +48,8 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         
         Map<String, Object> otherClaims = token.getOtherClaims();
 		for(String s: otherClaims.keySet()) {
-    		logger.info("Key: " + s + " Value: " + otherClaims.get(s));
-		}
+    		logger.debug("Key: " + s + " Value: " + otherClaims.get(s));
+		} 
         
 		String accountType = (String)otherClaims.get("account_type");
 		
@@ -61,7 +61,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 		
 		switch (accountType) {
 		case "bceid":
-			logger.info("SOAM: Account type bceid found");
+			logger.debug("SOAM: Account type bceid found");
 			username = (String)otherClaims.get("bceid_guid");
 			if(username == null) {
 				throw new SoamRuntimeException("No bceid_guid value was found in token");
@@ -69,7 +69,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			createOrUpdateUser(username, accountType, "BASIC", null);
 			break;
 		case "bcsc":
-			logger.info("SOAM: Account type bcsc found");
+			logger.debug("SOAM: Account type bcsc found");
 			username = (String)otherClaims.get("bcsc_did");
 			if(username == null) {
 				throw new SoamRuntimeException("No bcsc_did value was found in token");
@@ -93,7 +93,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			createOrUpdateUser(username, accountType, "BCSC", servicesCard);
 			break; 
 		case "idir": 
-			logger.info("SOAM: Account type idir found");
+			logger.debug("SOAM: Account type idir found");
 			username = (String)otherClaims.get("idir_guid");
 			if(username == null) {
 				throw new SoamRuntimeException("No idir_guid value was found in token");
@@ -104,7 +104,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 		}
         
         if(context.getSession().users().getUserByUsername(username, realm) == null) {
-            logger.infof("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
+            logger.debugf("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
                     username, brokerContext.getIdpConfig().getAlias()); 
 
             UserModel federatedUser = session.users().addUser(realm, username);
@@ -127,7 +127,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             context.getAuthenticationSession().setAuthNote(BROKER_REGISTERED_NEW_USER, "true");
             context.success();
         } else {
-        	logger.info("SOAM: Existing " + accountType + " user found with username: " + username);
+        	logger.debug("SOAM: Existing " + accountType + " user found with username: " + username);
         	UserModel existingUser = context.getSession().users().getUserByUsername(username, realm);
         	context.setUser(existingUser);
         	context.success();
@@ -135,8 +135,8 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
     }
 
     protected void createOrUpdateUser(String guid, String accountType, String credType, SoamServicesCard servicesCard) {
-    	logger.info("SOAM: createOrUpdateUser");
-    	logger.info("SOAM: performing login for " + accountType + " user: " + guid);
+    	logger.debug("SOAM: createOrUpdateUser");
+    	logger.debug("SOAM: performing login for " + accountType + " user: " + guid);
     	
     	try {
 			RestUtils.getInstance().performLogin(credType, guid, guid, servicesCard);
