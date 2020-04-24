@@ -244,13 +244,16 @@ oc set env --from=secret/redis dc/pen-request-backend-$SOAM_KC_REALM_ID
 ###########################################################
 bceid_reg_url=""
 journey_builder_url=""
+meta_data=""
 if [ "$envValue" = "dev" ] || [ "$envValue" = "test"  ]
 then
     bceid_reg_url="https://www.test.bceid.ca/os/?7081&SkipTo=Basic#action"
     journey_builder_url="https://www2.qa.gov.bc.ca/gov/content/education-training/k-12/support/pen"
+    meta_data="[ { name: 'robots', content: 'noindex,nofollow' } ]"
 else
     bceid_reg_url="https://www.bceid.ca/os/?7081&SkipTo=Basic#action"
     journey_builder_url="https://www2.gov.bc.ca/gov/content?id=74E29C67215B4988ABCD778F453A3129"
+    meta_data="[]"
 fi
 
 snowplow="
@@ -281,6 +284,7 @@ regConfig="var config = (function() {
     \"VUE_APP_BCEID_REG_URL\" : \"$bceid_reg_url\",
     \"VUE_APP_JOURNEY_BUILDER\" : \"$journey_builder_url\",
     \"VUE_APP_IDLE_TIMEOUT_IN_MILLIS\" : \"1800000\"
+    \"VUE_APP_META_DATA\" : \"$meta_data\"
   };
 })();"
 
