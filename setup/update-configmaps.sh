@@ -275,7 +275,7 @@ regConfig="var config = (function() {
     \"VUE_APP_BCEID_REG_URL\" : \"$bceid_reg_url\",
     \"VUE_APP_JOURNEY_BUILDER\" : \"$journey_builder_url\",
     \"VUE_APP_IDLE_TIMEOUT_IN_MILLIS\" : \"1800000\"
-    \"VUE_APP_META_DATA\" : \"$meta_data\"
+    \"VUE_APP_META_DATA\" : $meta_data
   };
 })();"
 
