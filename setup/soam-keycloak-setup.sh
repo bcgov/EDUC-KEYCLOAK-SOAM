@@ -62,7 +62,10 @@ $KCADM_FILE_BIN_FOLDER/kcadm.sh update realms/$SOAM_KC_REALM_ID --body "{\"login
 
 echo Creating STUDENT_ADMIN role
 $KCADM_FILE_BIN_FOLDER/kcadm.sh create roles -r $SOAM_KC_REALM_ID --body "{\"name\" : \"STUDENT_ADMIN\",\"description\" : \"Allows access to staff site\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
- 
+
+echo Creating STUDENT_ADMIN Read only role
+$KCADM_FILE_BIN_FOLDER/kcadm.sh create roles -r $SOAM_KC_REALM_ID --body "{\"name\" : \"STUDENT_ADMIN_READ_ONLY\",\"description\" : \"Allows access to staff site with read only permissions\",\"composite\" : false,\"clientRole\" : false,\"containerId\" : \"$SOAM_KC_REALM_ID\"}"
+
 echo Creating Client Scopes
 #READ_DIGITALID
 $KCADM_FILE_BIN_FOLDER/kcadm.sh create client-scopes -r $SOAM_KC_REALM_ID --body "{\"description\": \"Read scope for digital ID\",\"id\": \"READ_DIGITALID\",\"name\": \"READ_DIGITALID\",\"protocol\": \"openid-connect\",\"attributes\" : {\"include.in.token.scope\" : \"true\",\"display.on.consent.screen\" : \"false\"}}"
