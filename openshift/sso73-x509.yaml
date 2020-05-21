@@ -230,10 +230,10 @@ objects:
             protocol: TCP
           resources:
             requests:
-              cpu: "500m"
+              cpu: "100m"
             limits:
               memory: ${MEMORY_LIMIT}
-              cpu: "1"
+              cpu: "250m"
           volumeMounts:
           - mountPath: /etc/x509/https
             name: sso-x509-https-volume
