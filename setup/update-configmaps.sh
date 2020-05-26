@@ -21,6 +21,8 @@ DB_USER_API_PEN_DEMOGRAPHICS=$(grep -i 'DB_USER_API_PEN_DEMOGRAPHICS' $FILE  | c
 DB_PWD_API_PEN_DEMOGRAPHICS=$(grep -i 'DB_PWD_API_PEN_DEMOGRAPHICS' $FILE  | cut -f2 -d'=')
 DB_USER_API_SERVICES_CARD=$(grep -i 'DB_USER_API_SERVICES_CARD' $FILE  | cut -f2 -d'=')
 DB_PWD_API_SERVICES_CARD=$(grep -i 'DB_PWD_API_SERVICES_CARD' $FILE  | cut -f2 -d'=')
+DB_USER_API_STUDENT_PROFILE=$(grep -i 'DB_USER_API_STUDENT_PROFILE' $FILE  | cut -f2 -d'=')
+DB_PWD_API_STUDENT_PROFILE=$(grep -i 'DB_PWD_API_STUDENT_PROFILE' $FILE  | cut -f2 -d'=')
 
 CHES_CLIENT_ID=$(grep -i 'CHES_CLIENT_ID' $FILE  | cut -f2 -d'=')
 CHES_CLIENT_SECRET=$(grep -i 'CHES_CLIENT_SECRET' $FILE  | cut -f2 -d'=')
@@ -426,5 +428,16 @@ oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap student-profile-frontend-c
 echo
 echo Setting environment variables for student-profile-frontend-$SOAM_KC_REALM_ID application
 oc set env --from=configmap/student-profile-frontend-config-map dc/student-profile-frontend-$SOAM_KC_REALM_ID
+
+###########################################################
+#Setup for student-profile-api-config-map
+###########################################################
+
+echo
+echo Creating config map student-profile-api-config-map
+oc create -n $OPENSHIFT_NAMESPACE-$envValue configmap student-profile-api-config-map --from-literal=TZ=$TZVALUE --from-literal=JDBC_URL=$DB_JDBC_CONNECT_STRING --from-literal=ORACLE_USERNAME="$DB_USER_API_STUDENT_PROFILE" --from-literal=ORACLE_PASSWORD="$DB_PWD_API_STUDENT_PROFILE" --from-literal=KEYCLOAK_PUBLIC_KEY="$soamFullPublicKey" --from-literal=SPRING_SECURITY_LOG_LEVEL=INFO --from-literal=HIBERNATE_STATISTICS=false --from-literal=SPRING_WEB_LOG_LEVEL=INFO --from-literal=APP_LOG_LEVEL=INFO --from-literal=SPRING_BOOT_AUTOCONFIG_LOG_LEVEL=INFO --from-literal=FILE_EXTENSIONS="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.jpe,.jfif,.jif,.jfi" --from-literal=FILE_MAXSIZE=10485760 --from-literal=SPRING_SHOW_REQUEST_DETAILS=false --dry-run -o yaml | oc apply -f -
+echo
+echo Setting environment variables for student-profile-api-$SOAM_KC_REALM_ID application
+oc set env --from=configmap/student-profile-api-config-map dc/student-profile-api-$SOAM_KC_REALM_ID
 
 echo Complete.
