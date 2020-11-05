@@ -322,7 +322,7 @@ parameters:
     resides.
   displayName: ImageStream Namespace
   name: IMAGE_STREAM_NAMESPACE
-  value: "bcgov"
+  value: "75e61b-tools"
 - name: IMAGE_STREAM_TAG
   description: Patroni ImageTag
   value: patroni:v11-stable

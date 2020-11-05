@@ -55,9 +55,9 @@ module.exports = (settings)=>{
       'NAME': `${phases[phase].name}-pgsql`,
       'SUFFIX': phases[phase].suffix,
       'INSTANCE': `${phases[phase].name}-pgsql${phases[phase].suffix}`,
-      'IMAGE_STREAM_NAMESPACE': 'bcgov',
+      'IMAGE_STREAM_NAMESPACE': '75e61b-tools',
 //      'OPENSHIFT_IMAGE_REGISTRY': '172.30.1.1:5000',
-      'IMAGE_STREAM_TAG': 'patroni:v10-stable'
+      'IMAGE_STREAM_TAG': 'patroni:v11-stable'
     }
   }))
 
