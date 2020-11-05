@@ -325,7 +325,7 @@ parameters:
   value: "bcgov"
 - name: IMAGE_STREAM_TAG
   description: Patroni ImageTag
-  value: patroni:v10-stable
+  value: patroni:v11-stable
 - description: The size of the persistent volume to create.
   displayName: Persistent Volume Size
   name: PVC_SIZE
