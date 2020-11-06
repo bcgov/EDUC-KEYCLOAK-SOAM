@@ -26,16 +26,6 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<filters>
-					               <filter>
-				                    <artifact>*:*</artifact>
-				                    <excludes>
-				                        <exclude>META-INF/*.SF</exclude>
-				                        <exclude>META-INF/*.DSA</exclude>
-				                        <exclude>META-INF/*.RSA</exclude>
-				                    </excludes>
-				                </filter>
-							</filters>
 							<outputFile>target/dist/${project.artifactId}-${project.version}.jar</outputFile>
 							<artifactSet>
 								<excludes>
@@ -63,13 +53,6 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>org.wildfly.bom</groupId>
-				<artifactId>wildfly</artifactId>
-				<version>${wildfly.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -91,34 +74,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.logging</groupId>
-			<artifactId>jboss-logging</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-services</artifactId>
 			<version>${keycloak.version}</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-		    <groupId>junit</groupId>
-		    <artifactId>junit</artifactId>
-		    <version>4.13.1</version>
-		    <scope>test</scope>
-		</dependency>
-		<!--  <dependency>
-			<groupId>ca.bc.gov.educ.api.soam</groupId>
-			<artifactId>soam-api-client</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		-->
-		 
-        <dependency>
-            <groupId>org.springframework.security.oauth.boot</groupId>
-            <artifactId>spring-security-oauth2-autoconfigure</artifactId>
-            <version>2.1.7.RELEASE</version>
-        </dependency>
+	        </dependency>
  
 	</dependencies>
 </project>

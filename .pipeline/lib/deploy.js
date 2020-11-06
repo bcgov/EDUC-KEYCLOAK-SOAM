@@ -13,7 +13,7 @@ module.exports = (settings)=>{
 
   //Secrets for PGSQL/Patroni
   //First call will create/generate default values and a template
-  oc.createIfMissing(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso73-x509-postgresql-secrets.yaml`, {
+  oc.createIfMissing(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso74-x509-postgresql-secrets.yaml`, {
     'param':{
       'NAME': `template.${phases[phase].name}-pgsql-patroni`,
       'SUFFIX': '',
@@ -23,7 +23,7 @@ module.exports = (settings)=>{
   }))
 
   //Second call will create the required object using their respective template (default ones generated above)
-  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso73-x509-postgresql-secrets.yaml`, {
+  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso74-x509-postgresql-secrets.yaml`, {
     'param':{
       'NAME': `${phases[phase].name}-pgsql`,
       'SUFFIX': phases[phase].suffix,
@@ -34,7 +34,7 @@ module.exports = (settings)=>{
 
   //Secrets for RHSSO
   //First call will create/generate default values and a template
-  oc.createIfMissing(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso73-x509-secrets.yaml`, {
+  oc.createIfMissing(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso74-x509-secrets.yaml`, {
     'param':{
       'NAME': `template.${phases[phase].name}`,
       'SUFFIX': ''
@@ -42,7 +42,25 @@ module.exports = (settings)=>{
   }))
 
   //Second call will create the required object using their respective template (default ones generated above)
-  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso73-x509-secrets.yaml`, {
+  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso74-x509-secrets.yaml`, {
+    'param':{
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix
+    }
+  }))
+
+
+  //Configmap for RHSSO
+  //First call will create/generate default values and a template
+  oc.createIfMissing(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso74-x509-configmap.yaml`, {
+    'param':{
+      'NAME': `template.${phases[phase].name}`,
+      'SUFFIX': ''
+    }
+  }))
+
+  //Second call will create the required object using their respective template (default ones generated above)
+  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso74-x509-configmap.yaml`, {
     'param':{
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix
@@ -50,18 +68,18 @@ module.exports = (settings)=>{
   }))
 
   //Deployment objects for Patroni
-  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso73-x509-postgresql.yaml`, {
+  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso74-x509-postgresql.yaml`, {
     'param':{
       'NAME': `${phases[phase].name}-pgsql`,
       'SUFFIX': phases[phase].suffix,
       'INSTANCE': `${phases[phase].name}-pgsql${phases[phase].suffix}`,
-      'IMAGE_STREAM_NAMESPACE': '75e61b-tools',
+      'IMAGE_STREAM_NAMESPACE': 'bcgov',
 //      'OPENSHIFT_IMAGE_REGISTRY': '172.30.1.1:5000',
       'IMAGE_STREAM_TAG': 'patroni:v10-stable'
     }
   }))
 
-  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso73-x509.yaml`, {
+  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/sso74-x509.yaml`, {
     'param':{
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
@@ -95,6 +113,14 @@ module.exports = (settings)=>{
       //     }
       //   })
       // })
+
+      // remove label from volumeClaimTemplates:
+      if (item.spec.volumeClaimTemplates) {
+        item.spec.volumeClaimTemplates.forEach((pvc) => {
+          // eslint-disable-next-line no-param-reassign
+          pvc.metadata.labels = { statefulset: item.metadata.name };
+        });
+      }
     } else if (item.kind == 'DeploymentConfig'){
       oc.copyRecommendedLabels(item.metadata.labels, item.spec.template.metadata.labels);
       const existing = oc.objectOrNull(Util.name(item), {'ignore-not-found':'true'})
