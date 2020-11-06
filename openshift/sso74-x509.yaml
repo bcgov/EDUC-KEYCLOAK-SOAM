@@ -41,8 +41,8 @@ objects:
   metadata:
     annotations:
     # TODO: Update to netapp
-      volume.beta.kubernetes.io/storage-class: netapp-block-standard
-      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/netapp-block-standardfs
+      volume.beta.kubernetes.io/storage-class: netapp-file-standard
+      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/netapp-file-standardfs
     name: ${NAME}-logs${SUFFIX}
   spec:
     accessModes:
