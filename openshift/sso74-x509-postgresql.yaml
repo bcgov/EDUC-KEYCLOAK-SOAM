@@ -322,10 +322,10 @@ parameters:
     resides.
   displayName: ImageStream Namespace
   name: IMAGE_STREAM_NAMESPACE
-  value: "75e61b-tools"
+  value: "bcgov"
 - name: IMAGE_STREAM_TAG
   description: Patroni ImageTag
-  value: patroni:v11-stable
+  value: patroni:12.4-latest
 - description: The size of the persistent volume to create.
   displayName: Persistent Volume Size
   name: PVC_SIZE
