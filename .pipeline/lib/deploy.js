@@ -75,7 +75,7 @@ module.exports = (settings)=>{
       'INSTANCE': `${phases[phase].name}-pgsql${phases[phase].suffix}`,
       'IMAGE_STREAM_NAMESPACE': '75e61b-tools',
 //      'OPENSHIFT_IMAGE_REGISTRY': '172.30.1.1:5000',
-      'IMAGE_STREAM_TAG': 'patroni:v11-stable'
+      'IMAGE_STREAM_TAG': 'patroni:v12-latest'
     }
   }))
 
