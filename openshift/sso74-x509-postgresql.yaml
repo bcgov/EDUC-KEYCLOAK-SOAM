@@ -322,10 +322,10 @@ parameters:
     resides.
   displayName: ImageStream Namespace
   name: IMAGE_STREAM_NAMESPACE
-  value: "bcgov"
+  value: "75e61b-tools"
 - name: IMAGE_STREAM_TAG
   description: Patroni ImageTag
-  value: patroni:12.4-latest
+  value: patroni:v11-stable
 - description: The size of the persistent volume to create.
   displayName: Persistent Volume Size
   name: PVC_SIZE
@@ -333,4 +333,4 @@ parameters:
 - name: STORAGE_CLASS
   value: netapp-block-standard
 - name: IMAGE_REGISTRY
-  value: image-registry.apps.silver.devops.gov.bc.ca
+  value: image-registry.openshift-image-registry.svc:5000
