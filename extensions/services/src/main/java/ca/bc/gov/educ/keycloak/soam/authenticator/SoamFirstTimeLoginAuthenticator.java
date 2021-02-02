@@ -60,7 +60,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 
 		//This is added for BCSC - direct IDP
 		if(accountType == null){
-			accountType = (String)brokerContext.getContextData().get("user.attributes.account_type");
+			accountType = ((List<String>)brokerContext.getContextData().get("user.attributes.account_type")).get(0);
 		}
 		
 		if(accountType == null) {
@@ -80,26 +80,26 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			break;
 		case "bcsc":
 			logger.debug("SOAM: Account type bcsc found");
-			username = (String)otherClaims.get("bcsc_did");
+			username = ((List<String>)brokerContext.getContextData().get("user.attributes.did")).get(0);
 			if(username == null) {
 				throw new SoamRuntimeException("No bcsc_did value was found in token");
 			}
 				
 			SoamServicesCard servicesCard = new SoamServicesCard();
-			servicesCard.setBirthDate((String)brokerContext.getContextData().get("user.attributes.birthdate"));
-			servicesCard.setCity((String)brokerContext.getContextData().get("user.attributes.locality"));
-			servicesCard.setCountry((String)brokerContext.getContextData().get("user.attributes.country"));
-			servicesCard.setDid((String)brokerContext.getContextData().get("user.attributes.sub"));
-			servicesCard.setEmail((String)brokerContext.getContextData().get("user.attributes.email"));
-			servicesCard.setGender((String)brokerContext.getContextData().get("user.attributes.gender"));
-			servicesCard.setGivenName((String)brokerContext.getContextData().get("user.attributes.given_name"));
-			servicesCard.setGivenNames((String)brokerContext.getContextData().get("user.attributes.given_names"));
-			servicesCard.setIdentityAssuranceLevel((String)brokerContext.getContextData().get("user.attributes.identity_assurance_level"));
-			servicesCard.setPostalCode((String)brokerContext.getContextData().get("user.attributes.postal_code"));
-			servicesCard.setProvince((String)brokerContext.getContextData().get("user.attributes.region"));
-			servicesCard.setStreetAddress((String)brokerContext.getContextData().get("user.attributes.street_address"));
-			servicesCard.setSurname((String)brokerContext.getContextData().get("user.attributes.family_name"));
-			servicesCard.setUserDisplayName((String)brokerContext.getContextData().get("user.attributes.display_name"));
+			servicesCard.setBirthDate(((List<String>)brokerContext.getContextData().get("user.attributes.birthdate")).get(0));
+			servicesCard.setCity(((List<String>)brokerContext.getContextData().get("user.attributes.locality")).get(0));
+			servicesCard.setCountry(((List<String>)brokerContext.getContextData().get("user.attributes.country")).get(0));
+			servicesCard.setDid(((List<String>)brokerContext.getContextData().get("user.attributes.did")).get(0));
+			servicesCard.setEmail(((List<String>)brokerContext.getContextData().get("user.attributes.emailAddress")).get(0));
+			servicesCard.setGender(((List<String>)brokerContext.getContextData().get("user.attributes.gender")).get(0));
+			servicesCard.setGivenName(((List<String>)brokerContext.getContextData().get("user.attributes.given_name")).get(0));
+			servicesCard.setGivenNames(((List<String>)brokerContext.getContextData().get("user.attributes.given_names")).get(0));
+			servicesCard.setIdentityAssuranceLevel(((List<String>)brokerContext.getContextData().get("user.attributes.identity_assurance_level")).get(0));
+			servicesCard.setPostalCode(((List<String>)brokerContext.getContextData().get("user.attributes.postal_code")).get(0));
+			servicesCard.setProvince(((List<String>)brokerContext.getContextData().get("user.attributes.region")).get(0));
+			servicesCard.setStreetAddress(((List<String>)brokerContext.getContextData().get("user.attributes.street_address")).get(0));
+			servicesCard.setSurname(((List<String>)brokerContext.getContextData().get("user.attributes.family_name")).get(0));
+			servicesCard.setUserDisplayName(((List<String>)brokerContext.getContextData().get("user.attributes.display_name")).get(0));
 			createOrUpdateUser(username, accountType, "BCSC", servicesCard);
 			break; 
 		case "idir": 
