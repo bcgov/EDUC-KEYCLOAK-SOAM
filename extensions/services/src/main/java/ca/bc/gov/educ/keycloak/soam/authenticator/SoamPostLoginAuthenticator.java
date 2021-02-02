@@ -41,16 +41,22 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				context.success();
 	            return;
 	        }
-	        
-			String accountType = context.getUser().getFirstAttribute("account_type");
-			
-			if(accountType == null) {
-				throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
-			}
-			
+
 			String stringSerialCtx = context.getAuthenticationSession().getAuthNote(PostBrokerLoginConstants.PBL_BROKERED_IDENTITY_CONTEXT);
 			SerializedBrokeredIdentityContext serializedCtx = JsonSerialization.readValue(stringSerialCtx, SerializedBrokeredIdentityContext.class);
 			BrokeredIdentityContext brokerContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
+
+			String accountType = context.getUser().getFirstAttribute("account_type");
+
+			//This is added for BCSC - direct IDP
+			if(accountType == null){
+				accountType = (String)brokerContext.getContextData().get("user.attributes.account_type");
+			}
+
+			if(accountType == null) {
+				throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
+			}
+
 			JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
 				        
 	        Map<String, Object> otherClaims = token.getOtherClaims();
@@ -76,20 +82,20 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 					throw new SoamRuntimeException("No bcsc_did value was found in token");
 				}
 				SoamServicesCard servicesCard = new SoamServicesCard();
-				servicesCard.setBirthDate((String)otherClaims.get("birthdate"));
-				servicesCard.setCity((String)otherClaims.get("locality"));
-				servicesCard.setCountry((String)otherClaims.get("country"));
-				servicesCard.setDid((String)otherClaims.get("bcsc_did"));
-				servicesCard.setEmail((String)otherClaims.get("email"));
-				servicesCard.setGender((String)otherClaims.get("gender"));
-				servicesCard.setGivenName((String)otherClaims.get("given_name"));
-				servicesCard.setGivenNames((String)otherClaims.get("given_names"));
-				servicesCard.setIdentityAssuranceLevel((String)otherClaims.get("identity_assurance_level"));
-				servicesCard.setPostalCode((String)otherClaims.get("postal_code"));
-				servicesCard.setProvince((String)otherClaims.get("region"));
-				servicesCard.setStreetAddress((String)otherClaims.get("street_address"));
-				servicesCard.setSurname((String)otherClaims.get("family_name"));
-				servicesCard.setUserDisplayName((String)otherClaims.get("name"));
+				servicesCard.setBirthDate((String)brokerContext.getContextData().get("user.attributes.birthdate"));
+				servicesCard.setCity((String)brokerContext.getContextData().get("user.attributes.locality"));
+				servicesCard.setCountry((String)brokerContext.getContextData().get("user.attributes.country"));
+				servicesCard.setDid((String)brokerContext.getContextData().get("user.attributes.sub"));
+				servicesCard.setEmail((String)brokerContext.getContextData().get("user.attributes.email"));
+				servicesCard.setGender((String)brokerContext.getContextData().get("user.attributes.gender"));
+				servicesCard.setGivenName((String)brokerContext.getContextData().get("user.attributes.given_name"));
+				servicesCard.setGivenNames((String)brokerContext.getContextData().get("user.attributes.given_names"));
+				servicesCard.setIdentityAssuranceLevel((String)brokerContext.getContextData().get("user.attributes.identity_assurance_level"));
+				servicesCard.setPostalCode((String)brokerContext.getContextData().get("user.attributes.postal_code"));
+				servicesCard.setProvince((String)brokerContext.getContextData().get("user.attributes.region"));
+				servicesCard.setStreetAddress((String)brokerContext.getContextData().get("user.attributes.street_address"));
+				servicesCard.setSurname((String)brokerContext.getContextData().get("user.attributes.family_name"));
+				servicesCard.setUserDisplayName((String)brokerContext.getContextData().get("user.attributes.display_name"));
 				updateUserInfo(username, accountType, "BCSC", servicesCard);
 				break;
 			case "idir":

@@ -86,20 +86,20 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			}
 				
 			SoamServicesCard servicesCard = new SoamServicesCard();
-			servicesCard.setBirthDate((String)brokerContext.getContextData().get("birthdate"));
-			servicesCard.setCity((String)brokerContext.getContextData().get("locality"));
-			servicesCard.setCountry((String)brokerContext.getContextData().get("country"));
-			servicesCard.setDid((String)brokerContext.getContextData().get("sub"));
-			servicesCard.setEmail((String)brokerContext.getContextData().get("email"));
-			servicesCard.setGender((String)brokerContext.getContextData().get("gender"));
-			servicesCard.setGivenName((String)brokerContext.getContextData().get("given_name"));
-			servicesCard.setGivenNames((String)brokerContext.getContextData().get("given_names"));
-			servicesCard.setIdentityAssuranceLevel((String)brokerContext.getContextData().get("identity_assurance_level"));
-			servicesCard.setPostalCode((String)brokerContext.getContextData().get("postal_code"));
-			servicesCard.setProvince((String)brokerContext.getContextData().get("region"));
-			servicesCard.setStreetAddress((String)brokerContext.getContextData().get("street_address"));
-			servicesCard.setSurname((String)brokerContext.getContextData().get("family_name"));
-			servicesCard.setUserDisplayName((String)brokerContext.getContextData().get("display_name"));
+			servicesCard.setBirthDate((String)brokerContext.getContextData().get("user.attributes.birthdate"));
+			servicesCard.setCity((String)brokerContext.getContextData().get("user.attributes.locality"));
+			servicesCard.setCountry((String)brokerContext.getContextData().get("user.attributes.country"));
+			servicesCard.setDid((String)brokerContext.getContextData().get("user.attributes.sub"));
+			servicesCard.setEmail((String)brokerContext.getContextData().get("user.attributes.email"));
+			servicesCard.setGender((String)brokerContext.getContextData().get("user.attributes.gender"));
+			servicesCard.setGivenName((String)brokerContext.getContextData().get("user.attributes.given_name"));
+			servicesCard.setGivenNames((String)brokerContext.getContextData().get("user.attributes.given_names"));
+			servicesCard.setIdentityAssuranceLevel((String)brokerContext.getContextData().get("user.attributes.identity_assurance_level"));
+			servicesCard.setPostalCode((String)brokerContext.getContextData().get("user.attributes.postal_code"));
+			servicesCard.setProvince((String)brokerContext.getContextData().get("user.attributes.region"));
+			servicesCard.setStreetAddress((String)brokerContext.getContextData().get("user.attributes.street_address"));
+			servicesCard.setSurname((String)brokerContext.getContextData().get("user.attributes.family_name"));
+			servicesCard.setUserDisplayName((String)brokerContext.getContextData().get("user.attributes.display_name"));
 			createOrUpdateUser(username, accountType, "BCSC", servicesCard);
 			break; 
 		case "idir": 
