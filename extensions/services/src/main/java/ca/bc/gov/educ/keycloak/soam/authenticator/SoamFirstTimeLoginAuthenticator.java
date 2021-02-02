@@ -3,6 +3,8 @@ package ca.bc.gov.educ.keycloak.soam.authenticator;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -47,16 +49,33 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 		Map <String, Object> contextData = brokerContext.getContextData();
 
 		for(String s: contextData.keySet()) {
-			logger.info("Broker Key: " + s);
+			logger.info("Broker Key: " + s + " | Value: " + contextData.get(s));
 		}
 
-		JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
-        
-        Map<String, Object> otherClaims = token.getOtherClaims();
+		JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ACCESS_TOKEN");
+
+		Map<String, Object> otherClaims = token.getOtherClaims();
 		for(String s: otherClaims.keySet()) {
-    		logger.info("Key: " + s + " Value: " + otherClaims.get(s));
-		} 
+			logger.info("VALIDATED_ACCESS_TOKEN Key: " + s + " Value: " + otherClaims.get(s));
+		}
+
+		JsonWebToken idToken = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
         
+        Map<String, Object> claims = idToken.getOtherClaims();
+		for(String s: claims.keySet()) {
+    		logger.info("VALIDATED_ID_TOKEN Key: " + s + " Value: " + claims.get(s));
+		}
+
+		try {
+			JsonNode jsonNode = (JsonNode) brokerContext.getContextData().get("UserInfo");
+			ObjectMapper mapper = new ObjectMapper();
+			String pretty = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
+
+			// print pretty JSON string
+			System.out.println(pretty);
+		}catch(Exception e){
+
+		}
 		String accountType = (String)otherClaims.get("account_type");
 		
 		if(accountType == null) {
