@@ -3,8 +3,6 @@ package ca.bc.gov.educ.keycloak.soam.authenticator;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -46,37 +44,24 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             return;
         }
 
-		Map <String, Object> contextData = brokerContext.getContextData();
-
-		for(String s: contextData.keySet()) {
-			logger.info("Broker Key: " + s + " | Value: " + contextData.get(s));
+		Map<String, Object> brokerClaims = brokerContext.getContextData();
+		for(String s: brokerClaims.keySet()) {
+			logger.debug("Context Key: " + s + " Value: " + brokerClaims.get(s));
 		}
 
-		JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ACCESS_TOKEN");
-
-		Map<String, Object> otherClaims = token.getOtherClaims();
-		for(String s: otherClaims.keySet()) {
-			logger.info("VALIDATED_ACCESS_TOKEN Key: " + s + " Value: " + otherClaims.get(s));
-		}
-
-		JsonWebToken idToken = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
+        JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
         
-        Map<String, Object> claims = idToken.getOtherClaims();
-		for(String s: claims.keySet()) {
-    		logger.info("VALIDATED_ID_TOKEN Key: " + s + " Value: " + claims.get(s));
+        Map<String, Object> otherClaims = token.getOtherClaims();
+		for(String s: otherClaims.keySet()) {
+    		logger.debug("VALIDATED_ID_TOKEN Key: " + s + " Value: " + otherClaims.get(s));
 		}
 
-		try {
-			JsonNode jsonNode = (JsonNode) brokerContext.getContextData().get("UserInfo");
-			ObjectMapper mapper = new ObjectMapper();
-			String pretty = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
-
-			// print pretty JSON string
-			System.out.println(pretty);
-		}catch(Exception e){
-
-		}
 		String accountType = (String)otherClaims.get("account_type");
+
+		//This is added for BCSC - direct IDP
+		if(accountType == null){
+			accountType = (String)brokerContext.getContextData().get("user.attributes.account_type");
+		}
 		
 		if(accountType == null) {
 			throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
@@ -101,20 +86,20 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			}
 				
 			SoamServicesCard servicesCard = new SoamServicesCard();
-			servicesCard.setBirthDate((String)otherClaims.get("birthdate"));
-			servicesCard.setCity((String)otherClaims.get("locality"));
-			servicesCard.setCountry((String)otherClaims.get("country"));
-			servicesCard.setDid((String)otherClaims.get("bcsc_did"));
-			servicesCard.setEmail((String)otherClaims.get("email"));
-			servicesCard.setGender((String)otherClaims.get("gender"));
-			servicesCard.setGivenName((String)otherClaims.get("given_name"));
-			servicesCard.setGivenNames((String)otherClaims.get("given_names"));
-			servicesCard.setIdentityAssuranceLevel((String)otherClaims.get("identity_assurance_level"));
-			servicesCard.setPostalCode((String)otherClaims.get("postal_code"));
-			servicesCard.setProvince((String)otherClaims.get("region"));
-			servicesCard.setStreetAddress((String)otherClaims.get("street_address"));
-			servicesCard.setSurname((String)otherClaims.get("family_name"));
-			servicesCard.setUserDisplayName((String)otherClaims.get("name"));
+			servicesCard.setBirthDate((String)brokerContext.getContextData().get("birthdate"));
+			servicesCard.setCity((String)brokerContext.getContextData().get("locality"));
+			servicesCard.setCountry((String)brokerContext.getContextData().get("country"));
+			servicesCard.setDid((String)brokerContext.getContextData().get("sub"));
+			servicesCard.setEmail((String)brokerContext.getContextData().get("email"));
+			servicesCard.setGender((String)brokerContext.getContextData().get("gender"));
+			servicesCard.setGivenName((String)brokerContext.getContextData().get("given_name"));
+			servicesCard.setGivenNames((String)brokerContext.getContextData().get("given_names"));
+			servicesCard.setIdentityAssuranceLevel((String)brokerContext.getContextData().get("identity_assurance_level"));
+			servicesCard.setPostalCode((String)brokerContext.getContextData().get("postal_code"));
+			servicesCard.setProvince((String)brokerContext.getContextData().get("region"));
+			servicesCard.setStreetAddress((String)brokerContext.getContextData().get("street_address"));
+			servicesCard.setSurname((String)brokerContext.getContextData().get("family_name"));
+			servicesCard.setUserDisplayName((String)brokerContext.getContextData().get("display_name"));
 			createOrUpdateUser(username, accountType, "BCSC", servicesCard);
 			break; 
 		case "idir": 
