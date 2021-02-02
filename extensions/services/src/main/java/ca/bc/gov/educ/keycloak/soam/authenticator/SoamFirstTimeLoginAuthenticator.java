@@ -80,7 +80,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			break;
 		case "bcsc":
 			logger.debug("SOAM: Account type bcsc found");
-			username = ((List<String>)brokerContext.getContextData().get("user.attributes.sub")).get(0);
+			username = ((List<String>)brokerContext.getContextData().get("user.attributes.did")).get(0);
 			if(username == null) {
 				throw new SoamRuntimeException("No bcsc_did value was found in token");
 			}
@@ -89,7 +89,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			servicesCard.setBirthDate(((List<String>)brokerContext.getContextData().get("user.attributes.birthdate")).get(0));
 			servicesCard.setCity(((List<String>)brokerContext.getContextData().get("user.attributes.locality")).get(0));
 			servicesCard.setCountry(((List<String>)brokerContext.getContextData().get("user.attributes.country")).get(0));
-			servicesCard.setDid(((List<String>)brokerContext.getContextData().get("user.attributes.sub")).get(0));
+			servicesCard.setDid(((List<String>)brokerContext.getContextData().get("user.attributes.did")).get(0));
 			servicesCard.setEmail(((List<String>)brokerContext.getContextData().get("user.attributes.email")).get(0));
 			servicesCard.setGender(((List<String>)brokerContext.getContextData().get("user.attributes.gender")).get(0));
 			servicesCard.setGivenName(((List<String>)brokerContext.getContextData().get("user.attributes.given_name")).get(0));
