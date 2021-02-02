@@ -1,5 +1,6 @@
 package ca.bc.gov.educ.keycloak.soam.authenticator;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonReader;
@@ -82,20 +83,20 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 					throw new SoamRuntimeException("No bcsc_did value was found in token");
 				}
 				SoamServicesCard servicesCard = new SoamServicesCard();
-				servicesCard.setBirthDate((String)brokerContext.getContextData().get("user.attributes.birthdate"));
-				servicesCard.setCity((String)brokerContext.getContextData().get("user.attributes.locality"));
-				servicesCard.setCountry((String)brokerContext.getContextData().get("user.attributes.country"));
-				servicesCard.setDid((String)brokerContext.getContextData().get("user.attributes.sub"));
-				servicesCard.setEmail((String)brokerContext.getContextData().get("user.attributes.email"));
-				servicesCard.setGender((String)brokerContext.getContextData().get("user.attributes.gender"));
-				servicesCard.setGivenName((String)brokerContext.getContextData().get("user.attributes.given_name"));
-				servicesCard.setGivenNames((String)brokerContext.getContextData().get("user.attributes.given_names"));
-				servicesCard.setIdentityAssuranceLevel((String)brokerContext.getContextData().get("user.attributes.identity_assurance_level"));
-				servicesCard.setPostalCode((String)brokerContext.getContextData().get("user.attributes.postal_code"));
-				servicesCard.setProvince((String)brokerContext.getContextData().get("user.attributes.region"));
-				servicesCard.setStreetAddress((String)brokerContext.getContextData().get("user.attributes.street_address"));
-				servicesCard.setSurname((String)brokerContext.getContextData().get("user.attributes.family_name"));
-				servicesCard.setUserDisplayName((String)brokerContext.getContextData().get("user.attributes.display_name"));
+				servicesCard.setBirthDate(((List<String>)brokerContext.getContextData().get("user.attributes.birthdate")).get(0));
+				servicesCard.setCity(((List<String>)brokerContext.getContextData().get("user.attributes.locality")).get(0));
+				servicesCard.setCountry(((List<String>)brokerContext.getContextData().get("user.attributes.country")).get(0));
+				servicesCard.setDid(((List<String>)brokerContext.getContextData().get("user.attributes.sub")).get(0));
+				servicesCard.setEmail(((List<String>)brokerContext.getContextData().get("user.attributes.email")).get(0));
+				servicesCard.setGender(((List<String>)brokerContext.getContextData().get("user.attributes.gender")).get(0));
+				servicesCard.setGivenName(((List<String>)brokerContext.getContextData().get("user.attributes.given_name")).get(0));
+				servicesCard.setGivenNames(((List<String>)brokerContext.getContextData().get("user.attributes.given_names")).get(0));
+				servicesCard.setIdentityAssuranceLevel(((List<String>)brokerContext.getContextData().get("user.attributes.identity_assurance_level")).get(0));
+				servicesCard.setPostalCode(((List<String>)brokerContext.getContextData().get("user.attributes.postal_code")).get(0));
+				servicesCard.setProvince(((List<String>)brokerContext.getContextData().get("user.attributes.region")).get(0));
+				servicesCard.setStreetAddress(((List<String>)brokerContext.getContextData().get("user.attributes.street_address")).get(0));
+				servicesCard.setSurname(((List<String>)brokerContext.getContextData().get("user.attributes.family_name")).get(0));
+				servicesCard.setUserDisplayName(((List<String>)brokerContext.getContextData().get("user.attributes.display_name")).get(0));
 				updateUserInfo(username, accountType, "BCSC", servicesCard);
 				break;
 			case "idir":

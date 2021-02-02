@@ -80,7 +80,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 			break;
 		case "bcsc":
 			logger.debug("SOAM: Account type bcsc found");
-			username = (String)otherClaims.get("bcsc_did");
+			username = ((List<String>)brokerContext.getContextData().get("user.attributes.sub")).get(0);
 			if(username == null) {
 				throw new SoamRuntimeException("No bcsc_did value was found in token");
 			}
