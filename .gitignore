@@ -7,3 +7,4 @@ node_modules
 .pipeline/.node/
 .pipeline/node_modules/
 *.local.sh
+testing/k6/src/config/local.json
