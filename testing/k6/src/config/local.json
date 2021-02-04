@@ -12,9 +12,16 @@
   "idim": {
     "clientId": ""
   },
-  "user": {
-    "name": "",
-    "secret": "",
-    "id": ""
-  }
+  "user": [
+    {
+      "name": "",
+      "secret": "",
+      "id": ""
+    },
+    {
+      "name": "",
+      "secret": "",
+      "id": ""
+    }
+  ]
 }
