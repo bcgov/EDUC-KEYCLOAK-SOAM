@@ -10,6 +10,7 @@ export const options = {
     ],
     discardResponseBodies: true
 };
+// Use this for debugging test instead of the above option
 // export let options = {
 //     httpDebug: 'full',
 //     discardResponseBodies: true
@@ -19,15 +20,28 @@ let config = JSON.parse(open(__ENV.CONFIG));
 
 export let errorRate = new Rate("errors");
 
-function checkStatus200(response) {
-    let success = check(response, {"is status 200": (r) => r.status === 200});
-    //if(!success)
-    errorRate.add(!success);
+function checkStatus(response, statusCode=200) {
+    let success = check(response, {"is correct status": (r) => r.status === statusCode});
+    errorRate.add(!success, { tag1: 'is correct status' });
+}
+//Used to get a different user for each test
+let userIdx = 0;
+
+function getUserId() {
+    return config.user[userIdx % config.user.length].id;
+}
+
+function getUserName() {
+    return config.user[userIdx % config.user.length].name;
+}
+
+function getUserSecret() {
+    return config.user[userIdx % config.user.length].secret;
 }
 
 export default function main() {
     let response;
-
+    userIdx++;
     const vars = {};
 
     group(
@@ -42,7 +56,7 @@ export default function main() {
                     }
                 }
             );
-            checkStatus200(response);
+            checkStatus(response);
 
             vars["validateCardResult"] = response
                 .html()
@@ -60,7 +74,7 @@ export default function main() {
                         name: 'LoginEntryURL'
                     }
                 });
-            checkStatus200(response);
+            checkStatus(response);
 
             response = http.get("https://idtest.gov.bc.ca/cardtap/resources/templates.html?v=R2.9.2",
                 {
@@ -68,7 +82,7 @@ export default function main() {
                         name: 'CardtapURL'
                     }
                 });
-            checkStatus200(response);
+            checkStatus(response);
 
             response = http.post(
                 "https://idtest.gov.bc.ca/cardtap/v3/transactions/1577032a-02f7-44da-8d7a-963c41a7289b?clientId=" + config.idim.clientId,
@@ -82,7 +96,7 @@ export default function main() {
                     }
                 }
             );
-            checkStatus200(response);
+            checkStatus(response);
 
             response = http.put(
                 "https://idtest.gov.bc.ca/cardtap/v3/transactions/1577032a-02f7-44da-8d7a-963c41a7289b/device",
@@ -96,7 +110,7 @@ export default function main() {
                     }
                 }
             );
-            checkStatus200(response);
+            checkStatus(response);
 
             response = http.post(
                 "https://idtest.gov.bc.ca/MockSKAP/authorize",
@@ -107,7 +121,7 @@ export default function main() {
                     }
                 }
             );
-            checkStatus200(response);
+            checkStatus(response);
 
             response = http.get("https://idtest.gov.bc.ca/MockSKAP/Widget/mockConnect.html",
                 {
@@ -115,10 +129,10 @@ export default function main() {
                         name: 'MockConnectURL'
                     }
                 });
-            checkStatus200(response);
+            checkStatus(response);
 
             response = http.post(
-                "https://idtest.gov.bc.ca/MockSKAP/lookup-mbun-by-csn?csn=" + config.user.name,
+                "https://idtest.gov.bc.ca/MockSKAP/lookup-mbun-by-csn?csn=" + getUserName(),
                 null,
                 {
                     headers: {
@@ -129,11 +143,11 @@ export default function main() {
                     }
                 }
             );
-            checkStatus200(response);
+            checkStatus(response);
 
             response = http.post(
                 "https://idtest.gov.bc.ca/MockSKAP/cardread",
-                '{"userId": ' + config.user.id + '}',
+                '{"userId": ' + getUserId() + '}',
                 {
                     headers: {
                         "content-type": "application/json"
@@ -144,7 +158,7 @@ export default function main() {
                     }
                 }
             );
-            checkStatus200(response);
+            checkStatus(response);
 
             let jwe = response.body.match('JWE":"([^"]*)"')[1];
 
@@ -161,7 +175,7 @@ export default function main() {
                     }
                 }
             );
-            checkStatus200(response);
+            checkStatus(response);
 
             let validateCardResultFromJwe = response.body;
 
@@ -178,13 +192,13 @@ export default function main() {
                     }
                 }
             );
-            checkStatus200(response);
+            checkStatus(response);
 
             response = http.post(
                 "https://idtest.gov.bc.ca/login/passcode/validate",
                 {
                     csrftoken: `${vars["validateCardResult"]}`,
-                    passcode: config.user.secret,
+                    passcode: getUserSecret(),
                 },
                 {
                     tags: {
@@ -192,7 +206,7 @@ export default function main() {
                     }
                 }
             );
-            checkStatus200(response);
+            checkStatus(response);
 
             response = http.get("https://idtest.gov.bc.ca/login/history",
                 {
@@ -200,7 +214,7 @@ export default function main() {
                         name: 'HistoryURL'
                     }
                 });
-            checkStatus200(response);
+            checkStatus(response);
         }
     );
 
@@ -212,17 +226,14 @@ export default function main() {
                     headers: {
                         "content-type": "application/x-www-form-urlencoded",
                     },
-                    redirects: 3,
+                    redirects: 3, //Limits the number of redirects so we don't return to final callback url
                     tags: {
                         name: 'SetConfirmationURL'
                     }
                 }
             );
 
-            let statusCheck = check(response, {
-                "is status 302": (r) => r.status === 302
-            });
-            errorRate.add(!statusCheck);
+            checkStatus(response, 302);
             let codeCheck = check(response, {
                 "is code present": (r) => {
                     if (r.headers && r.headers.Location) {
@@ -233,7 +244,7 @@ export default function main() {
 
                 }
             });
-            errorRate.add(!codeCheck);
+            errorRate.add(!codeCheck, { tag1: 'is code present' });
 
         }
     );
@@ -263,7 +274,7 @@ export default function main() {
                         name: 'GetTokenURL'
                     }
                 });
-            checkStatus200(response);
+            checkStatus(response);
             let codeCheck = check(response, {
                 "is token present": (r) => {
                     if (r.body) {
@@ -274,7 +285,7 @@ export default function main() {
 
                 }
             });
-            errorRate.add(!codeCheck);
+            errorRate.add(!codeCheck, { tag1: 'is token present' });
         }
     );
     // Automatically added sleep
