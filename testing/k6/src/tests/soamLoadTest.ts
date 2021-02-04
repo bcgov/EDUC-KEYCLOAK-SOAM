@@ -27,10 +27,6 @@ function checkStatus(response, statusCode=200) {
 //Used to get a different user for each test
 let userIdx = 0;
 
-function getUserId() {
-    return config.user[userIdx % config.user.length].id;
-}
-
 function getUserName() {
     return config.user[userIdx % config.user.length].name;
 }
@@ -138,6 +134,7 @@ export default function main() {
                     headers: {
                         "content-type": "application/json"
                     },
+                    responseType: 'text',
                     tags: {
                         name: 'LookupURL'
                     }
@@ -145,9 +142,11 @@ export default function main() {
             );
             checkStatus(response);
 
+            let userId = response.body.match('mbun":"([^"]*)"')[1];
+
             response = http.post(
                 "https://idtest.gov.bc.ca/MockSKAP/cardread",
-                '{"userId": ' + getUserId() + '}',
+                '{"userId": ' + userId + '}',
                 {
                     headers: {
                         "content-type": "application/json"
