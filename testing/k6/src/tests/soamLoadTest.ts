@@ -22,7 +22,7 @@ export let errorRate = new Rate("errors");
 function checkStatus200(response) {
     let success = check(response, {"is status 200": (r) => r.status === 200});
     //if(!success)
-    errorRate.add(!success);
+    errorRate.add(!success, { tag1: 'is status 200' });
 }
 
 export default function main() {
@@ -222,7 +222,7 @@ export default function main() {
             let statusCheck = check(response, {
                 "is status 302": (r) => r.status === 302
             });
-            errorRate.add(!statusCheck);
+            errorRate.add(!statusCheck, { tag1: 'is status 302' });
             let codeCheck = check(response, {
                 "is code present": (r) => {
                     if (r.headers && r.headers.Location) {
@@ -233,7 +233,7 @@ export default function main() {
 
                 }
             });
-            errorRate.add(!codeCheck);
+            errorRate.add(!codeCheck, { tag1: 'is code present' });
 
         }
     );
@@ -274,7 +274,7 @@ export default function main() {
 
                 }
             });
-            errorRate.add(!codeCheck);
+            errorRate.add(!codeCheck, { tag1: 'is token present' });
         }
     );
     // Automatically added sleep
