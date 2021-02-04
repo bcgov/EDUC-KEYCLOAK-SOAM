@@ -1,0 +1,20 @@
+
+{
+  "soam": {
+    "rootUrl": "",
+    "authPath": "",
+    "tokenPath": "",
+    "redirectUrl": "",
+    "scopes": "",
+    "clientId": "",
+    "clientSecret": ""
+  },
+  "idim": {
+    "clientId": ""
+  },
+  "user": {
+    "name": "",
+    "secret": "",
+    "id": ""
+  }
+}
