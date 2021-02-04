@@ -2,20 +2,18 @@ import {sleep, group, check} from "k6";
 import * as http from "k6/http";
 import {Rate} from "k6/metrics";
 
-// export const options = {
-//     stages: [
-//         { duration: "30s", target: 10 },
-//         { duration: "1m", target: 50 },
-//         { duration: "30s", target: 100 },
-//         { duration: "30s", target: 50 },
-//         { duration: "30s", target: 10 },
-//     ],
-//     discardResponseBodies: true
-// };
-export let options = {
-    httpDebug: 'full',
+export const options = {
+    stages: [
+        { duration: "30s", target: 5 },
+        { duration: "1m", target: 10 },
+        { duration: "30s", target: 0 }
+    ],
     discardResponseBodies: true
 };
+// export let options = {
+//     httpDebug: 'full',
+//     discardResponseBodies: true
+// };
 
 let config = JSON.parse(open(__ENV.CONFIG));
 
