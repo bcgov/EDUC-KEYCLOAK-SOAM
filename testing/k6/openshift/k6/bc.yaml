@@ -6,30 +6,6 @@ objects:
     spec:
       lookupPolicy:
         local: false
-      tags:
-        - annotations:
-            openshift.io/imported-from: 'loadimpact/k6:latest'
-          from:
-            kind: DockerImage
-            name: 'loadimpact/k6:latest'
-          generation: null
-          importPolicy: {}
-          name: latest
-          referencePolicy:
-            type: ''
-    metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewBuild
-      labels:
-        build: ${NAME}
-        group: educ-k6
-        component: ${NAME}-imagestream
-      name: k6
-  - apiVersion: image.openshift.io/v1
-    kind: ImageStream
-    spec:
-      lookupPolicy:
-        local: false
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewBuild
@@ -49,16 +25,14 @@ objects:
       postCommit: {}
       resources: {}
       source:
-        contextDir: testing/k6/openshift/k6
+        contextDir: testing/k6
         git:
           ref: ${GIT_REF}
           uri: ${GIT_REPO}
         type: Git
       strategy:
         dockerStrategy:
-          from:
-            kind: ImageStreamTag
-            name: 'k6:latest'
+          dockerfilePath: openshift/k6/Dockerfile
         type: Docker
       triggers:
         - type: ConfigChange
