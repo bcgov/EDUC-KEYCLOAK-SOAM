@@ -17,7 +17,7 @@
   "gnetId": 13719,
   "graphTooltip": 2,
   "id": 1,
-  "iteration": 1612403153261,
+  "iteration": 1612472982519,
   "links": [],
   "panels": [
     {
@@ -35,8 +35,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
-        "w": 6,
+        "h": 6,
+        "w": 12,
         "x": 0,
         "y": 0
       },
@@ -165,9 +165,9 @@
       "fill": 3,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 6,
+        "h": 6,
+        "w": 12,
+        "x": 12,
         "y": 0
       },
       "hiddenSeries": false,
@@ -323,9 +323,9 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 0
+        "w": 12,
+        "x": 0,
+        "y": 6
       },
       "hiddenSeries": false,
       "id": 7,
@@ -472,9 +472,9 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
-        "w": 6,
-        "x": 18,
-        "y": 0
+        "w": 12,
+        "x": 12,
+        "y": 6
       },
       "hiddenSeries": false,
       "id": 10,
@@ -628,7 +628,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 13
       },
       "height": "250px",
       "hiddenSeries": false,
@@ -793,7 +793,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 19
       },
       "height": "250px",
       "hiddenSeries": false,
@@ -957,7 +957,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 19
+        "y": 25
       },
       "height": "250px",
       "hiddenSeries": false,
@@ -1285,7 +1285,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 19
+        "y": 25
       },
       "heatmap": {},
       "height": "250px",
@@ -1393,7 +1393,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 26
+        "y": 32
       },
       "height": "50px",
       "id": 12,
@@ -1530,7 +1530,7 @@
         "h": 3,
         "w": 4,
         "x": 4,
-        "y": 26
+        "y": 32
       },
       "height": "50px",
       "id": 16,
@@ -1667,7 +1667,7 @@
         "h": 3,
         "w": 4,
         "x": 8,
-        "y": 26
+        "y": 32
       },
       "height": "50px",
       "id": 15,
@@ -1791,7 +1791,7 @@
         "h": 3,
         "w": 4,
         "x": 12,
-        "y": 26
+        "y": 32
       },
       "height": "50px",
       "id": 14,
@@ -1928,7 +1928,7 @@
         "h": 3,
         "w": 4,
         "x": 16,
-        "y": 26
+        "y": 32
       },
       "height": "50px",
       "id": 11,
@@ -2052,7 +2052,7 @@
         "h": 3,
         "w": 4,
         "x": 20,
-        "y": 26
+        "y": 32
       },
       "height": "50px",
       "id": 13,
@@ -2163,7 +2163,7 @@
         "h": 19,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 35
       },
       "id": 67,
       "links": [],
@@ -2448,7 +2448,7 @@
         "h": 19,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 35
       },
       "id": 73,
       "links": [],
@@ -2720,7 +2720,7 @@
       "type": "table-old"
     }
   ],
-  "refresh": "5s",
+  "refresh": "",
   "schemaVersion": 26,
   "style": "dark",
   "tags": [
@@ -2875,7 +2875,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {

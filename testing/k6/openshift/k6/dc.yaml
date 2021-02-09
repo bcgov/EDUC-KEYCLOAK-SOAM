@@ -1,0 +1,49 @@
+kind: Template
+apiVersion: v1
+objects:
+  - apiVersion: batch/v1
+    kind: Job
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          volumes:
+            - name: k6-config
+              configMap:
+                name: k6-config
+          containers:
+            - image: ${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${IMAGE_TAG}
+              name: ${NAME}
+              env:
+                - name: K6_OUT
+                  value: influxdb=http://influxdb:8086/k6
+              resources:
+                limits:
+                  cpu: 2
+                  memory: 2Gi
+                requests:
+                  cpu: 500m
+                  memory: 500Mi
+              volumeMounts:
+                - name: k6-config
+                  mountPath: /var/opt/config
+          restartPolicy: Never
+    metadata:
+      name: ${NAME}
+      labels:
+        app: ${NAME}
+        group: educ-k6
+        component: ${NAME}-job
+parameters:
+  - name: NAME
+    value: educ-k6
+  - name: IMAGE_TAG
+    value: educ-k6:latest
+  - name: IMAGE_NAMESPACE
+    required: true
+  - name: IMAGE_REGISTRY
+    value: image-registry.openshift-image-registry.svc:5000
+  - name: HTTP_DEBUG
+    description: enable http debug logging in the k6 pod
+    value: "false"
