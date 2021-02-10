@@ -15,11 +15,13 @@
   "user": [
     {
       "name": "",
-      "secret": ""
+      "secret": "",
+      "givenName": ""
     },
     {
       "name": "",
-      "secret": ""
+      "secret": "",
+      "givenName": ""
     }
   ]
 }

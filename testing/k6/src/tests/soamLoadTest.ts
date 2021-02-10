@@ -4,8 +4,8 @@ import {Rate} from "k6/metrics";
 
 export const options = {
     stages: [
-        { duration: "30s", target: 5 },
-        { duration: "1m", target: 10 },
+        { duration: "1m", target: 60 },
+        { duration: "1m", target: 60 },
         { duration: "30s", target: 0 }
     ],
     discardResponseBodies: true
@@ -20,10 +20,20 @@ let config = JSON.parse(open(__ENV.CONFIG));
 
 export let errorRate = new Rate("errors");
 
-function checkStatus(response, statusCode=200) {
-    let success = check(response, {"is correct status": (r) => r.status === statusCode});
-    errorRate.add(!success, { tag1: 'is correct status' });
+function checkStatus(response, checkName, statusCode = 200) {
+    let success = check(response, {
+        [checkName]: (r) => {
+            if(r.status === statusCode){
+                return true
+            } else {
+                console.debug(checkName + ' failed. Incorrect response code.');
+                return false;
+            }
+        }
+    });
+    errorRate.add(!success, {tag1: checkName});
 }
+
 //Used to get a different user for each test
 let userIdx = 0;
 
@@ -46,19 +56,13 @@ export default function main() {
             response = http.get(
                 config.soam.rootUrl + config.soam.authPath + "?response_type=code&client_id=" + config.soam.clientId + "&kc_idp_hint=keycloak_bcdevexchange_bcsc&redirect_uri=" + encodeURI(config.soam.redirectUrl) + "&scope=" + config.soam.scopes,
                 {
-                    responseType: 'text',
+                    redirects: 2,
                     tags: {
-                        name: 'SOAMAuthURL'
+                        name: config.soam.authPath
                     }
                 }
             );
-            checkStatus(response);
-
-            vars["validateCardResult"] = response
-                .html()
-                .find("input[name=validateCardResult]")
-                .first()
-                .attr("value");
+            checkStatus(response, config.soam.authPath, 302);
         }
     );
     group(
@@ -66,66 +70,134 @@ export default function main() {
         function () {
             response = http.get('https://idtest.gov.bc.ca/login/entry',
                 {
+                    responseType: 'text',
                     tags: {
-                        name: 'LoginEntryURL'
+                        name: '/login/entry'
                     }
                 });
-            checkStatus(response);
+
+            vars["validateCardResult"] = response
+                .html()
+                .find("input[name=validateCardResult]")
+                .first()
+                .attr("value");
+
+            let transactionId;
+
+            let entryCheck = check(response, {
+                '/login/entry': (r) => {
+                    if (r.body) {
+                        transactionId = response.body.match("'cardtap-target-div', '([^']+)'");
+                        if (transactionId)
+                            transactionId = transactionId[1];
+                        else {
+                            console.debug('/login/entry failed. No transactionId.');
+                            return false;
+                        }
+                        if (transactionId && vars['validateCardResult'] && r.status === 200) {
+                            return true;
+                        } else {
+                            console.debug('/login/entry failed. Incorrect response body.');
+                            return false;
+                        }
+                    } else {
+                        console.debug('/login/entry failed. No response body.');
+                        return false;
+                    }
+
+                }
+            });
+            errorRate.add(!entryCheck, {tag1: '/login/entry'});
 
             response = http.get("https://idtest.gov.bc.ca/cardtap/resources/templates.html?v=R2.9.2",
                 {
                     tags: {
-                        name: 'CardtapURL'
+                        name: '/cardtap/resources/templates.html'
                     }
                 });
-            checkStatus(response);
+            checkStatus(response, '/cardtap/resources/templates.html status');
 
             response = http.post(
-                "https://idtest.gov.bc.ca/cardtap/v3/transactions/1577032a-02f7-44da-8d7a-963c41a7289b?clientId=" + config.idim.clientId,
+                "https://idtest.gov.bc.ca/cardtap/v3/transactions/" + transactionId + "?clientId=" + config.idim.clientId,
                 null,
                 {
+                    responseType: 'text',
                     headers: {
                         "content-type": "application/json"
                     },
                     tags: {
-                        name: 'ClientIDURL'
+                        name: '/cardtap/v3/transactions/{transaction-id}'
                     }
                 }
             );
-            checkStatus(response);
+            let responseCheck = check(response, {
+                "/cardtap/v3/transactions/{transaction-id}": (r) => {
+                    if (r.body && r.status === 200) {
+                        if (r.body.match('transactionId":"[^"]+"'))
+                            return true;
+                        else {
+                            console.debug('/cardtap/v3/transactions/{transaction-id} failed. No transaction id');
+                            return false;
+                        }
+                    } else {
+                        console.debug('/cardtap/v3/transactions/{transaction-id} failed. Incorrect response.');
+                        return false;
+                    }
+
+                }
+            });
+            errorRate.add(!responseCheck, {tag1: '/cardtap/v3/transactions/{transaction-id}'});
 
             response = http.put(
-                "https://idtest.gov.bc.ca/cardtap/v3/transactions/1577032a-02f7-44da-8d7a-963c41a7289b/device",
+                "https://idtest.gov.bc.ca/cardtap/v3/transactions/" + transactionId + "/device",
                 '{"deviceType":"MOCKSKAP"}',
                 {
+                    responseType: 'text',
                     headers: {
                         "content-type": "application/json"
                     },
                     tags: {
-                        name: 'DeviceURL'
+                        name: '/cardtap/v3/transactions/{transaction-id}/device'
                     }
                 }
             );
-            checkStatus(response);
+
+            responseCheck = check(response, {
+                "/cardtap/v3/transactions/{transaction-id}/device": (r) => {
+                    if (r.body && r.status === 200) {
+                        if (r.body.match('transactionId":"[^"]+"'))
+                            return true;
+                        else {
+                            console.debug('/cardtap/v3/transactions/{transaction-id}/device failed. No transaction id.');
+                            return false;
+                        }
+                    } else {
+                        console.debug('/cardtap/v3/transactions/{transaction-id}/device failed. Incorrect response.');
+                        return false;
+                    }
+
+                }
+            });
+            errorRate.add(!responseCheck, {tag1: '/cardtap/v3/transactions/{transaction-id}/device'});
 
             response = http.post(
                 "https://idtest.gov.bc.ca/MockSKAP/authorize",
                 null,
                 {
                     tags: {
-                        name: 'IDMAuthorizeURL'
+                        name: '/MockSKAP/authorize'
                     }
                 }
             );
-            checkStatus(response);
+            checkStatus(response, '/MockSKAP/authorize status');
 
             response = http.get("https://idtest.gov.bc.ca/MockSKAP/Widget/mockConnect.html",
                 {
                     tags: {
-                        name: 'MockConnectURL'
+                        name: '/MockSKAP/Widget/mockConnect.html'
                     }
                 });
-            checkStatus(response);
+            checkStatus(response, '/MockSKAP/Widget/mockConnect.html status');
 
             response = http.post(
                 "https://idtest.gov.bc.ca/MockSKAP/lookup-mbun-by-csn?csn=" + getUserName(),
@@ -136,13 +208,36 @@ export default function main() {
                     },
                     responseType: 'text',
                     tags: {
-                        name: 'LookupURL'
+                        name: '/MockSKAP/lookup-mbun-by-csn'
                     }
                 }
             );
-            checkStatus(response);
 
-            let userId = response.body.match('mbun":"([^"]*)"')[1];
+            let userId;
+
+            responseCheck = check(response, {
+                "/MockSKAP/lookup-mbun-by-csn": (r) => {
+                    if (r.body && r.status === 200) {
+                        userId = response.body.match('mbun":"([^"]*)"');
+                        if (userId)
+                            userId = userId[1];
+                        else {
+                            console.debug('/MockSKAP/lookup-mbun-by-csn failed. No userId.');
+                            return false;
+                        }
+                        if (userId && vars['validateCardResult'])
+                            return true;
+                        else {
+                            console.debug('/MockSKAP/lookup-mbun-by-csn failed. Incorrect response body.');
+                            return false;
+                        }
+                    } else {
+                        console.debug('/MockSKAP/lookup-mbun-by-csn failed. No response body.');
+                        return false;
+                    }
+                }
+            });
+            errorRate.add(!responseCheck, {tag1: '/MockSKAP/lookup-mbun-by-csn'});
 
             response = http.post(
                 "https://idtest.gov.bc.ca/MockSKAP/cardread",
@@ -153,16 +248,32 @@ export default function main() {
                     },
                     responseType: 'text',
                     tags: {
-                        name: 'CardReadURL'
+                        name: '/MockSKAP/cardread'
                     }
                 }
             );
-            checkStatus(response);
 
-            let jwe = response.body.match('JWE":"([^"]*)"')[1];
+            let jwe;
+            responseCheck = check(response, {
+                '/MockSKAP/cardread': (r) => {
+                    if (r.body && r.status === 200) {
+                        jwe = response.body.match('JWE":"([^"]*)"');
+                        if (jwe) {
+                            jwe = jwe[1];
+                        } else {
+                            console.debug('/MockSKAP/cardread call failed. JWE was not present.')
+                        }
+                        return jwe;
+                    } else {
+                        console.debug('/MockSKAP/cardread call failed. Response was incorrect.')
+                    }
+
+                }
+            });
+            errorRate.add(!responseCheck, {tag1: '/MockSKAP/cardread'});
 
             response = http.put(
-                "https://idtest.gov.bc.ca/cardtap/v3/transactions/1577032a-02f7-44da-8d7a-963c41a7289b/jwe",
+                "https://idtest.gov.bc.ca/cardtap/v3/transactions/" + transactionId + "/jwe",
                 '{"audience":"mockskap.app","JWE":"' + jwe + '"}',
                 {
                     headers: {
@@ -170,13 +281,28 @@ export default function main() {
                     },
                     responseType: 'text',
                     tags: {
-                        name: 'JWEURL'
+                        name: '/cardtap/v3/transactions/{transaction-id}/jwe'
                     }
                 }
             );
-            checkStatus(response);
 
             let validateCardResultFromJwe = response.body;
+            responseCheck = check(response, {
+                '/cardtap/v3/transactions/{transaction-id}/jwe': (r) => {
+                    if (r.body && r.status === 200) {
+                        if (validateCardResultFromJwe.includes('"cardStatus":"ACTIVE","cardEventType":"REGISTRATION"'))
+                            return true;
+                        else {
+                            console.debug('/cardtap/v3/transactions/{transaction-id}/jwe call failed. Response body was incorrect.');
+                            return false
+                        }
+                    } else {
+                        console.debug('/cardtap/v3/transactions/{transaction-id}/jwe call failed. Response was incorrect.');
+                    }
+
+                }
+            });
+            errorRate.add(!responseCheck, {tag1: '/cardtap/v3/transactions/{transaction-id}/jwe'});
 
             response = http.post(
                 "https://idtest.gov.bc.ca/login/identify",
@@ -186,12 +312,30 @@ export default function main() {
                     csrftoken: `${vars["validateCardResult"]}`,
                 },
                 {
+
+                    responseType: 'text',
                     tags: {
-                        name: 'IdentifyURL'
+                        name: '/login/identify'
                     }
                 }
             );
-            checkStatus(response);
+
+            responseCheck = check(response, {
+                '/login/identify': (r) => {
+                    if (r.body && r.status === 200) {
+                        if (response.body.match('<strong>' + config.user[userIdx % config.user.length].givenName))
+                            return true;
+                        else {
+                            console.debug('/login/identify call failed. HTML was incorrect.');
+                            return false
+                        }
+                    } else {
+                        console.debug('/login/identify call failed. Response was incorrect.');
+                    }
+
+                }
+            });
+            errorRate.add(!responseCheck, {tag1: '/login/identify'});
 
             response = http.post(
                 "https://idtest.gov.bc.ca/login/passcode/validate",
@@ -200,20 +344,37 @@ export default function main() {
                     passcode: getUserSecret(),
                 },
                 {
+                    responseType: 'text',
                     tags: {
-                        name: 'ValidateURL'
+                        name: '/login/passcode/validate'
                     }
                 }
             );
-            checkStatus(response);
+
+            responseCheck = check(response, {
+                '/login/passcode/validate': (r) => {
+                    if (r.body && r.status === 200) {
+                        if (response.body.match('<strong>' + config.user[userIdx % config.user.length].givenName))
+                            return true;
+                        else {
+                            console.debug('/login/passcode/validate call failed. HTML was incorrect.');
+                            return false
+                        }
+                    } else {
+                        console.debug('/login/passcode/validate call failed. Response was incorrect.');
+                    }
+
+                }
+            });
+            errorRate.add(!responseCheck, {tag1: '/login/passcode/validate'});
 
             response = http.get("https://idtest.gov.bc.ca/login/history",
                 {
                     tags: {
-                        name: 'HistoryURL'
+                        name: '/login/history'
                     }
                 });
-            checkStatus(response);
+            checkStatus(response, '/login/history status');
         }
     );
 
@@ -227,23 +388,27 @@ export default function main() {
                     },
                     redirects: 3, //Limits the number of redirects so we don't return to final callback url
                     tags: {
-                        name: 'SetConfirmationURL'
+                        name: '/login/setConfirmation'
                     }
                 }
             );
 
-            checkStatus(response, 302);
             let codeCheck = check(response, {
-                "is code present": (r) => {
-                    if (r.headers && r.headers.Location) {
-                        return r.headers.Location.includes("code=");
+                "/login/setConfirmation": (r) => {
+                    if (r.headers && r.headers.Location && r.status === 302) {
+                        if (r.headers.Location.includes("code="))
+                            return true;
+                        else {
+                            console.debug('/login/setConfirmation call failed. Code was not in response.');
+                        }
                     } else {
+                        console.debug('/login/setConfirmation call failed.  Response was incorrect.');
                         return false;
                     }
 
                 }
             });
-            errorRate.add(!codeCheck, { tag1: 'is code present' });
+            errorRate.add(!codeCheck, {tag1: '/login/setConfirmation'});
 
         }
     );
@@ -252,7 +417,10 @@ export default function main() {
 
             let code = null;
             if (response.headers && response.headers.Location) {
-                code = response.headers.Location.match("code=(.*)")[1];
+                code = response.headers.Location.match("code=(.*)");
+                if (code) {
+                    code = code[1];
+                }
             }
             response = http.post(config.soam.rootUrl + config.soam.tokenPath,
                 {
@@ -270,21 +438,27 @@ export default function main() {
                     },
                     responseType: 'text',
                     tags: {
-                        name: 'GetTokenURL'
+                        name: config.soam.tokenPath
                     }
                 });
-            checkStatus(response);
+
             let codeCheck = check(response, {
-                "is token present": (r) => {
-                    if (r.body) {
-                        return r.body.includes("access_token\":");
+                [config.soam.tokenPath]: (r) => {
+                    if (r.body && r.status === 200) {
+                        if (r.body.includes("access_token\":"))
+                            return true;
+                        else {
+                            console.debug(config.soam.tokenPath + ' call failed. Token was not present.');
+                            return false;
+                        }
                     } else {
+                        console.debug(config.soam.tokenPath + ' call failed. Response was incorrect.');
                         return false;
                     }
 
                 }
             });
-            errorRate.add(!codeCheck, { tag1: 'is token present' });
+            errorRate.add(!codeCheck, {tag1: config.soam.tokenPath});
         }
     );
     // Automatically added sleep
