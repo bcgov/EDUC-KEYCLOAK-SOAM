@@ -122,6 +122,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             
             if(accountType.equals("bceid")) {
 	           federatedUser.setSingleAttribute("display_name", (String)otherClaims.get("display_name"));
+	           federatedUser.setSingleAttribute("bceid_userid", ((String)otherClaims.get("bceid_userid")));
             }else if(accountType.equals("idir")) {
  	           federatedUser.setSingleAttribute("idir_username", ((String)otherClaims.get("preferred_username")).replaceFirst("@idir", "").toUpperCase());
  	           federatedUser.setSingleAttribute("display_name", ((String)otherClaims.get("name")));
