@@ -1,0 +1,15 @@
+<logging-profiles>
+  <logging-profile name="soam">
+    <file-handler name="soam-logs" append="false">
+      <level name="DEBUG"/>
+      <file relative-to="jboss.server.log.dir" path="app.log"/>
+      <formatter>{"time_stamp":"%d{yyyy-MM-dd HH:mm:ss.SSS}","level":"%p" ,"thread":"%t","msg":"%s", "exception":"%e","correlation_id":%X{correlation_id:-""},"user_guid":%X{user_guid:-""}}</formatter>
+    </file-handler>
+    <logger category="ca.bc.gov.educ.keycloak.soam">
+      <level name="DEBUG"/>
+      <handlers>
+        <handler name="soam-logs"/>
+      </handlers>
+    </logger>
+  </logging-profile>
+</logging-profiles>
