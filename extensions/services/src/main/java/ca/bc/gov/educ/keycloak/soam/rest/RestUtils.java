@@ -63,6 +63,7 @@ public class RestUtils {
 	  final String correlationID = UUID.randomUUID().toString();
       MDC.put("correlation_id", correlationID);
       MDC.put("user_guid", identifierValue);
+      System.out.println("created correlation id ::"+correlationID+" for guid :: "+identifierType);
       logger.info("correlation id created.");
       MDC.clear();
 		RestTemplate restTemplate = getRestTemplate(null);
