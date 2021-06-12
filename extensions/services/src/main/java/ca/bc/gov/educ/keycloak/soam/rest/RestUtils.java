@@ -60,16 +60,11 @@ public class RestUtils {
 	}
 
     public void performLogin(String identifierType, String identifierValue, String userID, SoamServicesCard servicesCard) {
-	  final String correlationID = UUID.randomUUID().toString();
-      MDC.put("correlation_id", correlationID);
-      MDC.put("user_guid", identifierValue);
-      System.out.println("created correlation id ::"+correlationID+" for guid :: "+identifierType);
-      logger.info("correlation id created.");
-      MDC.clear();
-		RestTemplate restTemplate = getRestTemplate(null);
+      final String correlationID = logAndGetCorrelationID(identifierType, identifierValue);
+      RestTemplate restTemplate = getRestTemplate(null);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
+    headers.add("correlationID", correlationID);
 		MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
 		map.add("identifierType", identifierType);
 		map.add("identifierValue", identifierValue);
@@ -102,14 +97,25 @@ public class RestUtils {
     }
 
     public SoamLoginEntity getSoamLoginEntity(String identifierType, String identifierValue) {
-		RestTemplate restTemplate = getRestTemplate(null);
+      final String correlationID = logAndGetCorrelationID(identifierType, identifierValue);
+      RestTemplate restTemplate = getRestTemplate(null);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
+      headers.add("correlationID", correlationID);
 		try {
 			return restTemplate.exchange(props.getSoamApiURL() + "/" + identifierType + "/" + identifierValue, HttpMethod.GET, new HttpEntity<>("parameters", headers), SoamLoginEntity.class).getBody();
 		} catch (final HttpClientErrorException e) {
 			throw new RuntimeException("Could not complete getSoamLoginEntity call: " + e.getMessage());
 		}
     }
+
+  private String logAndGetCorrelationID(String identifierType, String identifierValue) {
+    final String correlationID = UUID.randomUUID().toString();
+    MDC.put("correlation_id", correlationID);
+    MDC.put("user_guid", identifierValue);
+    System.out.println("created correlation id ::" + correlationID + " for guid :: " + identifierType);
+    logger.info("correlation id created.");
+    MDC.clear();
+    return correlationID;
+  }
 }
