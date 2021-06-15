@@ -60,7 +60,8 @@ public class RestUtils {
 	}
 
     public void performLogin(String identifierType, String identifierValue, String userID, SoamServicesCard servicesCard) {
-      final String correlationID = logAndGetCorrelationID(identifierValue);
+      String url = props.getSoamApiURL() + "/login";
+      final String correlationID = logAndGetCorrelationID(identifierValue, url, HttpMethod.POST.toString());
       RestTemplate restTemplate = getRestTemplate(null);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -90,29 +91,32 @@ public class RestUtils {
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
 		try {
-			restTemplate.postForEntity(props.getSoamApiURL() + "/login",request, SoamLoginEntity.class);
+			restTemplate.postForEntity(url,request, SoamLoginEntity.class);
 		} catch (final HttpClientErrorException e) {
 			throw new RuntimeException("Could not complete login call: " + e.getMessage());
 		}
     }
 
     public SoamLoginEntity getSoamLoginEntity(String identifierType, String identifierValue) {
-      final String correlationID = logAndGetCorrelationID(identifierValue);
+	   String url = props.getSoamApiURL() + "/" + identifierType + "/" + identifierValue;
+      final String correlationID = logAndGetCorrelationID(identifierValue, url, HttpMethod.GET.toString());
       RestTemplate restTemplate = getRestTemplate(null);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
       headers.add("correlationID", correlationID);
 		try {
-			return restTemplate.exchange(props.getSoamApiURL() + "/" + identifierType + "/" + identifierValue, HttpMethod.GET, new HttpEntity<>("parameters", headers), SoamLoginEntity.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>("parameters", headers), SoamLoginEntity.class).getBody();
 		} catch (final HttpClientErrorException e) {
 			throw new RuntimeException("Could not complete getSoamLoginEntity call: " + e.getMessage());
 		}
     }
 
-  private String logAndGetCorrelationID(String identifierValue) {
+  private String logAndGetCorrelationID(String identifierValue, String url, String httpMethod) {
     final String correlationID = UUID.randomUUID().toString();
     MDC.put("correlation_id", correlationID);
     MDC.put("user_guid", identifierValue);
+    MDC.put("client_http_request_url", url);
+    MDC.put("client_http_request_method", httpMethod);
     logger.info("correlation id for guid="+identifierValue+" is="+correlationID);
     MDC.clear();
     return correlationID;
