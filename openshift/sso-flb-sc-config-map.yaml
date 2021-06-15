@@ -1,0 +1,51 @@
+---
+apiVersion: v1
+kind: Template
+metadata:
+  name: sso-flb-sc-config-map
+  annotations:
+    "openshift.io/display-name": sso-flb-sc-config-map
+parameters:
+  - description: The pod namespace
+    name: POD_NAMESPACE
+    value: $(POD_NAMESPACE)
+  - description: Splunk Token
+    name: SPLUNK_TOKEN
+    value: $(SPLUNK_TOKEN)
+objects:
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      name: sso-flb-sc-config-map
+      namespace: ${POD_NAMESPACE}
+    data:
+      fluent-bit.conf: |
+        [SERVICE]
+           Flush        1
+           Daemon       Off
+           Log_Level    debug
+           HTTP_Server   On
+           HTTP_Listen   0.0.0.0
+           Parsers_File parsers.conf
+        [INPUT]
+           Name   tail
+           Path   /mnt/log/*,/mnt/log/soam/*
+           Exclude_Path *.log.*,*.gz,*.zip,*audit*
+           Parser docker
+           Mem_Buf_Limit 20MB
+        [OUTPUT]
+           Name   stdout
+           Match  *
+        [OUTPUT]
+           Name  splunk
+           Match *
+           Host  gww.splunk.educ.gov.bc.ca
+           Port  443
+           TLS         On
+           TLS.Verify  Off
+           Message_Key sso
+           Splunk_Token ${SPLUNK_TOKEN}
+      parsers.conf: |
+        [PARSER]
+            Name        docker
+            Format      json

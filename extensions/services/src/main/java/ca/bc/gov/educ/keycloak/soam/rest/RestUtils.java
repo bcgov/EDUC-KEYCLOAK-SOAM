@@ -2,8 +2,10 @@ package ca.bc.gov.educ.keycloak.soam.rest;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.jboss.logging.Logger;
+import org.jboss.logging.MDC;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -22,22 +24,22 @@ import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
 
 /**
  * This class is used for REST calls
- * 
+ *
  * @author Marco Villeneuve
  *
  */
 public class RestUtils {
-	
+
 	private static Logger logger = Logger.getLogger(RestUtils.class);
-	
+
 	private static RestUtils restUtilsInstance;
-	
+
 	private static ApplicationProperties props;
 
 	private RestUtils() {
 		props = new ApplicationProperties();
 	}
-	
+
 	public static RestUtils getInstance() {
 		if(restUtilsInstance == null) {
 			restUtilsInstance = new RestUtils();
@@ -58,15 +60,16 @@ public class RestUtils {
 	}
 
     public void performLogin(String identifierType, String identifierValue, String userID, SoamServicesCard servicesCard) {
-		RestTemplate restTemplate = getRestTemplate(null);
+      final String correlationID = logAndGetCorrelationID(identifierValue);
+      RestTemplate restTemplate = getRestTemplate(null);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
+    headers.add("correlationID", correlationID);
 		MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
 		map.add("identifierType", identifierType);
 		map.add("identifierValue", identifierValue);
 		map.add("userID", userID);
-		
+
 		if(servicesCard != null) {
 			map.add("birthDate",servicesCard.getBirthDate());
 			map.add("city",servicesCard.getCity());
@@ -83,25 +86,35 @@ public class RestUtils {
 			map.add("surname",servicesCard.getSurname());
 			map.add("userDisplayName",servicesCard.getUserDisplayName());
 		}
-		
+
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-	
+
 		try {
 			restTemplate.postForEntity(props.getSoamApiURL() + "/login",request, SoamLoginEntity.class);
 		} catch (final HttpClientErrorException e) {
 			throw new RuntimeException("Could not complete login call: " + e.getMessage());
 		}
     }
-    
+
     public SoamLoginEntity getSoamLoginEntity(String identifierType, String identifierValue) {
-		RestTemplate restTemplate = getRestTemplate(null);
+      final String correlationID = logAndGetCorrelationID(identifierValue);
+      RestTemplate restTemplate = getRestTemplate(null);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-		
+      headers.add("correlationID", correlationID);
 		try {
 			return restTemplate.exchange(props.getSoamApiURL() + "/" + identifierType + "/" + identifierValue, HttpMethod.GET, new HttpEntity<>("parameters", headers), SoamLoginEntity.class).getBody();
 		} catch (final HttpClientErrorException e) {
 			throw new RuntimeException("Could not complete getSoamLoginEntity call: " + e.getMessage());
 		}
     }
+
+  private String logAndGetCorrelationID(String identifierValue) {
+    final String correlationID = UUID.randomUUID().toString();
+    MDC.put("correlation_id", correlationID);
+    MDC.put("user_guid", identifierValue);
+    logger.info("correlation id for guid="+identifierValue+" is="+correlationID);
+    MDC.clear();
+    return correlationID;
+  }
 }
