@@ -105,51 +105,73 @@ objects:
           </management>
           <profile>
               <subsystem xmlns="urn:jboss:domain:logging:6.0">
-                  <console-handler name="CONSOLE">
-                      <formatter>
-                          <named-formatter name="##CONSOLE-FORMATTER##"/>
-                      </formatter>
-                  </console-handler>
-                  <periodic-rotating-file-handler name="AUDIT">
-                      <file path="${jboss.persistent.log.dir}/audit-log-${jboss.node.name}-keycloak.log"/>
-                      <suffix value=".yyyy-MM-dd"/>
-                      <formatter>
-                          <named-formatter name="OPENSHIFT"/>
-                      </formatter>
-                  </periodic-rotating-file-handler>
-                  <logger category="com.arjuna">
-                      <level name="WARN"/>
-                  </logger>
-                  <logger category="org.jboss.as.config">
-                      <level name="DEBUG"/>
-                  </logger>
-                  <logger category="org.keycloak.events" use-parent-handlers="false">
-                      <level name="DEBUG"/>
-                      <handlers>
-                          <handler name="AUDIT"/>
-                      </handlers>
-                  </logger>
-                  <logger category="sun.rmi">
-                      <level name="WARN"/>
-                  </logger>
-                  <root-logger>
-                      <level name="INFO"/>
-                      <handlers>
-                          <handler name="CONSOLE"/>
-                      </handlers>
-                  </root-logger>
-                  <formatter name="OPENSHIFT">
-                      <json-formatter>
-                          <exception-output-type value="formatted"/>
-                          <key-overrides timestamp="@timestamp"/>
-                          <meta-data>
-                              <property name="@version" value="1"/>
-                          </meta-data>
-                      </json-formatter>
-                  </formatter>
-                  <formatter name="COLOR-PATTERN">
-                      <pattern-formatter pattern="%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"/>
-                  </formatter>
+                <console-handler name="CONSOLE">
+                    <formatter>
+                        <pattern-formatter pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} | [%5p] | [%t] | [%C] | [%s] | [%X{correlation_id}] | [%X{user_guid}] | [%e] %n"/>
+                    </formatter>
+                </console-handler>
+                <periodic-rotating-file-handler name="AUDIT">
+                    <file path="${jboss.persistent.log.dir}/audit-log-${jboss.node.name}-keycloak.log"/>
+                    <suffix value=".yyyy-MM-dd"/>
+                    <formatter>
+                        <named-formatter name="OPENSHIFT"/>
+                    </formatter>
+                </periodic-rotating-file-handler>
+                <size-rotating-file-handler name="SOAM" rotate-on-boot="true">
+                    <file path="${jboss.persistent.log.dir}/soam/soam.log"/>
+                    <append value="false"/>
+                    <suffix value=".yyyy-MM-dd"/>
+                     <formatter>
+                      <named-formatter name="SOAM-FORMATTER"/>
+                    </formatter>
+                </size-rotating-file-handler>
+                <logger category="com.arjuna">
+                    <level name="WARN"/>
+                </logger>
+                <logger category="org.jboss.as.config">
+                    <level name="DEBUG"/>
+                </logger>
+                <logger category="org.keycloak.events" use-parent-handlers="false">
+                    <level name="DEBUG"/>
+                    <handlers>
+                        <handler name="AUDIT"/>
+                    </handlers>
+                </logger>
+                <logger category="sun.rmi">
+                    <level name="WARN"/>
+                </logger>
+                <logger category="ca.bc.gov.educ.keycloak.soam" use-parent-handlers="false">
+                    <level name="TRACE"/>
+                     <handlers>
+                        <handler name="SOAM"/>
+                        <handler name="CONSOLE"/>
+                    </handlers>
+                </logger>
+                <root-logger>
+                    <level name="INFO"/>
+                    <handlers>
+                        <handler name="SOAM"/>
+                        <handler name="CONSOLE"/>
+                    </handlers>
+                </root-logger>
+                <formatter name="SOAM-FORMATTER">
+                    <json-formatter>
+                        <exception-output-type value="formatted"/>
+                        <key-overrides timestamp="time_stamp"/>
+                    </json-formatter>
+                </formatter>
+                <formatter name="OPENSHIFT">
+                    <json-formatter>
+                        <exception-output-type value="formatted"/>
+                        <key-overrides timestamp="@timestamp"/>
+                        <meta-data>
+                            <property name="@version" value="1"/>
+                        </meta-data>
+                    </json-formatter>
+                </formatter>
+                <formatter name="COLOR-PATTERN">
+                    <pattern-formatter pattern="%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"/>
+                </formatter>
               </subsystem>
               <subsystem xmlns="urn:jboss:domain:bean-validation:1.0"/>
               <subsystem xmlns="urn:jboss:domain:core-management:1.0"/>

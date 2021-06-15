@@ -1,10 +1,9 @@
 package ca.bc.gov.educ.keycloak.soam.authenticator;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.json.JsonReader;
-
+import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
+import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
+import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
+import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -17,9 +16,9 @@ import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 import org.keycloak.util.JsonSerialization;
 
-import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
-import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
-import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
+import javax.json.JsonReader;
+import java.util.List;
+import java.util.Map;
 
 
 public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
@@ -30,18 +29,18 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
     @Override
     protected void actionImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
     }
-    
+
     @Override
     public void authenticate(AuthenticationFlowContext context) {
-    	JsonReader reader = null;
-    	try {
-			logger.debug("SOAM Post: inside authenticate");
-			
-	        if (context.getAuthenticationSession().getAuthNote(BROKER_REGISTERED_NEW_USER) != null) {
-	        	context.setUser(context.getUser());
-				context.success();
-	            return;
-	        }
+    JsonReader reader = null;
+    try {
+      logger.debug("SOAM Post: inside authenticate");
+
+      if (context.getAuthenticationSession().getAuthNote(BROKER_REGISTERED_NEW_USER) != null) {
+        context.setUser(context.getUser());
+        context.success();
+        return;
+      }
 
 			String stringSerialCtx = context.getAuthenticationSession().getAuthNote(PostBrokerLoginConstants.PBL_BROKERED_IDENTITY_CONTEXT);
 			SerializedBrokeredIdentityContext serializedCtx = JsonSerialization.readValue(stringSerialCtx, SerializedBrokeredIdentityContext.class);
@@ -58,15 +57,13 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
 			}
 
-			JsonWebToken token = (JsonWebToken)brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
-				        
-	        Map<String, Object> otherClaims = token.getOtherClaims();
-			for(String s: otherClaims.keySet()) {
-	    		logger.debug("Key: " + s + " Value: " + otherClaims.get(s));
-			}
-			
-			String username = null;
-			
+      JsonWebToken token = (JsonWebToken) brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
+
+      Map<String, Object> otherClaims = token.getOtherClaims();
+      logger.debug(ApplicationProperties.mapper.writeValueAsString(otherClaims));
+
+      String username = null;
+
 			switch (accountType) {
 			case "bceid":
 				logger.debug("SOAM Post: Account type bceid found");
@@ -105,13 +102,13 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				if(username == null) {
 					throw new SoamRuntimeException("No idir_guid value was found in token");
 				}
-				break; 
+				break;
 			default:
 				throw new SoamRuntimeException("Account type is not bcsc, bceid or idir, check IDP mappers");
 			}
-			
+
 			//UserModel existingUser = context.getSession().users().getUserByUsername(context.getUser().getUsername(), context.getRealm());
-			
+
 			context.setUser(context.getUser());
 			context.success();
 		} catch (Exception e) {
@@ -121,26 +118,26 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				reader.close();
 			}
 		}
-    } 
-    
+    }
+
     protected void updateUserInfo(String guid, String accountType, String credType, SoamServicesCard servicesCard) {
     	logger.debug("SOAM: createOrUpdateUser");
     	logger.debug("SOAM: performing login for " + accountType + " user: " + guid);
-    	
-    	try { 
+
+    	try {
 			RestUtils.getInstance().performLogin(credType, guid, guid, servicesCard);
 		} catch (Exception e) {
 			logger.error("Exception occurred within SOAM while processing login" + e.getMessage());
 			throw new SoamRuntimeException("Exception occurred within SOAM while processing login, check downstream logs for SOAM API service");
 		}
     }
- 
+
     @Override
     protected void authenticateImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
     	logger.debug("SOAM Post: inside returning authenticateImpl");
     	//Not used for Post Login Authenticator
     }
-    
+
     @Override
     public boolean requiresUser() {
         return false;

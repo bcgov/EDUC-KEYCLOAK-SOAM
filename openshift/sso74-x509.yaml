@@ -199,7 +199,7 @@ objects:
             value: ""
           - name: JAVA_OPTS_APPEND
             value: "-Dkeycloak.profile.feature.authorization=enabled -Djboss.persistent.log.dir=/var/log/eap"
-            # SH: For upgrade timeout settings 
+            # SH: For upgrade timeout settings
             # value: "-Dkeycloak.profile.feature.authorization=enabled -Djboss.persistent.log.dir=/var/log/eap -Djboss.as.management.blocking.timeout=600"
 # Debug configuration for remote debugging
 #          - name: DEBUG
@@ -255,6 +255,44 @@ objects:
             readOnly: true
           - mountPath: /var/log/eap
             name: logs
+        - image: docker-remote.artifacts.developer.gov.bc.ca/fluent/fluent-bit:1.5.7
+            name: "${NAME}-fluent-bit-sidecar"
+            imagePullPolicy: Always
+            imagePullSecrets:
+              - name: artifactory-creds
+            volumeMounts:
+              - name: logs
+                mountPath: /mnt/log
+              - name: flb-sc-config-volume
+                mountPath: /fluent-bit/etc/
+            readinessProbe:
+              tcpSocket:
+                port: 2020
+              initialDelaySeconds: 10
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 5
+              successThreshold: 1
+            livenessProbe:
+              httpGet:
+                path: /
+                port: 2020
+              initialDelaySeconds: 10
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 5
+              successThreshold: 1
+            ports:
+              - containerPort: 2020
+                protocol: TCP
+                name: metrics
+            resources:
+              requests:
+                cpu: "10m"
+                memory: "25Mi"
+              limits:
+                cpu: "20m"
+                memory: "50Mi"
         terminationGracePeriodSeconds: 75
         volumes:
         # SH: remove base chain build, use configmap
@@ -269,8 +307,10 @@ objects:
           secret:
             secretName: ${NAME}-x509-jgroups-secret${SUFFIX}
         - name: logs
-          persistentVolumeClaim:
-            claimName: ${NAME}-logs${SUFFIX}
+          emptyDir: {}
+        - name: flb-sc-config-volume
+            configMap:
+              name: "sso-flb-sc-config-map"
     triggers:
     - imageChangeParams:
         automatic: true

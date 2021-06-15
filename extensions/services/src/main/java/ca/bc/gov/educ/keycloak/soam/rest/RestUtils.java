@@ -60,7 +60,7 @@ public class RestUtils {
 	}
 
     public void performLogin(String identifierType, String identifierValue, String userID, SoamServicesCard servicesCard) {
-      final String correlationID = logAndGetCorrelationID(identifierType, identifierValue);
+      final String correlationID = logAndGetCorrelationID(identifierValue);
       RestTemplate restTemplate = getRestTemplate(null);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -97,7 +97,7 @@ public class RestUtils {
     }
 
     public SoamLoginEntity getSoamLoginEntity(String identifierType, String identifierValue) {
-      final String correlationID = logAndGetCorrelationID(identifierType, identifierValue);
+      final String correlationID = logAndGetCorrelationID(identifierValue);
       RestTemplate restTemplate = getRestTemplate(null);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -109,12 +109,11 @@ public class RestUtils {
 		}
     }
 
-  private String logAndGetCorrelationID(String identifierType, String identifierValue) {
+  private String logAndGetCorrelationID(String identifierValue) {
     final String correlationID = UUID.randomUUID().toString();
     MDC.put("correlation_id", correlationID);
     MDC.put("user_guid", identifierValue);
-    System.out.println("created correlation id ::" + correlationID + " for guid :: " + identifierType);
-    logger.info("correlation id created.");
+    logger.info("correlation id for guid="+identifierValue+" is="+correlationID);
     MDC.clear();
     return correlationID;
   }
