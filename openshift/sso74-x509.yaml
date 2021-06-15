@@ -36,20 +36,6 @@ metadata:
   creationTimestamp: null
   name: sso74-x509-postgresql-persistent
 objects:
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    annotations:
-    # TODO: Update to netapp
-      volume.beta.kubernetes.io/storage-class: netapp-file-standard
-      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/netapp-file-standardfs
-    name: ${NAME}-logs${SUFFIX}
-  spec:
-    accessModes:
-    - ReadWriteMany
-    resources:
-      requests:
-        storage: 5Gi
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
   metadata:
@@ -131,186 +117,197 @@ objects:
         name: ${NAME}${SUFFIX}
       spec:
         containers:
-        # SH: remove base chain build, use configmap
-        - command:
-          - /bin/sh
-          - -c
-          - cp /provisioning/standalone-openshift.xml /opt/eap/standalone/configuration/standalone-openshift.xml && /opt/eap/bin/openshift-launch.sh
-          env:
-          - name: DB_POSTGRESQL_SERVICE_HOST
-            value: ${DB_SERVICE_HOST}
-          - name: DB_POSTGRESQL_SERVICE_PORT
-            value: "5432"
-          - name: DB_SERVICE_PREFIX_MAPPING
-            value: db-postgresql=DB
-          - name: DB_JNDI
-            value: ${DB_JNDI}
-          - name: DB_USERNAME
-            valueFrom:
-              secretKeyRef:
-                  name: "${DB_SECRET_NAME}"
-                  key: "${DB_SECRET_USERNAME_KEY}"
-          - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                  name: "${DB_SECRET_NAME}"
-                  key: "${DB_SECRET_PASSWORD_KEY}"
-          - name: DB_DATABASE
-            valueFrom:
-              secretKeyRef:
-                  name: "${DB_SECRET_NAME}"
-                  key: "${DB_SECRET_DATABASE_KEY}"
-          - name: TX_DATABASE_PREFIX_MAPPING
-            value: db-postgresql=DB
-          - name: DB_MIN_POOL_SIZE
-            value: ${DB_MIN_POOL_SIZE}
-          - name: DB_MAX_POOL_SIZE
-            value: ${DB_MAX_POOL_SIZE}
-          - name: DB_TX_ISOLATION
-            value: ${DB_TX_ISOLATION}
-          - name: JGROUPS_PING_PROTOCOL
-            value: dns.DNS_PING
-          - name: OPENSHIFT_DNS_PING_SERVICE_NAME
-            value: ${NAME}-ping${SUFFIX}
-          - name: OPENSHIFT_DNS_PING_SERVICE_PORT
-            value: "8888"
-          - name: X509_CA_BUNDLE
-            value: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
-          - name: JGROUPS_CLUSTER_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                  name: "${NAME}-jgroups${SUFFIX}"
-                  key: "password"
-          - name: SSO_ADMIN_USERNAME
-            valueFrom:
-              secretKeyRef:
-                  name: "${NAME}-admin${SUFFIX}"
-                  key: "username"
-          - name: SSO_ADMIN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                  name: "${NAME}-admin${SUFFIX}"
-                  key: "password"
-          - name: SSO_REALM
-            value: ""
-          - name: SSO_SERVICE_USERNAME
-            value: ""
-          - name: SSO_SERVICE_PASSWORD
-            value: ""
-          - name: JAVA_OPTS_APPEND
-            value: "-Dkeycloak.profile.feature.authorization=enabled -Djboss.persistent.log.dir=/var/log/eap"
-            # SH: For upgrade timeout settings
-            # value: "-Dkeycloak.profile.feature.authorization=enabled -Djboss.persistent.log.dir=/var/log/eap -Djboss.as.management.blocking.timeout=600"
-# Debug configuration for remote debugging
-#          - name: DEBUG
-#            value: 'true'
-#          - name: DEBUG_PORT
-#            value: '0.0.0.0:8787'
-          image: " "
-          imagePullPolicy: Always
-          livenessProbe:
-            exec:
-              command:
-              - /bin/bash
-              - -c
-              - /opt/eap/bin/livenessProbe.sh
-            initialDelaySeconds: 180
-          readinessProbe:
-            exec:
-              command:
-              - /bin/bash
-              - -c
-              - /opt/eap/bin/readinessProbe.sh
-            initialDelaySeconds: 120
-          name: ${CONTAINER_NAME}
-          ports:
-          - containerPort: 8778
-            name: jolokia
-            protocol: TCP
-          - containerPort: 8080
-            name: http
-            protocol: TCP
-          - containerPort: 8443
-            name: https
-            protocol: TCP
-          - containerPort: 8888
-            name: ping
-            protocol: TCP
-          resources:
-            requests:
-              cpu: "500m"
-            limits:
-              memory: ${MEMORY_LIMIT}
-              cpu: "1"
-          volumeMounts:
-          # SH: remove base chain build, use configmap
-          - mountPath: /provisioning
-            name: ${NAME}-standalone-openshift-xml${SUFFIX}
-            readOnly: true
-          - mountPath: /etc/x509/https
-            name: sso-x509-https-volume
-            readOnly: true
-          - mountPath: /etc/x509/jgroups
-            name: sso-x509-jgroups-volume
-            readOnly: true
-          - mountPath: /var/log/eap
-            name: logs
-        - image: docker-remote.artifacts.developer.gov.bc.ca/fluent/fluent-bit:1.5.7
-            name: ${NAME}-fluent-bit-sidecar
+          - resources:
+              limits:
+                cpu: '1'
+                memory: 1Gi
+              requests:
+                cpu: 500m
+            readinessProbe:
+              exec:
+                command:
+                  - /bin/bash
+                  - '-c'
+                  - /opt/eap/bin/readinessProbe.sh
+              initialDelaySeconds: 120
+              timeoutSeconds: 1
+              periodSeconds: 10
+              successThreshold: 1
+              failureThreshold: 3
+            terminationMessagePath: /dev/termination-log
+            name: rh-sso
+            command:
+              - /bin/sh
+              - '-c'
+              - >-
+                cp /provisioning/standalone-openshift.xml
+                /opt/eap/standalone/configuration/standalone-openshift.xml &&
+                /opt/eap/bin/openshift-launch.sh
+            livenessProbe:
+              exec:
+                command:
+                  - /bin/bash
+                  - '-c'
+                  - /opt/eap/bin/livenessProbe.sh
+              initialDelaySeconds: 180
+              timeoutSeconds: 1
+              periodSeconds: 10
+              successThreshold: 1
+              failureThreshold: 3
+            env:
+              - name: DB_POSTGRESQL_SERVICE_HOST
+                value: ${DB_SERVICE_HOST}
+              - name: DB_POSTGRESQL_SERVICE_PORT
+                value: '5432'
+              - name: DB_SERVICE_PREFIX_MAPPING
+                value: db-postgresql=DB
+              - name: DB_JNDI
+                value: ${DB_JNDI}
+              - name: DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${DB_SECRET_NAME}"
+                      key: "${DB_SECRET_USERNAME_KEY}"
+              - name: DB_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: "${DB_SECRET_NAME}"
+                    key: "${DB_SECRET_PASSWORD_KEY}"
+              - name: DB_DATABASE
+                valueFrom:
+                  secretKeyRef:
+                    name: "${DB_SECRET_NAME}"
+                    key: "${DB_SECRET_DATABASE_KEY}"
+              - name: TX_DATABASE_PREFIX_MAPPING
+                value: db-postgresql=DB
+              - name: DB_MIN_POOL_SIZE
+                value: ${DB_MIN_POOL_SIZE}
+              - name: DB_MAX_POOL_SIZE
+                value: ${DB_MAX_POOL_SIZE}
+              - name: DB_TX_ISOLATION
+                value: ${DB_TX_ISOLATION}
+              - name: JGROUPS_PING_PROTOCOL
+                value: dns.DNS_PING
+              - name: OPENSHIFT_DNS_PING_SERVICE_NAME
+                value: ${NAME}-ping${SUFFIX}
+              - name: OPENSHIFT_DNS_PING_SERVICE_PORT
+                value: "8888"
+              - name: X509_CA_BUNDLE
+                value: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+              - name: JGROUPS_CLUSTER_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${NAME}-jgroups${SUFFIX}"
+                      key: "password"
+              - name: SSO_ADMIN_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: "${NAME}-admin${SUFFIX}"
+                    key: "username"
+              - name: SSO_ADMIN_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: "${NAME}-admin${SUFFIX}"
+                    key: "password"
+              - name: SSO_REALM
+              - name: SSO_SERVICE_USERNAME
+              - name: SSO_SERVICE_PASSWORD
+              - name: JAVA_OPTS_APPEND
+                value: >-
+                  -Dkeycloak.profile.feature.authorization=enabled
+                  -Djboss.persistent.log.dir=/var/log/eap
+            # - name: DEBUG
+            #            value: 'true'
+            #          - name: DEBUG_PORT
+            #            value: '0.0.0.0:8787'
+
+            ports:
+              - name: jolokia
+                containerPort: 8778
+                protocol: TCP
+              - name: http
+                containerPort: 8080
+                protocol: TCP
+              - name: https
+                containerPort: 8443
+                protocol: TCP
+              - name: ping
+                containerPort: 8888
+                protocol: TCP
             imagePullPolicy: Always
-            imagePullSecrets:
-              - name: artifactory-creds
+            volumeMounts:
+              - name: ${NAME}-standalone-openshift-xml${SUFFIX}
+                readOnly: true
+                mountPath: /provisioning
+              - name: sso-x509-https-volume
+                readOnly: true
+                mountPath: /etc/x509/https
+              - name: sso-x509-jgroups-volume
+                readOnly: true
+                mountPath: /etc/x509/jgroups
+              - name: logs
+                mountPath: /var/log/eap
+            terminationMessagePolicy: File
+            image: " "
+          - resources:
+              limits:
+                cpu: 30m
+                memory: 100Mi
+              requests:
+                cpu: 15m
+                memory: 50Mi
+            readinessProbe:
+              tcpSocket:
+                port: 2020
+              initialDelaySeconds: 10
+              timeoutSeconds: 5
+              periodSeconds: 30
+              successThreshold: 1
+              failureThreshold: 5
+            terminationMessagePath: /dev/termination-log
+            name: sso-fluent-bit-sidecar
+            livenessProbe:
+              httpGet:
+                path: /
+                port: 2020
+                scheme: HTTP
+              initialDelaySeconds: 10
+              timeoutSeconds: 5
+              periodSeconds: 30
+              successThreshold: 1
+              failureThreshold: 5
+            ports:
+              - name: metrics
+                containerPort: 2020
+                protocol: TCP
+            imagePullPolicy: Always
             volumeMounts:
               - name: logs
                 mountPath: /mnt/log
               - name: flb-sc-config-volume
                 mountPath: /fluent-bit/etc/
-            readinessProbe:
-              tcpSocket:
-                port: 2020
-              initialDelaySeconds: 10
-              periodSeconds: 30
-              timeoutSeconds: 5
-              failureThreshold: 5
-              successThreshold: 1
-            livenessProbe:
-              httpGet:
-                path: /
-                port: 2020
-              initialDelaySeconds: 10
-              periodSeconds: 30
-              timeoutSeconds: 5
-              failureThreshold: 5
-              successThreshold: 1
-            ports:
-              - containerPort: 2020
-                protocol: TCP
-                name: metrics
-            resources:
-              requests:
-                cpu: "10m"
-                memory: "25Mi"
-              limits:
-                cpu: "20m"
-                memory: "50Mi"
+            terminationMessagePolicy: File
+            image: 'docker-remote.artifacts.developer.gov.bc.ca/fluent/fluent-bit:1.5.7'
         terminationGracePeriodSeconds: 75
         volumes:
-        # SH: remove base chain build, use configmap
-        - name: ${NAME}-standalone-openshift-xml${SUFFIX}
-          configMap:
-            defaultMode: 420
-            name: ${NAME}-standalone-openshift-xml${SUFFIX}
-        - name: sso-x509-https-volume
-          secret:
-            secretName: ${NAME}-x509-https-secret${SUFFIX}
-        - name: sso-x509-jgroups-volume
-          secret:
-            secretName: ${NAME}-x509-jgroups-secret${SUFFIX}
-        - name: logs
-          emptyDir: {}
-        - name: flb-sc-config-volume
+          - name: ${NAME}-standalone-openshift-xml${SUFFIX}
             configMap:
-              name: "sso-flb-sc-config-map"
+              name: ${NAME}-standalone-openshift-xml${SUFFIX}
+              defaultMode: 420
+          - name: sso-x509-https-volume
+            secret:
+              secretName: ${NAME}-x509-https-secret${SUFFIX}
+              defaultMode: 420
+          - name: sso-x509-jgroups-volume
+            secret:
+              secretName: ${NAME}-x509-jgroups-secret${SUFFIX}
+              defaultMode: 420
+          - name: logs
+            emptyDir: {}
+          - name: flb-sc-config-volume
+            configMap:
+              name: sso-flb-sc-config-map
+              defaultMode: 420
     triggers:
     - imageChangeParams:
         automatic: true
