@@ -256,7 +256,7 @@ objects:
           - mountPath: /var/log/eap
             name: logs
         - image: docker-remote.artifacts.developer.gov.bc.ca/fluent/fluent-bit:1.5.7
-            name: "${NAME}-fluent-bit-sidecar"
+            name: ${NAME}-fluent-bit-sidecar
             imagePullPolicy: Always
             imagePullSecrets:
               - name: artifactory-creds
