@@ -157,7 +157,7 @@ objects:
                 <formatter name="SOAM-FORMATTER">
                     <json-formatter>
                         <exception-output-type value="formatted"/>
-                        <key-overrides timestamp="time_stamp"/>
+                        <key-overrides timestamp="time_stamp" host-name="hostname"/>
                     </json-formatter>
                 </formatter>
                 <formatter name="OPENSHIFT">
