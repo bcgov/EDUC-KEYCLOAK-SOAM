@@ -317,7 +317,6 @@ objects:
           kind: ImageStreamTag
           name: "${NAME}:${IMAGE_TAG}"
       type: ImageChange
-    - type: ConfigChange
 parameters:
 - description: The name for the application.
   displayName: Application Name
