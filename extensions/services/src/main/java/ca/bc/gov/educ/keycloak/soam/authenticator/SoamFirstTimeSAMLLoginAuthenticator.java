@@ -57,7 +57,7 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
 		for(AttributeStatementType s: otherClaims) {
 			logger.debug("SAML Assertion Claims:");
 			for(AttributeStatementType.ASTChoiceType type: s.getAttributes()) {
-				logger.debug("SAML_ASSERTION Key: " + type.getAttribute().getName() + " Value: " + type.getAttribute().getName());
+				logger.debug("SAML_ASSERTION Key: " + type.getAttribute().getName() + " Value: " + type.getAttribute().getAttributeValue());
 			}
 		}
 
