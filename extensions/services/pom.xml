@@ -89,5 +89,10 @@
 			<artifactId>spring-security-oauth2</artifactId>
 			<version>2.5.0.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-saml-core-public</artifactId>
+			<version>${keycloak.version}</version>
+		</dependency>
 	</dependencies>
 </project>
