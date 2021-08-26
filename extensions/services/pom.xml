@@ -93,7 +93,7 @@
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-saml-core-public</artifactId>
 			<version>${keycloak.version}</version>
-			<scope>provided</scope>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 </project>
