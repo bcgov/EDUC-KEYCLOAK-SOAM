@@ -48,16 +48,16 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
 
 		Map<String, Object> brokerClaims = brokerContext.getContextData();
 		for(String s: brokerClaims.keySet()) {
-			logger.debug("Context Key: " + s + " Value: " + brokerClaims.get(s));
+			logger.info("Context Key: " + s + " Value: " + brokerClaims.get(s));
 		}
 
 		AssertionType assertion = (AssertionType)brokerContext.getContextData().get("SAML_ASSERTION");
 
 		Set<AttributeStatementType> otherClaims = assertion.getAttributeStatements();
 		for(AttributeStatementType s: otherClaims) {
-			logger.debug("SAML Assertion Claims:");
+			logger.info("SAML Assertion Claims:");
 			for(AttributeStatementType.ASTChoiceType type: s.getAttributes()) {
-				logger.debug("SAML_ASSERTION Key: " + type.getAttribute().getName() + " Value: " + type.getAttribute().getName());
+				logger.info("SAML_ASSERTION Key: " + type.getAttribute().getName() + " Value: " + type.getAttribute().getAttributeValue());
 			}
 		}
 

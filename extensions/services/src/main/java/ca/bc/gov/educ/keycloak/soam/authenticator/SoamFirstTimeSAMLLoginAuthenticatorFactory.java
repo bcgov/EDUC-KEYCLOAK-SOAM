@@ -34,7 +34,7 @@ import java.util.List;
 public class SoamFirstTimeSAMLLoginAuthenticatorFactory implements AuthenticatorFactory {
 
     public static final String PROVIDER_ID = "bcgov-soam-saml-authenticator";
-    static SoamFirstTimeLoginAuthenticator SINGLETON = new SoamFirstTimeLoginAuthenticator();
+    static SoamFirstTimeSAMLLoginAuthenticator SINGLETON = new SoamFirstTimeSAMLLoginAuthenticator();
 
 
     @Override
