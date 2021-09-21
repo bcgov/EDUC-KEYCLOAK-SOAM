@@ -32,7 +32,7 @@ metadata:
       for PostgreSQL using persistence, and securing RH-SSO communication using re-encrypt
       TLS.
     template.openshift.io/support-url: https://access.redhat.com
-    version: 7.4.1.GA
+    version: 7.4.9.GA
   creationTimestamp: null
   name: sso74-x509-postgresql-persistent
 objects:
@@ -333,9 +333,9 @@ parameters:
   name: SUFFIX
   value: ""
 - name: VERSION
-  value: "7.4"
+  value: "7.4.9"
 - name: IMAGE_TAG
-  value: "7.4"
+  value: "7.4.9"
 - description: Database JNDI name used by application to resolve the datasource, e.g.
     java:/jboss/datasources/postgresql
   displayName: Database JNDI Name
