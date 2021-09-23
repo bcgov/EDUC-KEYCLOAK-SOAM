@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
@@ -161,7 +162,11 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		token.getOtherClaims().put("createDate", student.getCreateDate());
 		token.getOtherClaims().put("updateUser", student.getUpdateUser());
 		token.getOtherClaims().put("updateDate", student.getUpdateDate());
-		token.getOtherClaims().put("displayName", student.getLegalFirstName() + " " + soamLoginEntity.getStudent().getLegalLastName());
+		if(StringUtils.isNotEmpty(student.getLegalFirstName())){
+			token.getOtherClaims().put("displayName", student.getLegalFirstName() + " " + soamLoginEntity.getStudent().getLegalLastName());
+		}else{
+			token.getOtherClaims().put("displayName", soamLoginEntity.getStudent().getLegalLastName());
+		}
 	}
 
 	private void populateServicesCardClaims(IDToken token, SoamLoginEntity soamLoginEntity) {
