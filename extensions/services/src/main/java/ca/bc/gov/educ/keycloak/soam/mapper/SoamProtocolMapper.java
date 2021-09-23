@@ -164,7 +164,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		otherClaims.put("createDate", student.getCreateDate());
 		otherClaims.put("updateUser", student.getUpdateUser());
 		otherClaims.put("updateDate", student.getUpdateDate());
-		if(StringUtils.isNotEmpty(student.getLegalFirstName())){
+		if(student.getLegalFirstName() != null && !student.getLegalFirstName().equals("")){
 			otherClaims.put("displayName", student.getLegalFirstName() + " " + soamLoginEntity.getStudent().getLegalLastName());
 		}else{
 			otherClaims.put("displayName", soamLoginEntity.getStudent().getLegalLastName());
