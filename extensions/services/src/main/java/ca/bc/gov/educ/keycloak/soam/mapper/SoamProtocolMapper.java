@@ -138,59 +138,62 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 	}
 	
 	private void populateDigitalIDClaims(IDToken token, SoamLoginEntity soamLoginEntity, UserSessionModel userSession) {
-		token.getOtherClaims().put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID()); 
-		token.getOtherClaims().put("displayName", userSession.getUser().getFirstAttribute("display_name"));
+		Map<String, Object> otherClaims = token.getOtherClaims();
+		otherClaims.put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID());
+		otherClaims.put("displayName", userSession.getUser().getFirstAttribute("display_name"));
 	}
 	
 	private void populateStudentClaims(IDToken token, SoamLoginEntity soamLoginEntity) {
 		SoamStudent student = soamLoginEntity.getStudent();
-		token.getOtherClaims().put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID()); 
-		token.getOtherClaims().put("studentID", student.getStudentID());
-		token.getOtherClaims().put("legalFirstName", student.getLegalFirstName());
-		token.getOtherClaims().put("legalMiddleNames", student.getLegalMiddleNames());
-		token.getOtherClaims().put("legalLastName", student.getLegalLastName());
-		token.getOtherClaims().put("dob", student.getDob());
-		token.getOtherClaims().put("pen", student.getPen()); 
-		token.getOtherClaims().put("sexCode", student.getSexCode());
-		token.getOtherClaims().put("dataSourceCode", student.getDataSourceCode());
-		token.getOtherClaims().put("usualFirstName", student.getUsualFirstName());
-		token.getOtherClaims().put("usualMiddleNames", student.getUsualMiddleNames());
-		token.getOtherClaims().put("usualLastName", student.getUsualLastName());
-		token.getOtherClaims().put("email", student.getEmail());
-		token.getOtherClaims().put("deceasedDate", student.getDeceasedDate());
-		token.getOtherClaims().put("createUser", student.getCreateUser());
-		token.getOtherClaims().put("createDate", student.getCreateDate());
-		token.getOtherClaims().put("updateUser", student.getUpdateUser());
-		token.getOtherClaims().put("updateDate", student.getUpdateDate());
+		Map<String, Object> otherClaims = token.getOtherClaims();
+		otherClaims.put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID());
+		otherClaims.put("studentID", student.getStudentID());
+		otherClaims.put("legalFirstName", student.getLegalFirstName());
+		otherClaims.put("legalMiddleNames", student.getLegalMiddleNames());
+		otherClaims.put("legalLastName", student.getLegalLastName());
+		otherClaims.put("dob", student.getDob());
+		otherClaims.put("pen", student.getPen());
+		otherClaims.put("sexCode", student.getSexCode());
+		otherClaims.put("dataSourceCode", student.getDataSourceCode());
+		otherClaims.put("usualFirstName", student.getUsualFirstName());
+		otherClaims.put("usualMiddleNames", student.getUsualMiddleNames());
+		otherClaims.put("usualLastName", student.getUsualLastName());
+		otherClaims.put("email", student.getEmail());
+		otherClaims.put("deceasedDate", student.getDeceasedDate());
+		otherClaims.put("createUser", student.getCreateUser());
+		otherClaims.put("createDate", student.getCreateDate());
+		otherClaims.put("updateUser", student.getUpdateUser());
+		otherClaims.put("updateDate", student.getUpdateDate());
 		if(StringUtils.isNotEmpty(student.getLegalFirstName())){
-			token.getOtherClaims().put("displayName", student.getLegalFirstName() + " " + soamLoginEntity.getStudent().getLegalLastName());
+			otherClaims.put("displayName", student.getLegalFirstName() + " " + soamLoginEntity.getStudent().getLegalLastName());
 		}else{
-			token.getOtherClaims().put("displayName", soamLoginEntity.getStudent().getLegalLastName());
+			otherClaims.put("displayName", soamLoginEntity.getStudent().getLegalLastName());
 		}
 	}
 
 	private void populateServicesCardClaims(IDToken token, SoamLoginEntity soamLoginEntity) {
 		SoamServicesCard servicesCard = soamLoginEntity.getServiceCard();
-		token.getOtherClaims().put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID());  
-		token.getOtherClaims().put("birthDate", servicesCard.getBirthDate());
-		token.getOtherClaims().put("city", servicesCard.getCity());
-		token.getOtherClaims().put("country", servicesCard.getCountry());
-		token.getOtherClaims().put("createDate", servicesCard.getCreateDate());
-		token.getOtherClaims().put("createUser", servicesCard.getCreateUser());
-		token.getOtherClaims().put("did", servicesCard.getDid()); 
-		token.getOtherClaims().put("email", servicesCard.getEmail());
-		token.getOtherClaims().put("gender", servicesCard.getGender());
-		token.getOtherClaims().put("givenName", servicesCard.getGivenName());
-		token.getOtherClaims().put("identityAssuranceLevel", servicesCard.getIdentityAssuranceLevel());
-		token.getOtherClaims().put("givenNames", servicesCard.getGivenNames());
-		token.getOtherClaims().put("postalCode", servicesCard.getPostalCode());
-		token.getOtherClaims().put("province", servicesCard.getProvince());
-		token.getOtherClaims().put("servicesCardInfoID", servicesCard.getServicesCardInfoID());
-		token.getOtherClaims().put("streetAddress", servicesCard.getStreetAddress());
-		token.getOtherClaims().put("surname", servicesCard.getSurname());
-		token.getOtherClaims().put("updateDate", servicesCard.getUpdateDate());
-		token.getOtherClaims().put("updateUser", servicesCard.getUpdateUser());
-		token.getOtherClaims().put("displayName", servicesCard.getUserDisplayName());
+		Map<String, Object> otherClaims = token.getOtherClaims();
+		otherClaims.put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID());
+		otherClaims.put("birthDate", servicesCard.getBirthDate());
+		otherClaims.put("city", servicesCard.getCity());
+		otherClaims.put("country", servicesCard.getCountry());
+		otherClaims.put("createDate", servicesCard.getCreateDate());
+		otherClaims.put("createUser", servicesCard.getCreateUser());
+		otherClaims.put("did", servicesCard.getDid());
+		otherClaims.put("email", servicesCard.getEmail());
+		otherClaims.put("gender", servicesCard.getGender());
+		otherClaims.put("givenName", servicesCard.getGivenName());
+		otherClaims.put("identityAssuranceLevel", servicesCard.getIdentityAssuranceLevel());
+		otherClaims.put("givenNames", servicesCard.getGivenNames());
+		otherClaims.put("postalCode", servicesCard.getPostalCode());
+		otherClaims.put("province", servicesCard.getProvince());
+		otherClaims.put("servicesCardInfoID", servicesCard.getServicesCardInfoID());
+		otherClaims.put("streetAddress", servicesCard.getStreetAddress());
+		otherClaims.put("surname", servicesCard.getSurname());
+		otherClaims.put("updateDate", servicesCard.getUpdateDate());
+		otherClaims.put("updateUser", servicesCard.getUpdateUser());
+		otherClaims.put("displayName", servicesCard.getUserDisplayName());
 	} 
 
 	public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
