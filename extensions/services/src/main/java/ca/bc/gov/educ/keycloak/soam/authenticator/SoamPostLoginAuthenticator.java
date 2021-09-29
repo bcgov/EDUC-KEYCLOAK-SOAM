@@ -61,13 +61,14 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 
       Map<String, Object> otherClaims = token.getOtherClaims();
       logger.debug(ApplicationProperties.mapper.writeValueAsString(otherClaims));
-
+      UserModel existingUser = context.getUser();
       String username = null;
 
 			switch (accountType) {
 			case "bceid":
 				logger.debug("SOAM Post: Account type bceid found");
 				username = context.getUser().getUsername();
+				existingUser.setSingleAttribute("user_guid", ((String)otherClaims.get("bceid_guid")));
 				if(username == null) {
 					throw new SoamRuntimeException("No bceid_guid value was found in token");
 				}
@@ -95,10 +96,12 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				servicesCard.setSurname(((List<String>)brokerContext.getContextData().get("user.attributes.family_name")).get(0));
 				servicesCard.setUserDisplayName(((List<String>)brokerContext.getContextData().get("user.attributes.display_name")).get(0));
 				updateUserInfo(username, accountType, "BCSC", servicesCard);
+				existingUser.setSingleAttribute("user_did", ((List<String>)brokerContext.getContextData().get("user.attributes.did")).get(0));
 				break;
 			case "idir":
 				logger.debug("SOAM Post: Account type idir found");
 				username = context.getUser().getUsername();
+				existingUser.setSingleAttribute("user_guid", ((String)otherClaims.get("idir_guid")));
 				if(username == null) {
 					throw new SoamRuntimeException("No idir_guid value was found in token");
 				}
@@ -107,9 +110,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				throw new SoamRuntimeException("Account type is not bcsc, bceid or idir, check IDP mappers");
 			}
 
-			//UserModel existingUser = context.getSession().users().getUserByUsername(context.getUser().getUsername(), context.getRealm());
-
-			context.setUser(context.getUser());
+			context.setUser(existingUser);
 			context.success();
 		} catch (Exception e) {
 			throw new SoamRuntimeException(e);

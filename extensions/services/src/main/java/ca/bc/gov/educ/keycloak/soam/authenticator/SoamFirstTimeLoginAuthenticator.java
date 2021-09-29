@@ -123,12 +123,16 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
             if(accountType.equals("bceid")) {
 	           federatedUser.setSingleAttribute("display_name", (String)otherClaims.get("display_name"));
 	           federatedUser.setSingleAttribute("bceid_userid", ((String)otherClaims.get("bceid_userid")));
+	           federatedUser.setSingleAttribute("user_guid", ((String)otherClaims.get("bceid_guid")));
             }else if(accountType.equals("idir")) {
  	           federatedUser.setSingleAttribute("idir_username", ((String)otherClaims.get("preferred_username")).replaceFirst("@idir", "").toUpperCase());
  	           federatedUser.setSingleAttribute("display_name", ((String)otherClaims.get("name")));
    	           federatedUser.setFirstName(((String)otherClaims.get("given_name"))); 
-  	           federatedUser.setLastName(((String)otherClaims.get("family_name"))); 
-            }
+  	           federatedUser.setLastName(((String)otherClaims.get("family_name")));
+  	           federatedUser.setSingleAttribute("user_guid", ((String)otherClaims.get("idir_guid")));
+            }else if(accountType.equals("bcsc")){
+				federatedUser.setSingleAttribute("user_did", ((List<String>)brokerContext.getContextData().get("user.attributes.did")).get(0));
+			}
             
             for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
                 federatedUser.setAttribute(attr.getKey(), attr.getValue());
