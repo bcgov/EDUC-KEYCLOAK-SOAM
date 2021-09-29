@@ -57,17 +57,18 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
 			}
 
-      JsonWebToken token = (JsonWebToken) brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
+		    JsonWebToken token = (JsonWebToken) brokerContext.getContextData().get("VALIDATED_ID_TOKEN");
 
-      Map<String, Object> otherClaims = token.getOtherClaims();
-      logger.debug(ApplicationProperties.mapper.writeValueAsString(otherClaims));
-      UserModel existingUser = context.getUser();
-      String username = null;
+		    Map<String, Object> otherClaims = token.getOtherClaims();
+		    logger.debug(ApplicationProperties.mapper.writeValueAsString(otherClaims));
+		    UserModel existingUser = context.getUser();
+		    String username = null;
 
 			switch (accountType) {
 			case "bceid":
 				logger.debug("SOAM Post: Account type bceid found");
-				username = context.getUser().getFirstAttribute("user_guid");
+				username = (String)otherClaims.get("bceid_guid");
+				existingUser.setSingleAttribute("user_guid", ((String)otherClaims.get("bceid_guid")));
 				if(username == null) {
 					throw new SoamRuntimeException("No bceid_guid value was found in token");
 				}
@@ -98,7 +99,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				break;
 			case "idir":
 				logger.debug("SOAM Post: Account type idir found");
-				username = context.getUser().getFirstAttribute("user_guid");
+				username = (String)otherClaims.get("idir_guid");
 				existingUser.setSingleAttribute("user_guid", ((String)otherClaims.get("idir_guid")));
 				if(username == null) {
 					throw new SoamRuntimeException("No idir_guid value was found in token");
