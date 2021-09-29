@@ -67,8 +67,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 			switch (accountType) {
 			case "bceid":
 				logger.debug("SOAM Post: Account type bceid found");
-				username = context.getUser().getUsername();
-				existingUser.setSingleAttribute("user_guid", ((String)otherClaims.get("bceid_guid")));
+				username = context.getUser().getFirstAttribute("user_guid");
 				if(username == null) {
 					throw new SoamRuntimeException("No bceid_guid value was found in token");
 				}
@@ -76,7 +75,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				break;
 			case "bcsc":
 				logger.debug("SOAM Post: Account type bcsc found");
-				username = context.getUser().getUsername();
+				username = ((List<String>)brokerContext.getContextData().get("user.attributes.did")).get(0);
 				if(username == null) {
 					throw new SoamRuntimeException("No bcsc_did value was found in token");
 				}
@@ -96,11 +95,10 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
 				servicesCard.setSurname(((List<String>)brokerContext.getContextData().get("user.attributes.family_name")).get(0));
 				servicesCard.setUserDisplayName(((List<String>)brokerContext.getContextData().get("user.attributes.display_name")).get(0));
 				updateUserInfo(username, accountType, "BCSC", servicesCard);
-				existingUser.setSingleAttribute("user_did", ((List<String>)brokerContext.getContextData().get("user.attributes.did")).get(0));
 				break;
 			case "idir":
 				logger.debug("SOAM Post: Account type idir found");
-				username = context.getUser().getUsername();
+				username = context.getUser().getFirstAttribute("user_guid");
 				existingUser.setSingleAttribute("user_guid", ((String)otherClaims.get("idir_guid")));
 				if(username == null) {
 					throw new SoamRuntimeException("No idir_guid value was found in token");
