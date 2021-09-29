@@ -100,7 +100,17 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		if(accountType == null) {
 			//This is a client credential call
 		}else {
-			String userGUID = userSession.getUser().getUsername();
+			String userGUID = userSession.getUser().getFirstAttribute("user_guid");
+			logger.debug("User GUID is: " + userGUID);
+
+			logger.debug("Attribute Values");
+			Map<String, List<String>> attributes = userSession.getUser().getAttributes();
+			for(String s: attributes.keySet()) {
+				logger.debug("Key: " + s);
+				for(String val: attributes.get(s)) {
+					logger.debug("Value: " + val);
+				}
+			}
 			
 			if(accountType.equals("bceid")){
 				SoamLoginEntity soamLoginEntity = fetchSoamLoginEntity("BASIC", userGUID);
