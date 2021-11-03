@@ -89,6 +89,7 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
           existingUser.setSingleAttribute("display_name", displayName);
           existingUser.setSingleAttribute("bceid_userid", userGUID);
           existingUser.setSingleAttribute("user_guid", userGUID);
+          existingUser.setLastName(username + "@bceid");
 
           if (userGUID == null) {
             throw new SoamRuntimeException("No bceid_guid value was found in token");
@@ -101,7 +102,9 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
           existingUser.setSingleAttribute("idir_guid", userGUID);
           existingUser.setSingleAttribute("user_guid", userGUID);
           existingUser.setSingleAttribute("display_name", displayName);
-          existingUser.setSingleAttribute("email", email);
+          existingUser.setFirstName(displayName);
+          existingUser.setLastName(username);
+          existingUser.setEmail(email);
 
           if (userGUID == null) {
             throw new SoamRuntimeException("No idir_guid value was found in token");

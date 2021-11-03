@@ -114,7 +114,9 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
         federatedUser.setSingleAttribute("idir_guid", userGUID);
         federatedUser.setSingleAttribute("user_guid", userGUID);
         federatedUser.setSingleAttribute("display_name", displayName);
-        federatedUser.setSingleAttribute("email", email);
+        federatedUser.setFirstName(displayName);
+        federatedUser.setLastName(username);
+        federatedUser.setEmail(email);
       }
 
       for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
