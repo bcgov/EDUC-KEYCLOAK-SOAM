@@ -15,6 +15,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,7 +77,7 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
       }
     }
 
-    String accountType = (String) brokerClaims.get("user.attributes.account_type");
+    String accountType = (String) ((ArrayList) brokerClaims.get("user.attributes.account_type")).get(0);
 
     switch (accountType) {
       case "bceid":
