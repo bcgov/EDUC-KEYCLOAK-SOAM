@@ -19,6 +19,7 @@ import org.keycloak.representations.JsonWebToken;
 import org.keycloak.util.JsonSerialization;
 
 import javax.json.JsonReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,11 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
       SerializedBrokeredIdentityContext serializedCtx = JsonSerialization.readValue(stringSerialCtx, SerializedBrokeredIdentityContext.class);
       BrokeredIdentityContext brokerContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
 
+      Map<String, Object> brokerClaims = brokerContext.getContextData();
+      for (String s : brokerClaims.keySet()) {
+        logger.debug("Context Key: " + s + " Value: " + brokerClaims.get(s));
+      }
+
       String accountType = context.getUser().getFirstAttribute("account_type");
 
       if (accountType == null) {
@@ -57,7 +63,6 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
 
       AssertionType assertion = (AssertionType) brokerContext.getContextData().get("SAML_ASSERTION");
 
-      String username = null;
       String userGUID = null;
       String displayName = null;
       String email = null;
@@ -71,8 +76,6 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
 
           if (name.equalsIgnoreCase("useridentifier")) {
             userGUID = (String) type.getAttribute().getAttributeValue().get(0);
-          } else if (name.equalsIgnoreCase("user_name")) {
-            username = (String) type.getAttribute().getAttributeValue().get(0);
           } else if (name.equalsIgnoreCase("SMGOV_USERDISPLAYNAME")) {
             displayName = (String) type.getAttribute().getAttributeValue().get(0);
           } else if (name.equalsIgnoreCase("Email")) {
@@ -81,6 +84,7 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
         }
       }
 
+      String username = (String) ((ArrayList) brokerClaims.get("user.attributes.username")).get(0);
       UserModel existingUser = context.getUser();
 
       switch (accountType) {
@@ -89,7 +93,6 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
           existingUser.setSingleAttribute("display_name", displayName);
           existingUser.setSingleAttribute("bceid_userid", userGUID);
           existingUser.setSingleAttribute("user_guid", userGUID);
-          existingUser.setLastName(username + "@bceid");
 
           if (userGUID == null) {
             throw new SoamRuntimeException("No bceid_guid value was found in token");
@@ -102,9 +105,6 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
           existingUser.setSingleAttribute("idir_guid", userGUID);
           existingUser.setSingleAttribute("user_guid", userGUID);
           existingUser.setSingleAttribute("display_name", displayName);
-          existingUser.setFirstName(displayName);
-          existingUser.setLastName(username);
-          existingUser.setEmail(email);
 
           if (userGUID == null) {
             throw new SoamRuntimeException("No idir_guid value was found in token");
