@@ -107,7 +107,7 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
         federatedUser.setSingleAttribute("bceid_userid", userGUID);
         federatedUser.setSingleAttribute("user_guid", userGUID);
       } else if (accountType.equals("idir")) {
-        federatedUser.setSingleAttribute("idir_username", username);
+        federatedUser.setSingleAttribute("idir_username", username.replace("@idir",""));
         federatedUser.setSingleAttribute("idir_guid", userGUID);
         federatedUser.setSingleAttribute("user_guid", userGUID);
         federatedUser.setSingleAttribute("display_name", displayName);
