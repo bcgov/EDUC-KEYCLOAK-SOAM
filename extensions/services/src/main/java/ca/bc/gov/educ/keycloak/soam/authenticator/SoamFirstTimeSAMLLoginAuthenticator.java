@@ -53,7 +53,6 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
 
     AssertionType assertion = (AssertionType) brokerContext.getContextData().get("SAML_ASSERTION");
 
-    String username = null;
     String userGUID = null;
     String displayName = null;
     String email = null;
@@ -67,8 +66,6 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
 
         if (name.equalsIgnoreCase("useridentifier")) {
           userGUID = (String) type.getAttribute().getAttributeValue().get(0);
-        } else if (name.equalsIgnoreCase("user_name")) {
-          username = (String) type.getAttribute().getAttributeValue().get(0);
         } else if (name.equalsIgnoreCase("SMGOV_USERDISPLAYNAME")) {
           displayName = (String) type.getAttribute().getAttributeValue().get(0);
         } else if (name.equalsIgnoreCase("Email")) {
@@ -78,6 +75,7 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
     }
 
     String accountType = (String) ((ArrayList) brokerClaims.get("user.attributes.account_type")).get(0);
+    String username = (String) ((ArrayList) brokerClaims.get("user.attributes.username")).get(0);
 
     switch (accountType) {
       case "bceid":
@@ -97,26 +95,22 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
         throw new SoamRuntimeException("Account type is not bcsc, bceid or idir, check IDP mappers");
     }
 
-    if (context.getSession().users().getUserByUsername(userGUID, realm) == null) {
+    if (context.getSession().users().getUserByUsername(username, realm) == null) {
       logger.debugf("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
-        userGUID, brokerContext.getIdpConfig().getAlias());
+        username, brokerContext.getIdpConfig().getAlias());
 
-      UserModel federatedUser = session.users().addUser(realm, userGUID);
+      UserModel federatedUser = session.users().addUser(realm, username);
       federatedUser.setEnabled(true);
 
       if (accountType.equals("bceid")) {
         federatedUser.setSingleAttribute("display_name", displayName);
         federatedUser.setSingleAttribute("bceid_userid", userGUID);
         federatedUser.setSingleAttribute("user_guid", userGUID);
-        federatedUser.setLastName(username + "@bceid");
       } else if (accountType.equals("idir")) {
         federatedUser.setSingleAttribute("idir_username", username);
         federatedUser.setSingleAttribute("idir_guid", userGUID);
         federatedUser.setSingleAttribute("user_guid", userGUID);
         federatedUser.setSingleAttribute("display_name", displayName);
-        federatedUser.setFirstName(displayName);
-        federatedUser.setLastName(username);
-        federatedUser.setEmail(email);
       }
 
       for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
@@ -127,8 +121,8 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
       context.getAuthenticationSession().setAuthNote(BROKER_REGISTERED_NEW_USER, "true");
       context.success();
     } else {
-      logger.debug("SOAM: Existing " + accountType + " user found with username: " + userGUID);
-      UserModel existingUser = context.getSession().users().getUserByUsername(userGUID, realm);
+      logger.debug("SOAM: Existing " + accountType + " user found with username: " + username);
+      UserModel existingUser = context.getSession().users().getUserByUsername(username, realm);
       context.setUser(existingUser);
       context.success();
     }
