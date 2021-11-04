@@ -101,7 +101,7 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
           break;
         case "idir":
           logger.debug("SOAM Post: Account type idir found");
-          existingUser.setSingleAttribute("idir_username", username);
+          existingUser.setSingleAttribute("idir_username", username.replace("@idir",""));
           existingUser.setSingleAttribute("idir_guid", userGUID);
           existingUser.setSingleAttribute("user_guid", userGUID);
           existingUser.setSingleAttribute("display_name", displayName);
