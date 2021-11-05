@@ -66,20 +66,19 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
       throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
     }
 
-    String username = null;
+    String username = ((List<String>) brokerContext.getContextData().get("user.attributes.username")).get(0);
 
     switch (accountType) {
       case "bceid":
         logger.debug("SOAM: Account type bceid found");
-        username = (String) otherClaims.get("bceid_guid");
         if (username == null) {
           throw new SoamRuntimeException("No bceid_guid value was found in token");
         }
-        createOrUpdateUser(username, accountType, "BASIC", null);
+        createOrUpdateUser((String) otherClaims.get("bceid_guid"), accountType, "BASIC", null);
         break;
       case "bcsc":
         logger.debug("SOAM: Account type bcsc found");
-        username = ((List<String>) brokerContext.getContextData().get("user.attributes.did")).get(0);
+
         if (username == null) {
           throw new SoamRuntimeException("No bcsc_did value was found in token");
         }
@@ -99,11 +98,10 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         servicesCard.setStreetAddress(((List<String>) brokerContext.getContextData().get("user.attributes.street_address")).get(0));
         servicesCard.setSurname(((List<String>) brokerContext.getContextData().get("user.attributes.family_name")).get(0));
         servicesCard.setUserDisplayName(((List<String>) brokerContext.getContextData().get("user.attributes.display_name")).get(0));
-        createOrUpdateUser(username, accountType, "BCSC", servicesCard);
+        createOrUpdateUser(servicesCard.getDid(), accountType, "BCSC", servicesCard);
         break;
       case "idir":
         logger.debug("SOAM: Account type idir found");
-        username = (String) otherClaims.get("idir_guid");
         if (username == null) {
           throw new SoamRuntimeException("No idir_guid value was found in token");
         }
