@@ -56,6 +56,7 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
     String userGUID = null;
     String displayName = null;
     String email = null;
+    String usernameFromToken = null;
 
     Set<AttributeStatementType> otherClaims = assertion.getAttributeStatements();
     for (AttributeStatementType s : otherClaims) {
@@ -66,6 +67,8 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
 
         if (name.equalsIgnoreCase("useridentifier")) {
           userGUID = (String) type.getAttribute().getAttributeValue().get(0);
+        } else if (name.equalsIgnoreCase("user_name")) {
+          usernameFromToken = (String) type.getAttribute().getAttributeValue().get(0);
         } else if (name.equalsIgnoreCase("SMGOV_USERDISPLAYNAME")) {
           displayName = (String) type.getAttribute().getAttributeValue().get(0);
         } else if (name.equalsIgnoreCase("Email")) {
@@ -107,7 +110,7 @@ public class SoamFirstTimeSAMLLoginAuthenticator extends AbstractIdpAuthenticato
         federatedUser.setSingleAttribute("bceid_userid", userGUID);
         federatedUser.setSingleAttribute("user_guid", userGUID);
       } else if (accountType.equals("idir")) {
-        federatedUser.setSingleAttribute("idir_username", username.replace("@idir",""));
+        federatedUser.setSingleAttribute("idir_username", usernameFromToken);
         federatedUser.setSingleAttribute("idir_guid", userGUID);
         federatedUser.setSingleAttribute("user_guid", userGUID);
         federatedUser.setSingleAttribute("display_name", displayName);

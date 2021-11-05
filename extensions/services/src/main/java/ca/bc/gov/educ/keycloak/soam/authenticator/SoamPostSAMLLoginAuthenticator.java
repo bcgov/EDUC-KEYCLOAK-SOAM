@@ -66,6 +66,7 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
       String userGUID = null;
       String displayName = null;
       String email = null;
+      String usernameFromToken = null;
 
       Set<AttributeStatementType> otherClaims = assertion.getAttributeStatements();
       for (AttributeStatementType s : otherClaims) {
@@ -76,6 +77,8 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
 
           if (name.equalsIgnoreCase("useridentifier")) {
             userGUID = (String) type.getAttribute().getAttributeValue().get(0);
+          } else if (name.equalsIgnoreCase("user_name")) {
+            usernameFromToken = (String) type.getAttribute().getAttributeValue().get(0);
           } else if (name.equalsIgnoreCase("SMGOV_USERDISPLAYNAME")) {
             displayName = (String) type.getAttribute().getAttributeValue().get(0);
           } else if (name.equalsIgnoreCase("Email")) {
@@ -101,7 +104,7 @@ public class SoamPostSAMLLoginAuthenticator extends AbstractIdpAuthenticator {
           break;
         case "idir":
           logger.debug("SOAM Post: Account type idir found");
-          existingUser.setSingleAttribute("idir_username", username.replace("@idir",""));
+          existingUser.setSingleAttribute("idir_username", usernameFromToken);
           existingUser.setSingleAttribute("idir_guid", userGUID);
           existingUser.setSingleAttribute("user_guid", userGUID);
           existingUser.setSingleAttribute("display_name", displayName);
