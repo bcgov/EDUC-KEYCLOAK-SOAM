@@ -61,25 +61,13 @@ public class STSRoleProtocolMapper extends AbstractOIDCProtocolMapper implements
     return token;
   }
 
-  public static ProtocolMapperModel create(String name, String role) {
+  public static ProtocolMapperModel create(String name) {
     String mapperId = "oidc-sts-role-mapper";
     ProtocolMapperModel mapper = new ProtocolMapperModel();
     mapper.setName(name);
     mapper.setProtocolMapper(mapperId);
     mapper.setProtocol("openid-connect");
-    Map<String, String> config = new HashMap();
-    config.put("role", role);
-    mapper.setConfig(config);
     return mapper;
-  }
-
-  static {
-    ProviderConfigProperty property = new ProviderConfigProperty();
-    property.setName("role");
-    property.setLabel("Role");
-    property.setHelpText("Role you want added to the token.  Click 'Select Role' button to browse roles, or just type it in the textbox.  To specify an application role the syntax is appname.approle, i.e. myapp.myrole");
-    property.setType("Role");
-    configProperties.add(property);
   }
 
 }
