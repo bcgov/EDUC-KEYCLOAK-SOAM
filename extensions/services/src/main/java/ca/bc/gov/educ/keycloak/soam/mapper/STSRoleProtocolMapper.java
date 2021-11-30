@@ -2,10 +2,13 @@ package ca.bc.gov.educ.keycloak.soam.mapper;
 
 import org.jboss.logging.Logger;
 import org.keycloak.models.*;
+import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.mappers.*;
 import org.keycloak.provider.ProviderConfigProperty;
+import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.IDToken;
+import org.keycloak.utils.RoleResolveUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,76 +19,67 @@ import java.util.Map;
  * STS Role Protocol Mapper Will be used to set STS specific roles
  *
  * @author Marco Villeneuve
- *
  */
-public class STSRoleProtocolMapper extends AbstractOIDCProtocolMapper
-		implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
+public class STSRoleProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper {
+  private static final List<ProviderConfigProperty> configProperties = new ArrayList();
+  public static final String PROVIDER_ID = "oidc-sts-role-mapper";
 
-	private static Logger logger = Logger.getLogger(STSRoleProtocolMapper.class);
-	private static final List<ProviderConfigProperty> configProperties = new ArrayList<ProviderConfigProperty>();
+  public STSRoleProtocolMapper() {
+  }
 
-	static {
-		OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, STSRoleProtocolMapper.class);
-	}
+  public List<ProviderConfigProperty> getConfigProperties() {
+    return configProperties;
+  }
 
-	public static final String PROVIDER_ID = "oidc-sts-role-mapper";
+  public String getId() {
+    return "oidc-sts-role-mapper";
+  }
 
-	public List<ProviderConfigProperty> getConfigProperties() {
-		return configProperties;
-	}
+  public String getDisplayType() {
+    return "STS Role Mapper";
+  }
 
-	public String getId() {
-		return PROVIDER_ID;
-	}
+  public String getDisplayCategory() {
+    return "Token mapper";
+  }
 
-	public String getDisplayType() {
-		return "STS Role Mapper";
-	}
+  public String getHelpText() {
+    return "Get STS roles into the access token.";
+  }
 
-	public String getDisplayCategory() {
-		return TOKEN_MAPPER_CATEGORY;
-	}
+  public int getPriority() {
+    return 20;
+  }
 
-	public String getHelpText() {
-		return "Map STS Role claims";
-	}
+  public AccessToken transformAccessToken(AccessToken token, ProtocolMapperModel mappingModel, KeycloakSession session, UserSessionModel userSession, ClientSessionContext clientSessionCtx) {
+    String role = "TESTERMARCO";
+    AccessToken.Access access;
 
-	@Override
-  protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx){
-		String accountType = userSession.getUser().getFirstAttribute("account_type");
+    access = RoleResolveUtil.getResolvedRealmRoles(session, clientSessionCtx, true);
+    access.addRole(role);
 
-		logger.debug("Protocol Mapper - User Account Type is: " + accountType);
+    return token;
+  }
 
-		if(accountType == null) {
-			//This is a client credential call
-		}else {
-			String userGUID = userSession.getUser().getFirstAttribute("user_guid");
-			logger.debug("User GUID is: " + userGUID);
+  public static ProtocolMapperModel create(String name, String role) {
+    String mapperId = "oidc-sts-role-mapper";
+    ProtocolMapperModel mapper = new ProtocolMapperModel();
+    mapper.setName(name);
+    mapper.setProtocolMapper(mapperId);
+    mapper.setProtocol("openid-connect");
+    Map<String, String> config = new HashMap();
+    config.put("role", role);
+    mapper.setConfig(config);
+    return mapper;
+  }
 
-			logger.debug("Attribute Values");
-			RealmModel realm = userSession.getRealm();
-			userSession.getUser().getRoleMappings().add(realm.getRole("TESTMARCO"));
-
-			for(RoleModel rm: userSession.getUser().getRoleMappings()) {
-				logger.debug("Role Name: " + rm.getName());
-			}
-		}
-	}
-
-	public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
-			String consentText, boolean accessToken, boolean idToken) {
-		ProtocolMapperModel mapper = new ProtocolMapperModel();
-		mapper.setName(name);
-		mapper.setProtocolMapper(PROVIDER_ID);
-		mapper.setProtocol(OIDCLoginProtocol.LOGIN_PROTOCOL);
-		Map<String, String> config = new HashMap<String, String>();
-		if (accessToken)
-			config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ACCESS_TOKEN, "true");
-		if (idToken)
-			config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ID_TOKEN, "true");
-		mapper.setConfig(config);
-
-		return mapper;
-	}
+  static {
+    ProviderConfigProperty property = new ProviderConfigProperty();
+    property.setName("role");
+    property.setLabel("Role");
+    property.setHelpText("Role you want added to the token.  Click 'Select Role' button to browse roles, or just type it in the textbox.  To specify an application role the syntax is appname.approle, i.e. myapp.myrole");
+    property.setType("Role");
+    configProperties.add(property);
+  }
 
 }
