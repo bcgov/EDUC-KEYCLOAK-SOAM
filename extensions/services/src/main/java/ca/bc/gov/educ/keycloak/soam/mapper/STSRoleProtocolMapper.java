@@ -1,10 +1,7 @@
 package ca.bc.gov.educ.keycloak.soam.mapper;
 
 import org.jboss.logging.Logger;
-import org.keycloak.models.ProtocolMapperModel;
-import org.keycloak.models.RealmModel;
-import org.keycloak.models.RoleModel;
-import org.keycloak.models.UserSessionModel;
+import org.keycloak.models.*;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.mappers.*;
 import org.keycloak.provider.ProviderConfigProperty;
@@ -42,7 +39,7 @@ public class STSRoleProtocolMapper extends AbstractOIDCProtocolMapper
 	}
 
 	public String getDisplayType() {
-		return "Soam Protocol Mapper";
+		return "STS Role Mapper";
 	}
 
 	public String getDisplayCategory() {
@@ -53,7 +50,8 @@ public class STSRoleProtocolMapper extends AbstractOIDCProtocolMapper
 		return "Map STS Role claims";
 	}
 
-	protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
+	@Override
+  protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx){
 		String accountType = userSession.getUser().getFirstAttribute("account_type");
 
 		logger.debug("Protocol Mapper - User Account Type is: " + accountType);
@@ -80,8 +78,6 @@ public class STSRoleProtocolMapper extends AbstractOIDCProtocolMapper
 		mapper.setName(name);
 		mapper.setProtocolMapper(PROVIDER_ID);
 		mapper.setProtocol(OIDCLoginProtocol.LOGIN_PROTOCOL);
-//		mapper.setConsentRequired(consentRequired);
-//		mapper.setConsentText(consentText);
 		Map<String, String> config = new HashMap<String, String>();
 		if (accessToken)
 			config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ACCESS_TOKEN, "true");

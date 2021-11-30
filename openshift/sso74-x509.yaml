@@ -130,11 +130,11 @@ objects:
                   - /bin/bash
                   - '-c'
                   - /opt/eap/bin/readinessProbe.sh
-              initialDelaySeconds: 120
+              initialDelaySeconds: 60
               timeoutSeconds: 1
               periodSeconds: 10
               successThreshold: 1
-              failureThreshold: 3
+              failureThreshold: 5
             terminationMessagePath: /dev/termination-log
             name: rh-sso
             command:
