@@ -1,5 +1,9 @@
 package ca.bc.gov.educ.keycloak.soam.mapper;
 
+import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
+import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
+import ca.bc.gov.educ.keycloak.soam.utils.ExpiringConcurrentHashMap;
+import ca.bc.gov.educ.keycloak.soam.utils.ExpiringConcurrentHashMapListener;
 import org.jboss.logging.Logger;
 import org.keycloak.models.*;
 import org.keycloak.models.utils.KeycloakModelUtils;
@@ -16,16 +20,33 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * STS Role Protocol Mapper Will be used to set STS specific roles
+ * STS Role Protocol Mapper
+ * Will be used to set STS specific roles
  *
  * @author Marco Villeneuve
  */
 public class STSRoleProtocolMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper {
   private static final List<ProviderConfigProperty> configProperties = new ArrayList();
   public static final String PROVIDER_ID = "oidc-sts-role-mapper";
+  private static Logger logger = Logger.getLogger(STSRoleProtocolMapper.class);
 
   public STSRoleProtocolMapper() {
   }
+
+  //Create hashmap with 30 second expiry.
+  private ExpiringConcurrentHashMap<String, List<String>> loginDetailCache = new ExpiringConcurrentHashMap<>(30000, new ExpiringConcurrentHashMapListener<String, List<String>>() {
+
+    @Override
+    public void notifyOnAdd(String key, List<String> value) {
+      logger.debug("Adding STS roles to SOAM cache, key: " + key);
+    }
+
+    @Override
+    public void notifyOnRemoval(String key, List<String> value) {
+      logger.debug("Removing STS roles from SOAM cache, key: " + key);
+      logger.debug("Current cache size on this node: " + loginDetailCache.size());
+    }
+  });
 
   public List<ProviderConfigProperty> getConfigProperties() {
     return configProperties;
@@ -52,13 +73,30 @@ public class STSRoleProtocolMapper extends AbstractOIDCProtocolMapper implements
   }
 
   public AccessToken transformAccessToken(AccessToken token, ProtocolMapperModel mappingModel, KeycloakSession session, UserSessionModel userSession, ClientSessionContext clientSessionCtx) {
-    String role = "TESTERMARCO";
+    String userGUID = userSession.getUser().getFirstAttribute("user_guid");
+    logger.debug("User GUID is: " + userGUID);
+
+    List<String> roles = fetchSTSRoles(userGUID);
     AccessToken.Access access;
 
     access = RoleResolveUtil.getResolvedRealmRoles(session, clientSessionCtx, true);
-    access.addRole(role);
+    for (String role : roles) {
+      access.addRole(role);
+      logger.debug("Role added: " + role);
+    }
 
     return token;
+  }
+
+  private List<String> fetchSTSRoles(String userGUID) {
+    if (loginDetailCache.containsKey(userGUID)) {
+      return loginDetailCache.get(userGUID);
+    }
+    logger.debug("SOAM Fetching STS roles for GUID " + userGUID);
+    List<String> roles = RestUtils.getInstance().getSTSRoles(userGUID);
+    loginDetailCache.put(userGUID, roles);
+
+    return roles;
   }
 
   public static ProtocolMapperModel create(String name) {
