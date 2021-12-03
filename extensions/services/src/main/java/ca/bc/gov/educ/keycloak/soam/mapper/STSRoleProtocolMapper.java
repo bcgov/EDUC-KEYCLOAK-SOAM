@@ -73,16 +73,23 @@ public class STSRoleProtocolMapper extends AbstractOIDCProtocolMapper implements
   }
 
   public AccessToken transformAccessToken(AccessToken token, ProtocolMapperModel mappingModel, KeycloakSession session, UserSessionModel userSession, ClientSessionContext clientSessionCtx) {
-    String userGUID = userSession.getUser().getFirstAttribute("user_guid");
-    logger.debug("User GUID is: " + userGUID);
+    String accountType = userSession.getUser().getFirstAttribute("account_type");
+    logger.debug("STS Protocol Mapper - User Account Type is: " + accountType);
 
-    List<String> roles = fetchSTSRoles(userGUID);
-    AccessToken.Access access;
+    if(accountType == null) {
+      //This is a client credential call
+    }else {
+      String userGUID = userSession.getUser().getFirstAttribute("user_guid");
+      logger.debug("User GUID is: " + userGUID);
 
-    access = RoleResolveUtil.getResolvedRealmRoles(session, clientSessionCtx, true);
-    for (String role : roles) {
-      access.addRole(role);
-      logger.debug("Role added: " + role);
+      List<String> roles = fetchSTSRoles(userGUID);
+      AccessToken.Access access;
+
+      access = RoleResolveUtil.getResolvedRealmRoles(session, clientSessionCtx, true);
+      for (String role : roles) {
+        access.addRole(role);
+        logger.debug("Role added: " + role);
+      }
     }
 
     return token;
