@@ -85,8 +85,6 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 
         SoamServicesCard servicesCard = new SoamServicesCard();
         servicesCard.setBirthDate(((List<String>) brokerContext.getContextData().get("user.attributes.birthdate")).get(0));
-        servicesCard.setCity(((List<String>) brokerContext.getContextData().get("user.attributes.locality")).get(0));
-        servicesCard.setCountry(((List<String>) brokerContext.getContextData().get("user.attributes.country")).get(0));
         servicesCard.setDid(((List<String>) brokerContext.getContextData().get("user.attributes.did")).get(0));
         servicesCard.setEmail(((List<String>) brokerContext.getContextData().get("user.attributes.emailAddress")).get(0));
         servicesCard.setGender(((List<String>) brokerContext.getContextData().get("user.attributes.gender")).get(0));
@@ -94,8 +92,6 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         servicesCard.setGivenNames(((List<String>) brokerContext.getContextData().get("user.attributes.given_names")).get(0));
         servicesCard.setIdentityAssuranceLevel(((List<String>) brokerContext.getContextData().get("user.attributes.identity_assurance_level")).get(0));
         servicesCard.setPostalCode(((List<String>) brokerContext.getContextData().get("user.attributes.postal_code")).get(0));
-        servicesCard.setProvince(((List<String>) brokerContext.getContextData().get("user.attributes.region")).get(0));
-        servicesCard.setStreetAddress(((List<String>) brokerContext.getContextData().get("user.attributes.street_address")).get(0));
         servicesCard.setSurname(((List<String>) brokerContext.getContextData().get("user.attributes.family_name")).get(0));
         servicesCard.setUserDisplayName(((List<String>) brokerContext.getContextData().get("user.attributes.display_name")).get(0));
         createOrUpdateUser(servicesCard.getDid(), accountType, "BCSC", servicesCard);

@@ -13,11 +13,7 @@ public class SoamServicesCard {
 	private String birthDate;
 	private String gender;
 	private String email;
-	private String streetAddress;
 	private String identityAssuranceLevel;
-	private String city;
-	private String province;
-	private String country;
 	private String postalCode;
 	private String createUser;
 	private Date createDate;
@@ -102,38 +98,6 @@ public class SoamServicesCard {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getStreetAddress() {
-		return streetAddress;
-	}
-
-	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getProvince() {
-		return province;
-	}
-
-	public void setProvince(String province) {
-		this.province = province;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
 	}
 
 	public String getPostalCode() {

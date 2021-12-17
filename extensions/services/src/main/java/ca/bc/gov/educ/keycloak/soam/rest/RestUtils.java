@@ -72,8 +72,6 @@ public class RestUtils {
 
     if (servicesCard != null) {
       map.add("birthDate", servicesCard.getBirthDate());
-      map.add("city", servicesCard.getCity());
-      map.add("country", servicesCard.getCountry());
       map.add("did", servicesCard.getDid());
       map.add("email", servicesCard.getEmail());
       map.add("gender", servicesCard.getGender());
@@ -81,8 +79,6 @@ public class RestUtils {
       map.add("givenNames", servicesCard.getGivenNames());
       map.add("identityAssuranceLevel", servicesCard.getIdentityAssuranceLevel());
       map.add("postalCode", servicesCard.getPostalCode());
-      map.add("province", servicesCard.getProvince());
-      map.add("streetAddress", servicesCard.getStreetAddress());
       map.add("surname", servicesCard.getSurname());
       map.add("userDisplayName", servicesCard.getUserDisplayName());
     }
