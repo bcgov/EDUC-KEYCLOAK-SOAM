@@ -186,8 +186,6 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		Map<String, Object> otherClaims = token.getOtherClaims();
 		otherClaims.put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID());
 		otherClaims.put("birthDate", servicesCard.getBirthDate());
-		otherClaims.put("city", servicesCard.getCity());
-		otherClaims.put("country", servicesCard.getCountry());
 		otherClaims.put("createDate", servicesCard.getCreateDate());
 		otherClaims.put("createUser", servicesCard.getCreateUser());
 		otherClaims.put("did", servicesCard.getDid());
@@ -197,9 +195,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		otherClaims.put("identityAssuranceLevel", servicesCard.getIdentityAssuranceLevel());
 		otherClaims.put("givenNames", servicesCard.getGivenNames());
 		otherClaims.put("postalCode", servicesCard.getPostalCode());
-		otherClaims.put("province", servicesCard.getProvince());
 		otherClaims.put("servicesCardInfoID", servicesCard.getServicesCardInfoID());
-		otherClaims.put("streetAddress", servicesCard.getStreetAddress());
 		otherClaims.put("surname", servicesCard.getSurname());
 		otherClaims.put("updateDate", servicesCard.getUpdateDate());
 		otherClaims.put("updateUser", servicesCard.getUpdateUser());
