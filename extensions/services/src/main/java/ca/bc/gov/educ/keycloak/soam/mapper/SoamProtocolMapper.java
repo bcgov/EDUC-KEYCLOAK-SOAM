@@ -1,23 +1,5 @@
 package ca.bc.gov.educ.keycloak.soam.mapper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.jboss.logging.Logger;
-import org.keycloak.models.ProtocolMapperModel;
-import org.keycloak.models.UserSessionModel;
-import org.keycloak.protocol.oidc.OIDCLoginProtocol;
-import org.keycloak.protocol.oidc.mappers.AbstractOIDCProtocolMapper;
-import org.keycloak.protocol.oidc.mappers.OIDCAccessTokenMapper;
-import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
-import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
-import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
-import org.keycloak.provider.ProviderConfigProperty;
-import org.keycloak.representations.IDToken;
-
 import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
 import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
 import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
@@ -25,6 +7,18 @@ import ca.bc.gov.educ.keycloak.soam.model.SoamStudent;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
 import ca.bc.gov.educ.keycloak.soam.utils.ExpiringConcurrentHashMap;
 import ca.bc.gov.educ.keycloak.soam.utils.ExpiringConcurrentHashMapListener;
+import org.jboss.logging.Logger;
+import org.keycloak.models.ProtocolMapperModel;
+import org.keycloak.models.UserSessionModel;
+import org.keycloak.protocol.oidc.OIDCLoginProtocol;
+import org.keycloak.protocol.oidc.mappers.*;
+import org.keycloak.provider.ProviderConfigProperty;
+import org.keycloak.representations.IDToken;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * SOAM Protocol Mapper Will be used to set Education specific claims for our
@@ -164,6 +158,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 		otherClaims.put("dob", student.getDob());
 		otherClaims.put("pen", student.getPen());
 		otherClaims.put("genderCode", student.getGenderCode());
+    otherClaims.put("sexCode", student.getSexCode());
 		otherClaims.put("dataSourceCode", student.getDataSourceCode());
 		otherClaims.put("usualFirstName", student.getUsualFirstName());
 		otherClaims.put("usualMiddleNames", student.getUsualMiddleNames());
