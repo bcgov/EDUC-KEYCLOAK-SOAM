@@ -4,6 +4,7 @@ import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
 import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
 import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
 import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
+import ca.bc.gov.educ.keycloak.soam.utils.SoamUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -82,16 +83,16 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
             throw new SoamRuntimeException("No bcsc_did value was found in token");
           }
           SoamServicesCard servicesCard = new SoamServicesCard();
-          servicesCard.setBirthDate(((List<String>) brokerContext.getContextData().get("user.attributes.birthdate")).get(0));
-          servicesCard.setDid(((List<String>) brokerContext.getContextData().get("user.attributes.did")).get(0));
-          servicesCard.setEmail(((List<String>) brokerContext.getContextData().get("user.attributes.emailAddress")).get(0));
-          servicesCard.setGender(((List<String>) brokerContext.getContextData().get("user.attributes.gender")).get(0));
-          servicesCard.setGivenName(((List<String>) brokerContext.getContextData().get("user.attributes.given_name")).get(0));
-          servicesCard.setGivenNames(((List<String>) brokerContext.getContextData().get("user.attributes.given_names")).get(0));
-          servicesCard.setIdentityAssuranceLevel(((List<String>) brokerContext.getContextData().get("user.attributes.identity_assurance_level")).get(0));
-          servicesCard.setPostalCode(((List<String>) brokerContext.getContextData().get("user.attributes.postal_code")).get(0));
-          servicesCard.setSurname(((List<String>) brokerContext.getContextData().get("user.attributes.family_name")).get(0));
-          servicesCard.setUserDisplayName(((List<String>) brokerContext.getContextData().get("user.attributes.display_name")).get(0));
+          servicesCard.setBirthDate(SoamUtils.getValueForAttribute("user.attributes.birthdate", brokerContext));
+          servicesCard.setDid(SoamUtils.getValueForAttribute("user.attributes.did", brokerContext));
+          servicesCard.setEmail(SoamUtils.getValueForAttribute("user.attributes.emailAddress", brokerContext));
+          servicesCard.setGender(SoamUtils.getValueForAttribute("user.attributes.gender", brokerContext));
+          servicesCard.setGivenName(SoamUtils.getValueForAttribute("user.attributes.given_name", brokerContext));
+          servicesCard.setGivenNames(SoamUtils.getValueForAttribute("user.attributes.given_names", brokerContext));
+          servicesCard.setIdentityAssuranceLevel(SoamUtils.getValueForAttribute("user.attributes.identity_assurance_level", brokerContext));
+          servicesCard.setPostalCode(SoamUtils.getValueForAttribute("user.attributes.postal_code", brokerContext));
+          servicesCard.setSurname(SoamUtils.getValueForAttribute("user.attributes.family_name", brokerContext));
+          servicesCard.setUserDisplayName(SoamUtils.getValueForAttribute("user.attributes.display_name", brokerContext));
           updateUserInfo(user_guid, accountType, "BCSC", servicesCard);
           break;
         case "idir":
