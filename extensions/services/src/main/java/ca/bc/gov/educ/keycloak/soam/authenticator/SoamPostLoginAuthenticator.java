@@ -47,6 +47,11 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
       SerializedBrokeredIdentityContext serializedCtx = JsonSerialization.readValue(stringSerialCtx, SerializedBrokeredIdentityContext.class);
       BrokeredIdentityContext brokerContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
 
+      Map<String, Object> brokerClaims = brokerContext.getContextData();
+      for (String s : brokerClaims.keySet()) {
+        logger.debug("Context Key: " + s + " Value: " + brokerClaims.get(s));
+      }
+
       String accountType = context.getUser().getFirstAttribute("account_type");
 
       //This is added for BCSC - direct IDP
@@ -97,8 +102,8 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
           break;
         case "idir":
           logger.debug("SOAM Post: Account type idir found");
-          user_guid = (String) otherClaims.get("idir_guid");
-          existingUser.setSingleAttribute("user_guid", ((String) otherClaims.get("idir_guid")));
+          user_guid = (String) otherClaims.get("idir_user_guid");
+          existingUser.setSingleAttribute("user_guid", ((String) otherClaims.get("idir_user_guid")));
           if (user_guid == null) {
             throw new SoamRuntimeException("No idir_guid value was found in token");
           }
