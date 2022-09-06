@@ -1,4 +1,2 @@
 ca.bc.gov.educ.keycloak.soam.authenticator.SoamFirstTimeLoginAuthenticatorFactory
 ca.bc.gov.educ.keycloak.soam.authenticator.SoamPostLoginAuthenticatorFactory
-ca.bc.gov.educ.keycloak.soam.authenticator.SoamFirstTimeSAMLLoginAuthenticatorFactory
-ca.bc.gov.educ.keycloak.soam.authenticator.SoamPostSAMLLoginAuthenticatorFactory
