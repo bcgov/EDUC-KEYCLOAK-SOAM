@@ -71,12 +71,12 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
       String user_guid = null;
 
       switch (accountType) {
-        case "bceid":
-          logger.debug("SOAM Post: Account type bceid found");
-          user_guid = (String) otherClaims.get("bceid_guid");
-          existingUser.setSingleAttribute("user_guid", ((String) otherClaims.get("bceid_guid")));
+        case "bceidbasic":
+          logger.debug("SOAM Post: Account type basic bceid found");
+          user_guid = (String) otherClaims.get("bceid_user_guid");
+          existingUser.setSingleAttribute("user_guid", user_guid);
           if (user_guid == null) {
-            throw new SoamRuntimeException("No bceid_guid value was found in token");
+            throw new SoamRuntimeException("No bceid_user_guid value was found in token");
           }
           updateUserInfo(user_guid, accountType, "BASIC", null);
           break;
@@ -100,16 +100,8 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
           servicesCard.setUserDisplayName(SoamUtils.getValueForAttribute("user.attributes.display_name", brokerContext));
           updateUserInfo(user_guid, accountType, "BCSC", servicesCard);
           break;
-        case "idir":
-          logger.debug("SOAM Post: Account type idir found");
-          user_guid = (String) otherClaims.get("idir_user_guid");
-          existingUser.setSingleAttribute("user_guid", ((String) otherClaims.get("idir_user_guid")));
-          if (user_guid == null) {
-            throw new SoamRuntimeException("No idir_guid value was found in token");
-          }
-          break;
         default:
-          throw new SoamRuntimeException("Account type is not bcsc, bceid or idir, check IDP mappers");
+          throw new SoamRuntimeException("Account type is not bcsc or bceid, check IDP mappers");
       }
 
       context.setUser(existingUser);

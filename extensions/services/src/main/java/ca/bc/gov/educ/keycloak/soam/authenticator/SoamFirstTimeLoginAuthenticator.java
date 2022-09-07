@@ -73,9 +73,9 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
       case "bceid":
         logger.debug("SOAM: Account type bceid found");
         if (username == null) {
-          throw new SoamRuntimeException("No bceid_guid value was found in token");
+          throw new SoamRuntimeException("No bceid_user_guid value was found in token");
         }
-        createOrUpdateUser((String) otherClaims.get("bceid_guid"), accountType, "BASIC", null);
+        createOrUpdateUser((String) otherClaims.get("bceid_user_guid"), accountType, "BASIC", null);
         break;
       case "bcsc":
         logger.debug("SOAM: Account type bcsc found");
@@ -97,14 +97,8 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         servicesCard.setUserDisplayName(SoamUtils.getValueForAttribute("user.attributes.display_name", brokerContext));
         createOrUpdateUser(servicesCard.getDid(), accountType, "BCSC", servicesCard);
         break;
-      case "idir":
-        logger.debug("SOAM: Account type idir found");
-        if (username == null) {
-          throw new SoamRuntimeException("No idir_guid value was found in token");
-        }
-        break;
       default:
-        throw new SoamRuntimeException("Account type is not bcsc, bceid or idir, check IDP mappers");
+        throw new SoamRuntimeException("Account type is not bcsc or bceid check IDP mappers");
     }
 
     if (context.getSession().users().getUserByUsername(username, realm) == null) {
@@ -114,17 +108,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
       UserModel federatedUser = session.users().addUser(realm, username);
       federatedUser.setEnabled(true);
 
-      if (accountType.equals("bceid")) {
-        federatedUser.setSingleAttribute("display_name", (String) otherClaims.get("display_name"));
-        federatedUser.setSingleAttribute("bceid_userid", ((String) otherClaims.get("bceid_userid")));
-        federatedUser.setSingleAttribute("user_guid", ((String) otherClaims.get("bceid_guid")));
-      } else if (accountType.equals("idir")) {
-        federatedUser.setSingleAttribute("idir_username", ((String) otherClaims.get("preferred_username")).replaceFirst("@idir", "").toUpperCase());
-        federatedUser.setSingleAttribute("display_name", ((String) otherClaims.get("name")));
-        federatedUser.setFirstName(((String) otherClaims.get("given_name")));
-        federatedUser.setLastName(((String) otherClaims.get("family_name")));
-        federatedUser.setSingleAttribute("user_guid", ((String) otherClaims.get("idir_guid")));
-      } else if (accountType.equals("bcsc")) {
+      if (accountType.equals("bcsc")) {
         federatedUser.setSingleAttribute("user_did", ((List<String>) brokerContext.getContextData().get("user.attributes.did")).get(0));
       }
 
