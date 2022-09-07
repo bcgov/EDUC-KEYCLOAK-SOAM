@@ -73,9 +73,9 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
       case "bceid":
         logger.debug("SOAM: Account type bceid found");
         if (username == null) {
-          throw new SoamRuntimeException("No bceid_guid value was found in token");
+          throw new SoamRuntimeException("No bceid_user_guid value was found in token");
         }
-        createOrUpdateUser((String) otherClaims.get("bceid_guid"), accountType, "BASIC", null);
+        createOrUpdateUser((String) otherClaims.get("bceid_user_guid"), accountType, "BASIC", null);
         break;
       case "bcsc":
         logger.debug("SOAM: Account type bcsc found");
@@ -108,11 +108,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
       UserModel federatedUser = session.users().addUser(realm, username);
       federatedUser.setEnabled(true);
 
-      if (accountType.equals("bceid")) {
-        federatedUser.setSingleAttribute("display_name", (String) otherClaims.get("display_name"));
-        federatedUser.setSingleAttribute("bceid_userid", ((String) otherClaims.get("bceid_userid")));
-        federatedUser.setSingleAttribute("user_guid", ((String) otherClaims.get("bceid_guid")));
-      } else if (accountType.equals("bcsc")) {
+      if (accountType.equals("bcsc")) {
         federatedUser.setSingleAttribute("user_did", ((List<String>) brokerContext.getContextData().get("user.attributes.did")).get(0));
       }
 

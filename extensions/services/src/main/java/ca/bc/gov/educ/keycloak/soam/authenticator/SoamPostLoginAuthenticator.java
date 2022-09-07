@@ -71,12 +71,12 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
       String user_guid = null;
 
       switch (accountType) {
-        case "bceid":
-          logger.debug("SOAM Post: Account type bceid found");
-          user_guid = (String) otherClaims.get("bceid_guid");
-          existingUser.setSingleAttribute("user_guid", ((String) otherClaims.get("bceid_guid")));
+        case "bceidbasic":
+          logger.debug("SOAM Post: Account type basic bceid found");
+          user_guid = (String) otherClaims.get("bceid_user_guid");
+          existingUser.setSingleAttribute("user_guid", user_guid);
           if (user_guid == null) {
-            throw new SoamRuntimeException("No bceid_guid value was found in token");
+            throw new SoamRuntimeException("No bceid_user_guid value was found in token");
           }
           updateUserInfo(user_guid, accountType, "BASIC", null);
           break;
