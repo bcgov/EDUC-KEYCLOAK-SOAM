@@ -106,7 +106,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 				}
 			}
 			
-			if(accountType.equals("bceid")){
+			if(accountType.equals("bceidbasic")){
 				SoamLoginEntity soamLoginEntity = fetchSoamLoginEntity("BASIC", userGUID);
 				token.getOtherClaims().put("accountType", "BCEID");
 				
