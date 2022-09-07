@@ -70,7 +70,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
     String username = ((List<String>) brokerContext.getContextData().get("user.attributes.username")).get(0);
 
     switch (accountType) {
-      case "bceid":
+      case "bceidbasic":
         logger.debug("SOAM: Account type bceid found");
         if (username == null) {
           throw new SoamRuntimeException("No bceid_user_guid value was found in token");
