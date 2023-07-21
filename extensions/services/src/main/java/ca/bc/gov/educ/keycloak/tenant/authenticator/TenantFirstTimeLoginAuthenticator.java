@@ -53,8 +53,10 @@ public class TenantFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator 
       logger.debug("VALIDATED_ID_TOKEN Key: " + s + " Value: " + otherClaims.get(s));
     }
 
-    String tenantID = (String) otherClaims.get("tenantID");
+    String tenantID = (String) otherClaims.get("tid");
     String clientID = context.getAuthenticationSession().getClient().getClientId();
+
+    logger.debug("Tenant flow found Tenant ID: " + tenantID + " Client ID: " + clientID);
 
 //    TenantRestUtils.getInstance().checkForValidTenant(clientID, tenantID);
 
