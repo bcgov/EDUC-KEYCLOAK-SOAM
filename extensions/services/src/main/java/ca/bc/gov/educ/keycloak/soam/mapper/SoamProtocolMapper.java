@@ -4,9 +4,9 @@ import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
 import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
 import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
 import ca.bc.gov.educ.keycloak.soam.model.SoamStudent;
-import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
-import ca.bc.gov.educ.keycloak.soam.utils.ExpiringConcurrentHashMap;
-import ca.bc.gov.educ.keycloak.soam.utils.ExpiringConcurrentHashMapListener;
+import ca.bc.gov.educ.keycloak.soam.rest.SoamRestUtils;
+import ca.bc.gov.educ.keycloak.common.utils.ExpiringConcurrentHashMap;
+import ca.bc.gov.educ.keycloak.common.utils.ExpiringConcurrentHashMapListener;
 import org.jboss.logging.Logger;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
@@ -80,7 +80,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 			return loginDetailCache.get(userGUID);
 		}
 		logger.debug("SOAM Fetching " + type + " Claims");
-		SoamLoginEntity soamLoginEntity = RestUtils.getInstance().getSoamLoginEntity(type, userGUID);
+		SoamLoginEntity soamLoginEntity = SoamRestUtils.getInstance().getSoamLoginEntity(type, userGUID);
 		loginDetailCache.put(userGUID, soamLoginEntity);
 		
 		return soamLoginEntity;

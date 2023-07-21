@@ -1,15 +1,15 @@
-package ca.bc.gov.educ.keycloak.soam.utils;
+package ca.bc.gov.educ.keycloak.common.utils;
 
 import org.jboss.logging.Logger;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 
 import java.util.List;
 
-public class SoamUtils {
+public class CommonUtils {
 
-  private static Logger logger = Logger.getLogger(SoamUtils.class);
+  private static Logger logger = Logger.getLogger(CommonUtils.class);
 
-  private SoamUtils() {
+  private CommonUtils() {
   }
 
   public static String getValueForAttribute(String attributeName, BrokeredIdentityContext brokerContext){
