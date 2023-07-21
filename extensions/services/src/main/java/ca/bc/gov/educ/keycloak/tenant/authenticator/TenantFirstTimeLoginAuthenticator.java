@@ -1,7 +1,9 @@
 package ca.bc.gov.educ.keycloak.tenant.authenticator;
 
-import ca.bc.gov.educ.keycloak.tenant.exception.TenantRuntimeException;
-import ca.bc.gov.educ.keycloak.tenant.rest.TenantRestUtils;
+import ca.bc.gov.educ.keycloak.common.utils.CommonUtils;
+import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
+import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
+import ca.bc.gov.educ.keycloak.soam.rest.SoamRestUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -15,26 +17,20 @@ import org.keycloak.representations.JsonWebToken;
 import java.util.List;
 import java.util.Map;
 
-/**
- * SOAM First Time login authenticator
- * This class will handle the callouts to our API
- *
- * @author Marco Villeneuve
- */
 public class TenantFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 
-  private static Logger logger = Logger.getLogger(TenantFirstTimeLoginAuthenticator.class);
+  private static Logger logger = Logger.getLogger(ca.bc.gov.educ.keycloak.soam.authenticator.SoamFirstTimeLoginAuthenticator.class);
 
 
   @Override
   protected void actionImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
   }
 
-
-
   @Override
   protected void authenticateImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-    logger.debug("Tenant: inside first time authenticateImpl");
+    logger.debug("Tenant: inside authenticateImpl");
+    KeycloakSession session = context.getSession();
+    RealmModel realm = context.getRealm();
 
     if (context.getAuthenticationSession().getAuthNote(EXISTING_USER_INFO) != null) {
       context.attempted();
@@ -53,15 +49,89 @@ public class TenantFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator 
       logger.debug("VALIDATED_ID_TOKEN Key: " + s + " Value: " + otherClaims.get(s));
     }
 
-    String tenantID = (String) otherClaims.get("tid");
-    String clientID = context.getAuthenticationSession().getClient().getClientId();
+    String accountType = (String) otherClaims.get("account_type");
 
-    logger.debug("Tenant flow found Tenant ID: " + tenantID + " Client ID: " + clientID);
+    //This is added for BCSC - direct IDP
+    if (accountType == null) {
+      accountType = ((List<String>) brokerContext.getContextData().get("user.attributes.account_type")).get(0);
+    }
 
-//    TenantRestUtils.getInstance().checkForValidTenant(clientID, tenantID);
+    if (accountType == null) {
+      throw new SoamRuntimeException("Account type is null; account type should always be available, check the IDP mappers for the hardcoded attribute");
+    }
 
-    context.success();
+    String username = ((List<String>) brokerContext.getContextData().get("user.attributes.username")).get(0);
+
+    switch (accountType) {
+      case "bceidbasic":
+        logger.debug("Tenant: Account type bceid found");
+        if (username == null) {
+          throw new SoamRuntimeException("No bceid_user_guid value was found in token");
+        }
+        createOrUpdateUser((String) otherClaims.get("bceid_user_guid"), accountType, "BASIC", null);
+        break;
+      case "bcsc":
+        logger.debug("Tenant: Account type bcsc found");
+
+        if (username == null) {
+          throw new SoamRuntimeException("No bcsc_did value was found in token");
+        }
+
+        SoamServicesCard servicesCard = new SoamServicesCard();
+        servicesCard.setBirthDate(CommonUtils.getValueForAttribute("user.attributes.birthdate", brokerContext));
+        servicesCard.setDid(CommonUtils.getValueForAttribute("user.attributes.did", brokerContext));
+        servicesCard.setEmail(CommonUtils.getValueForAttribute("user.attributes.emailAddress", brokerContext));
+        servicesCard.setGender(CommonUtils.getValueForAttribute("user.attributes.gender", brokerContext));
+        servicesCard.setGivenName(CommonUtils.getValueForAttribute("user.attributes.given_name", brokerContext));
+        servicesCard.setGivenNames(CommonUtils.getValueForAttribute("user.attributes.given_names", brokerContext));
+        servicesCard.setIdentityAssuranceLevel(CommonUtils.getValueForAttribute("user.attributes.identity_assurance_level", brokerContext));
+        servicesCard.setPostalCode(CommonUtils.getValueForAttribute("user.attributes.postal_code", brokerContext));
+        servicesCard.setSurname(CommonUtils.getValueForAttribute("user.attributes.family_name", brokerContext));
+        servicesCard.setUserDisplayName(CommonUtils.getValueForAttribute("user.attributes.display_name", brokerContext));
+        createOrUpdateUser(servicesCard.getDid(), accountType, "BCSC", servicesCard);
+        break;
+      default:
+        throw new SoamRuntimeException("Account type is not bcsc or bceid check IDP mappers");
+    }
+
+    if (context.getSession().users().getUserByUsername(username, realm) == null) {
+      logger.debugf("No duplication detected. Creating account for user '%s' and linking with identity provider '%s' .",
+        username, brokerContext.getIdpConfig().getAlias());
+
+      UserModel federatedUser = session.users().addUser(realm, username);
+      federatedUser.setEnabled(true);
+
+      if (accountType.equals("bcsc")) {
+        federatedUser.setSingleAttribute("user_did", ((List<String>) brokerContext.getContextData().get("user.attributes.did")).get(0));
+      }
+
+      for (Map.Entry<String, List<String>> attr : serializedCtx.getAttributes().entrySet()) {
+        federatedUser.setAttribute(attr.getKey(), attr.getValue());
+      }
+
+      context.setUser(federatedUser);
+      context.getAuthenticationSession().setAuthNote(BROKER_REGISTERED_NEW_USER, "true");
+      context.success();
+    } else {
+      logger.debug("Tenant: Existing " + accountType + " user found with username: " + username);
+      UserModel existingUser = context.getSession().users().getUserByUsername(username, realm);
+      context.setUser(existingUser);
+      context.success();
+    }
   }
+
+  protected void createOrUpdateUser(String guid, String accountType, String credType, SoamServicesCard servicesCard) {
+    logger.debug("Tenant: createOrUpdateUser");
+    logger.debug("Tenant: performing login for " + accountType + " user: " + guid);
+
+    try {
+      SoamRestUtils.getInstance().performLogin(credType, guid, guid, servicesCard);
+    } catch (Exception e) {
+      logger.error("Exception occurred within SOAM while processing login" + e.getMessage());
+      throw new SoamRuntimeException("Exception occurred within SOAM while processing login, check downstream logs for SOAM API service");
+    }
+  }
+
 
   @Override
   public boolean requiresUser() {
