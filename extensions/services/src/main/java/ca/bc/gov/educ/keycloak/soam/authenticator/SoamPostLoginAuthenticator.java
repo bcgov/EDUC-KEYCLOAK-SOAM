@@ -2,9 +2,9 @@ package ca.bc.gov.educ.keycloak.soam.authenticator;
 
 import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
 import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
-import ca.bc.gov.educ.keycloak.soam.properties.ApplicationProperties;
-import ca.bc.gov.educ.keycloak.soam.rest.RestUtils;
-import ca.bc.gov.educ.keycloak.soam.utils.SoamUtils;
+import ca.bc.gov.educ.keycloak.common.properties.ApplicationProperties;
+import ca.bc.gov.educ.keycloak.soam.rest.SoamRestUtils;
+import ca.bc.gov.educ.keycloak.common.utils.CommonUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -88,16 +88,16 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
             throw new SoamRuntimeException("No bcsc_did value was found in token");
           }
           SoamServicesCard servicesCard = new SoamServicesCard();
-          servicesCard.setBirthDate(SoamUtils.getValueForAttribute("user.attributes.birthdate", brokerContext));
-          servicesCard.setDid(SoamUtils.getValueForAttribute("user.attributes.did", brokerContext));
-          servicesCard.setEmail(SoamUtils.getValueForAttribute("user.attributes.emailAddress", brokerContext));
-          servicesCard.setGender(SoamUtils.getValueForAttribute("user.attributes.gender", brokerContext));
-          servicesCard.setGivenName(SoamUtils.getValueForAttribute("user.attributes.given_name", brokerContext));
-          servicesCard.setGivenNames(SoamUtils.getValueForAttribute("user.attributes.given_names", brokerContext));
-          servicesCard.setIdentityAssuranceLevel(SoamUtils.getValueForAttribute("user.attributes.identity_assurance_level", brokerContext));
-          servicesCard.setPostalCode(SoamUtils.getValueForAttribute("user.attributes.postal_code", brokerContext));
-          servicesCard.setSurname(SoamUtils.getValueForAttribute("user.attributes.family_name", brokerContext));
-          servicesCard.setUserDisplayName(SoamUtils.getValueForAttribute("user.attributes.display_name", brokerContext));
+          servicesCard.setBirthDate(CommonUtils.getValueForAttribute("user.attributes.birthdate", brokerContext));
+          servicesCard.setDid(CommonUtils.getValueForAttribute("user.attributes.did", brokerContext));
+          servicesCard.setEmail(CommonUtils.getValueForAttribute("user.attributes.emailAddress", brokerContext));
+          servicesCard.setGender(CommonUtils.getValueForAttribute("user.attributes.gender", brokerContext));
+          servicesCard.setGivenName(CommonUtils.getValueForAttribute("user.attributes.given_name", brokerContext));
+          servicesCard.setGivenNames(CommonUtils.getValueForAttribute("user.attributes.given_names", brokerContext));
+          servicesCard.setIdentityAssuranceLevel(CommonUtils.getValueForAttribute("user.attributes.identity_assurance_level", brokerContext));
+          servicesCard.setPostalCode(CommonUtils.getValueForAttribute("user.attributes.postal_code", brokerContext));
+          servicesCard.setSurname(CommonUtils.getValueForAttribute("user.attributes.family_name", brokerContext));
+          servicesCard.setUserDisplayName(CommonUtils.getValueForAttribute("user.attributes.display_name", brokerContext));
           updateUserInfo(user_guid, accountType, "BCSC", servicesCard);
           break;
         default:
@@ -120,7 +120,7 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
     logger.debug("SOAM: performing login for " + accountType + " user: " + guid);
 
     try {
-      RestUtils.getInstance().performLogin(credType, guid, guid, servicesCard);
+      SoamRestUtils.getInstance().performLogin(credType, guid, guid, servicesCard);
     } catch (Exception e) {
       logger.error("Exception occurred within SOAM while processing login" + e.getMessage());
       throw new SoamRuntimeException("Exception occurred within SOAM while processing login, check downstream logs for SOAM API service");

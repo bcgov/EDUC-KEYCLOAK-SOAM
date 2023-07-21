@@ -1,4 +1,4 @@
-package ca.bc.gov.educ.keycloak.soam.properties;
+package ca.bc.gov.educ.keycloak.common.properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.logging.Logger;
@@ -12,7 +12,6 @@ import org.jboss.logging.Logger;
 public class ApplicationProperties {
   public static final ObjectMapper mapper = new ObjectMapper();
 	private static Logger logger = Logger.getLogger(ApplicationProperties.class);
-
 	private String soamApiURL;
 	private String tokenURL;
 	private String clientID;
