@@ -1,5 +1,9 @@
 package ca.bc.gov.educ.keycloak.tenant.authenticator;
 
+import ca.bc.gov.educ.keycloak.common.utils.CommonUtils;
+import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
+import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
+import ca.bc.gov.educ.keycloak.soam.rest.SoamRestUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -10,11 +14,12 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 
+import java.util.List;
 import java.util.Map;
 
 public class TenantFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
 
-  private static Logger logger = Logger.getLogger(TenantFirstTimeLoginAuthenticator.class);
+  private static Logger logger = Logger.getLogger(ca.bc.gov.educ.keycloak.soam.authenticator.SoamFirstTimeLoginAuthenticator.class);
 
 
   @Override
@@ -44,13 +49,28 @@ public class TenantFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator 
       logger.debug("VALIDATED_ID_TOKEN Key: " + s + " Value: " + otherClaims.get(s));
     }
 
-    String tenantID = (String) otherClaims.get("tid");
-    String clientID = context.getAuthenticationSession().getClient().getClientId();
+    String accountType = (String) otherClaims.get("account_type");
 
-    logger.debug("Tenant flow found Tenant ID: " + tenantID + " Client ID: " + clientID);
+    String username = "TEST";
 
+    logger.debug("Tenant: Existing " + accountType + " user found with username: " + username);
+    UserModel existingUser = context.getSession().users().getUserByUsername(username, realm);
+    context.setUser(existingUser);
     context.success();
   }
+
+  protected void createOrUpdateUser(String guid, String accountType, String credType, SoamServicesCard servicesCard) {
+    logger.debug("Tenant: createOrUpdateUser");
+    logger.debug("Tenant: performing login for " + accountType + " user: " + guid);
+
+    try {
+      SoamRestUtils.getInstance().performLogin(credType, guid, guid, servicesCard);
+    } catch (Exception e) {
+      logger.error("Exception occurred within SOAM while processing login" + e.getMessage());
+      throw new SoamRuntimeException("Exception occurred within SOAM while processing login, check downstream logs for SOAM API service");
+    }
+  }
+
 
   @Override
   public boolean requiresUser() {
