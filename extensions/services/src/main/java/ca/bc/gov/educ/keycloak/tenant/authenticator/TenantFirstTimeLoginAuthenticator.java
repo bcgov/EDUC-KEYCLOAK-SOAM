@@ -1,6 +1,5 @@
 package ca.bc.gov.educ.keycloak.tenant.authenticator;
 
-import ca.bc.gov.educ.keycloak.common.utils.CommonUtils;
 import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
 import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
 import ca.bc.gov.educ.keycloak.soam.rest.SoamRestUtils;
@@ -14,7 +13,6 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 
-import java.util.List;
 import java.util.Map;
 
 public class TenantFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
@@ -54,8 +52,6 @@ public class TenantFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator 
     String username = "TEST";
 
     logger.debug("Tenant: Existing " + accountType + " user found with username: " + username);
-    UserModel existingUser = context.getSession().users().getUserByUsername(username, realm);
-    context.setUser(existingUser);
     context.success();
   }
 
