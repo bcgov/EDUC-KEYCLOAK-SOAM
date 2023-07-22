@@ -49,7 +49,7 @@ public class TenantFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator 
 
     String accountType = (String) otherClaims.get("account_type");
 
-    String username = "TEST";
+    String username = "VINO";
 
     logger.debug("Tenant: Existing " + accountType + " user found with username: " + username);
     context.success();
