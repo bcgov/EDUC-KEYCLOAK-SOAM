@@ -69,6 +69,13 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
     String username = ((List<String>) brokerContext.getContextData().get("user.attributes.username")).get(0);
 
     switch (accountType) {
+      case "entra":
+        logger.debug("SOAM: Account type entra found");
+        if (username == null) {
+          throw new SoamRuntimeException("No entra oid value was found in token");
+        }
+        createOrUpdateUser((String) otherClaims.get("entra_user_id"), accountType, "ENTRA", null);
+        break;
       case "bceidbasic":
         logger.debug("SOAM: Account type bceid found");
         if (username == null) {

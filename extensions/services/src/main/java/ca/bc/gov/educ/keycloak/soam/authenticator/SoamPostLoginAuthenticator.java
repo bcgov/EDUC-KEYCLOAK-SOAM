@@ -71,6 +71,15 @@ public class SoamPostLoginAuthenticator extends AbstractIdpAuthenticator {
       String user_guid = null;
 
       switch (accountType) {
+        case "entra":
+          logger.debug("SOAM Post: Account type entra found");
+          user_guid = (String) otherClaims.get("entra_user_id");
+          existingUser.setSingleAttribute("user_guid", user_guid);
+          if (user_guid == null) {
+            throw new SoamRuntimeException("No entra_user_id value was found in token");
+          }
+          updateUserInfo(user_guid, accountType, "ENTRA", null);
+          break;
         case "bceidbasic":
           logger.debug("SOAM Post: Account type basic bceid found");
           user_guid = (String) otherClaims.get("bceid_user_guid");
