@@ -2,8 +2,7 @@ package ca.bc.gov.educ.keycloak.tenant.mapper;
 
 import ca.bc.gov.educ.keycloak.common.utils.ExpiringConcurrentHashMap;
 import ca.bc.gov.educ.keycloak.common.utils.ExpiringConcurrentHashMapListener;
-import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
-import ca.bc.gov.educ.keycloak.tenant.model.TenantAccessEntity;
+import ca.bc.gov.educ.keycloak.tenant.model.TenantAccess;
 import ca.bc.gov.educ.keycloak.tenant.rest.TenantRestUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.models.ClientSessionContext;
@@ -37,15 +36,15 @@ public class TenantProtocolMapper extends AbstractOIDCProtocolMapper
     }
 
     //Create hashmap with 30 second expiry.
-    private ExpiringConcurrentHashMap<String, TenantAccessEntity> loginDetailCache = new ExpiringConcurrentHashMap<>(30000, new ExpiringConcurrentHashMapListener<String, TenantAccessEntity>() {
+    private ExpiringConcurrentHashMap<String, TenantAccess> loginDetailCache = new ExpiringConcurrentHashMap<>(30000, new ExpiringConcurrentHashMapListener<String, TenantAccess>() {
 
         @Override
-        public void notifyOnAdd(String key, TenantAccessEntity value) {
+        public void notifyOnAdd(String key, TenantAccess value) {
             logger.debug("Adding TenantAccessEntity to Tenant cache, key: " + key);
         }
 
         @Override
-        public void notifyOnRemoval(String key, TenantAccessEntity value) {
+        public void notifyOnRemoval(String key, TenantAccess value) {
             logger.debug("Removing TenantAccessEntity from Tenant cache, key: " + key);
             logger.debug("Current cache size on this node: " + loginDetailCache.size());
         }
@@ -73,68 +72,32 @@ public class TenantProtocolMapper extends AbstractOIDCProtocolMapper
         return "Map Tenant claims";
     }
 
-    private TenantAccessEntity fetchTenantAccessEntity(String clientID, String tenantID) {
+    private TenantAccess fetchTenantAccessEntity(String clientID, String tenantID) {
         if (loginDetailCache.containsKey(tenantID)) {
             return loginDetailCache.get(tenantID);
         }
-        logger.debug("Tenant Access Fetching by Tenant ID: " + tenantID);
-        TenantAccessEntity tenantAccessEntity = TenantRestUtils.getInstance().checkForValidTenant(clientID, tenantID);
-        loginDetailCache.put(tenantID, tenantAccessEntity);
+        logger.debug("Tenant Access Fetching by Tenant ID: " + tenantID + " and Client ID: " + clientID);
+        TenantAccess tenantAccess = TenantRestUtils.getInstance().checkForValidTenant(clientID, tenantID);
+        loginDetailCache.put(tenantID, tenantAccess);
 
-        return tenantAccessEntity;
+        return tenantAccess;
     }
 
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
-        logger.debug("Tenant Mapper - setClaim method");
-
-//        String clientID = clientSessionCtx.getClientSession().getClient().getClientId();
-//
-//        logger.debug("Client ID is: " + clientID);
-
-        Map<String, List<String>> attributes = userSession.getUser().getAttributes();
-        for (String s : attributes.keySet()) {
-            logger.debug("User Key: " + s);
-            for (String val : attributes.get(s)) {
-                logger.debug("Value: " + val);
-            }
-        }
-
-        Map<String, Object> otherClaims = token.getOtherClaims();
-        for (String s : otherClaims.keySet()) {
-            logger.debug("Protocol Mapper ID Token Key: " + s + " Value: " + otherClaims.get(s));
-        }
-
-        String tenantID = userSession.getUser().getFirstAttribute("tenant_id");
-        logger.debug("Tenant ID is: " + tenantID);
-
+        logger.debug("Tenant Mapper - setClaim 3 param method");
 	}
 
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx) {
-        logger.debug("Tenant Mapper - setClaim large method");
+        logger.debug("Tenant Mapper - setClaim 5 param method");
 
         String clientID = clientSessionCtx.getClientSession().getClient().getClientId();
-
-        logger.debug("Client ID is: " + clientID);
-
-        Map<String, List<String>> attributes = userSession.getUser().getAttributes();
-        for (String s : attributes.keySet()) {
-            logger.debug("User Key: " + s);
-            for (String val : attributes.get(s)) {
-                logger.debug("Value: " + val);
-            }
-        }
-
-        Map<String, Object> otherClaims = token.getOtherClaims();
-        for (String s : otherClaims.keySet()) {
-            logger.debug("Protocol Mapper ID Token Key: " + s + " Value: " + otherClaims.get(s));
-        }
-
         String tenantID = userSession.getUser().getFirstAttribute("tenant_id");
-        logger.debug("Tenant ID is: " + tenantID);
-//        TenantAccessEntity entity = fetchTenantAccessEntity(clientID, tenantID);
-//
-//        token.getOtherClaims().put("isValidTenant", entity.getIsValid());
+
+        if(tenantID != null) {
+            TenantAccess entity = fetchTenantAccessEntity(clientID, tenantID);
+            token.getOtherClaims().put("isValidTenant", entity.getIsValid());
+        }
     }
 
     public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
