@@ -53,17 +53,15 @@ public class TenantRestUtils {
   }
 
   public TenantAccess checkForValidTenant(String clientID, String tenantID) {
-    String url = props.getSoamApiURL() + "/tenant";
+    String url = props.getSoamApiURL() + "/tenant?clientID=" + clientID + "&tenantID=" + tenantID;
     final String correlationID = logAndGetCorrelationID(tenantID, url, HttpMethod.GET.toString());
     RestTemplate restTemplate = getRestTemplate(null);
     HttpHeaders headers = new HttpHeaders();
     headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
     headers.add("correlationID", correlationID);
-    Map<String, String> params = new HashMap<>();
-    params.put("clientID", clientID);
-    params.put("tenantID", tenantID);
+
     try {
-      return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>("parameters", headers), TenantAccess.class, params).getBody();
+      return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>("parameters", headers), TenantAccess.class).getBody();
     } catch (final HttpClientErrorException e) {
       throw new RuntimeException("Could not complete checkForValidTenant call: " + e.getMessage());
     }
