@@ -1,10 +1,10 @@
 package ca.bc.gov.educ.keycloak.tenant.model;
 
-public class TenantResponse {
+public class TenantAccessEntity {
 
 	private String clientID;
 	private String tenantID;
-	private boolean valid;
+	private String isValid;
 
 	public String getClientID() {
 		return clientID;
@@ -22,11 +22,11 @@ public class TenantResponse {
 		this.tenantID = tenantID;
 	}
 
-	public boolean isValid() {
-		return valid;
+	public String getIsValid() {
+		return isValid;
 	}
 
-	public void setValid(boolean valid) {
-		this.valid = valid;
+	public void setIsValid(String isValid) {
+		this.isValid = isValid;
 	}
 }

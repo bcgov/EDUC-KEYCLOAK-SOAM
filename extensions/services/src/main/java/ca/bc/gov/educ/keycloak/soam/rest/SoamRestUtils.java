@@ -1,9 +1,8 @@
 package ca.bc.gov.educ.keycloak.soam.rest;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
+import ca.bc.gov.educ.keycloak.common.properties.ApplicationProperties;
+import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
+import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
 import org.jboss.logging.Logger;
 import org.jboss.logging.MDC;
 import org.springframework.http.HttpEntity;
@@ -18,9 +17,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
-import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
-import ca.bc.gov.educ.keycloak.common.properties.ApplicationProperties;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * This class is used for REST calls
