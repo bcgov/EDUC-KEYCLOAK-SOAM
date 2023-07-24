@@ -89,8 +89,6 @@ public class TenantProtocolMapper extends AbstractOIDCProtocolMapper
 
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx) {
-        logger.debug("Tenant Mapper - setClaim 5 param method");
-
         String clientID = clientSessionCtx.getClientSession().getClient().getClientId();
         String tenantID = userSession.getUser().getFirstAttribute("tenant_id");
 
