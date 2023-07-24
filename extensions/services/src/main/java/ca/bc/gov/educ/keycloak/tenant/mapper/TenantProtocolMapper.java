@@ -93,7 +93,7 @@ public class TenantProtocolMapper extends AbstractOIDCProtocolMapper
 
         Map<String, List<String>> attributes = userSession.getUser().getAttributes();
         for (String s : attributes.keySet()) {
-            logger.debug("Key: " + s);
+            logger.debug("User Key: " + s);
             for (String val : attributes.get(s)) {
                 logger.debug("Value: " + val);
             }
