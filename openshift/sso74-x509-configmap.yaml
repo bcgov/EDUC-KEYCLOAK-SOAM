@@ -140,7 +140,7 @@ objects:
                 <logger category="sun.rmi">
                     <level name="WARN"/>
                 </logger>
-                <logger category="ca.bc.gov.educ.keycloak.soam" use-parent-handlers="false">
+                <logger category="ca.bc.gov.educ.keycloak" use-parent-handlers="false">
                     <level name="TRACE"/>
                      <handlers>
                         <handler name="SOAM"/>
