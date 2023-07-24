@@ -1,9 +1,9 @@
 package ca.bc.gov.educ.keycloak.soam.authenticator;
 
-import java.util.List;
-import java.util.Map;
-
 import ca.bc.gov.educ.keycloak.common.utils.CommonUtils;
+import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
+import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
+import ca.bc.gov.educ.keycloak.soam.rest.SoamRestUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
@@ -14,9 +14,8 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 
-import ca.bc.gov.educ.keycloak.soam.exception.SoamRuntimeException;
-import ca.bc.gov.educ.keycloak.soam.model.SoamServicesCard;
-import ca.bc.gov.educ.keycloak.soam.rest.SoamRestUtils;
+import java.util.List;
+import java.util.Map;
 
 /**
  * SOAM First Time login authenticator

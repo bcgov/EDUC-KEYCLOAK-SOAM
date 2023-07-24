@@ -1,7 +1,7 @@
 package ca.bc.gov.educ.keycloak.tenant.rest;
 
 import ca.bc.gov.educ.keycloak.common.properties.ApplicationProperties;
-import ca.bc.gov.educ.keycloak.tenant.model.TenantResponse;
+import ca.bc.gov.educ.keycloak.tenant.model.TenantAccessEntity;
 import org.jboss.logging.Logger;
 import org.jboss.logging.MDC;
 import org.springframework.http.HttpEntity;
@@ -55,7 +55,7 @@ public class TenantRestUtils {
     return new OAuth2RestTemplate(resourceDetails, new DefaultOAuth2ClientContext());
   }
 
-  public void checkForValidTenant(String clientID, String tenantID) {
+  public TenantAccessEntity checkForValidTenant(String clientID, String tenantID) {
     String url = props.getSoamApiURL() + "/valid-tenant";
     final String correlationID = logAndGetCorrelationID(tenantID + ":" + clientID, url, HttpMethod.POST.toString());
     RestTemplate restTemplate = getRestTemplate(null);
@@ -70,7 +70,7 @@ public class TenantRestUtils {
 
     try {
       logger.debug("Calling checkForValidTenant with client ID: " + clientID + " and Tenant ID: " + tenantID);
-      restTemplate.postForEntity(url, request, TenantResponse.class);
+      return restTemplate.postForEntity(url, request, TenantAccessEntity.class).getBody();
     } catch (final HttpClientErrorException e) {
       throw new RuntimeException("Could not complete valid tenant check call: " + e.getMessage());
     }

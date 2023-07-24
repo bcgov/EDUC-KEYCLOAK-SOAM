@@ -1,13 +1,12 @@
 package ca.bc.gov.educ.keycloak.common.utils;
 
+import ca.bc.gov.educ.keycloak.soam.mapper.SoamProtocolMapper;
+import org.jboss.logging.Logger;
+
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-
-import org.jboss.logging.Logger;
-
-import ca.bc.gov.educ.keycloak.soam.mapper.SoamProtocolMapper;
 
 /**
  * An expiring concurrent hash map solution which stores the keys and values only for a specific amount of time, and then expires after that
