@@ -61,7 +61,7 @@ public class TenantProtocolMapper extends AbstractOIDCProtocolMapper
     }
 
     public String getDisplayType() {
-        return "Soam Protocol Mapper";
+        return "Tenant Protocol Mapper";
     }
 
     public String getDisplayCategory() {
@@ -69,7 +69,7 @@ public class TenantProtocolMapper extends AbstractOIDCProtocolMapper
     }
 
     public String getHelpText() {
-        return "Map SOAM claims";
+        return "Map Tenant claims";
     }
 
     private TenantAccessEntity fetchTenantAccessEntity(String clientID, String tenantID) {
