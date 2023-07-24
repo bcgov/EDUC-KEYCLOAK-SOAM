@@ -1,6 +1,6 @@
 package ca.bc.gov.educ.keycloak.tenant.model;
 
-public class TenantAccessEntity {
+public class TenantAccess {
 
 	private String clientID;
 	private String tenantID;

@@ -1,7 +1,7 @@
 package ca.bc.gov.educ.keycloak.tenant.rest;
 
 import ca.bc.gov.educ.keycloak.common.properties.ApplicationProperties;
-import ca.bc.gov.educ.keycloak.tenant.model.TenantAccessEntity;
+import ca.bc.gov.educ.keycloak.tenant.model.TenantAccess;
 import org.jboss.logging.Logger;
 import org.jboss.logging.MDC;
 import org.springframework.http.HttpEntity;
@@ -11,13 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This class is used for REST calls
@@ -55,34 +52,30 @@ public class TenantRestUtils {
     return new OAuth2RestTemplate(resourceDetails, new DefaultOAuth2ClientContext());
   }
 
-  public TenantAccessEntity checkForValidTenant(String clientID, String tenantID) {
-    String url = props.getSoamApiURL() + "/valid-tenant";
-    final String correlationID = logAndGetCorrelationID(tenantID + ":" + clientID, url, HttpMethod.POST.toString());
+  public TenantAccess checkForValidTenant(String clientID, String tenantID) {
+    String url = props.getSoamApiURL() + "/tenant";
+    final String correlationID = logAndGetCorrelationID(tenantID, url, HttpMethod.GET.toString());
     RestTemplate restTemplate = getRestTemplate(null);
     HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
     headers.add("correlationID", correlationID);
-    MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-    map.add("clientID", clientID);
-    map.add("tenantID", tenantID);
-
-    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-
+    Map<String, String> params = new HashMap<>();
+    params.put("clientID", clientID);
+    params.put("tenantID", tenantID);
     try {
-      logger.debug("Calling checkForValidTenant with client ID: " + clientID + " and Tenant ID: " + tenantID);
-      return restTemplate.postForEntity(url, request, TenantAccessEntity.class).getBody();
+      return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>("parameters", headers), TenantAccess.class, params).getBody();
     } catch (final HttpClientErrorException e) {
-      throw new RuntimeException("Could not complete valid tenant check call: " + e.getMessage());
+      throw new RuntimeException("Could not complete checkForValidTenant call: " + e.getMessage());
     }
   }
 
-  private String logAndGetCorrelationID(String identifierValue, String url, String httpMethod) {
+  private String logAndGetCorrelationID(String tenantID, String url, String httpMethod) {
     final String correlationID = UUID.randomUUID().toString();
     MDC.put("correlation_id", correlationID);
-    MDC.put("user_guid", identifierValue);
+    MDC.put("tenant_id", tenantID);
     MDC.put("client_http_request_url", url);
     MDC.put("client_http_request_method", httpMethod);
-    logger.info("correlation id for guid=" + identifierValue + " is=" + correlationID);
+    logger.info("correlation id for tenant ID=" + tenantID + " is=" + correlationID);
     MDC.clear();
     return correlationID;
   }
