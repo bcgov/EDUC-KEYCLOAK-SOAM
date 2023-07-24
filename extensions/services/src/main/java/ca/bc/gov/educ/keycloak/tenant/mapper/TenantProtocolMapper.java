@@ -2,6 +2,7 @@ package ca.bc.gov.educ.keycloak.tenant.mapper;
 
 import ca.bc.gov.educ.keycloak.common.utils.ExpiringConcurrentHashMap;
 import ca.bc.gov.educ.keycloak.common.utils.ExpiringConcurrentHashMapListener;
+import ca.bc.gov.educ.keycloak.soam.model.SoamLoginEntity;
 import ca.bc.gov.educ.keycloak.tenant.model.TenantAccessEntity;
 import ca.bc.gov.educ.keycloak.tenant.rest.TenantRestUtils;
 import org.jboss.logging.Logger;
@@ -83,9 +84,34 @@ public class TenantProtocolMapper extends AbstractOIDCProtocolMapper
         return tenantAccessEntity;
     }
 
+    protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
+        logger.debug("Tenant Mapper - setClaim method");
+
+//        String clientID = clientSessionCtx.getClientSession().getClient().getClientId();
+//
+//        logger.debug("Client ID is: " + clientID);
+
+        Map<String, List<String>> attributes = userSession.getUser().getAttributes();
+        for (String s : attributes.keySet()) {
+            logger.debug("User Key: " + s);
+            for (String val : attributes.get(s)) {
+                logger.debug("Value: " + val);
+            }
+        }
+
+        Map<String, Object> otherClaims = token.getOtherClaims();
+        for (String s : otherClaims.keySet()) {
+            logger.debug("Protocol Mapper ID Token Key: " + s + " Value: " + otherClaims.get(s));
+        }
+
+        String tenantID = userSession.getUser().getFirstAttribute("tenant_id");
+        logger.debug("Tenant ID is: " + tenantID);
+
+	}
+
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx) {
-        logger.debug("Tenant Mapper - setClaim method");
+        logger.debug("Tenant Mapper - setClaim large method");
 
         String clientID = clientSessionCtx.getClientSession().getClient().getClientId();
 
@@ -104,7 +130,11 @@ public class TenantProtocolMapper extends AbstractOIDCProtocolMapper
             logger.debug("Protocol Mapper ID Token Key: " + s + " Value: " + otherClaims.get(s));
         }
 
-        token.getOtherClaims().put("isValidTenant", "true");
+        String tenantID = userSession.getUser().getFirstAttribute("tenant_id");
+        logger.debug("Tenant ID is: " + tenantID);
+//        TenantAccessEntity entity = fetchTenantAccessEntity(clientID, tenantID);
+//
+//        token.getOtherClaims().put("isValidTenant", entity.getIsValid());
     }
 
     public static ProtocolMapperModel create(String name, String tokenClaimName, boolean consentRequired,
