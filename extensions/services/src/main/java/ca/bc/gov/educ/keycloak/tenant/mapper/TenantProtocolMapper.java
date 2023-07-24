@@ -101,7 +101,7 @@ public class TenantProtocolMapper extends AbstractOIDCProtocolMapper
 
         Map<String, Object> otherClaims = token.getOtherClaims();
         for (String s : otherClaims.keySet()) {
-            logger.debug("VALIDATED_ID_TOKEN Key: " + s + " Value: " + otherClaims.get(s));
+            logger.debug("Protocol Mapper ID Token Key: " + s + " Value: " + otherClaims.get(s));
         }
 
         token.getOtherClaims().put("isValidTenant", "true");
