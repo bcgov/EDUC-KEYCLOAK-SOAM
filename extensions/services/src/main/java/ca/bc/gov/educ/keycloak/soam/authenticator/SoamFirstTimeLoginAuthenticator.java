@@ -74,7 +74,7 @@ public class SoamFirstTimeLoginAuthenticator extends AbstractIdpAuthenticator {
         if (username == null) {
           throw new SoamRuntimeException("No entra oid value was found in token");
         }
-        createOrUpdateUser((String) otherClaims.get("entra_user_id"), accountType, "ENTRA", null);
+        createOrUpdateUser((String) otherClaims.get("oid"), accountType, "ENTRA", null);
         break;
       case "bceidbasic":
         logger.debug("SOAM: Account type bceid found");
