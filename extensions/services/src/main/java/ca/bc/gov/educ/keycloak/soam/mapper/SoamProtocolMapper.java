@@ -106,17 +106,22 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
                 SoamLoginEntity soamLoginEntity = fetchSoamLoginEntity("BASIC", userGUID);
                 token.getOtherClaims().put("accountType", "BCEID");
 
-                setStandardSoamLoginClaims(token, soamLoginEntity, userSession);
+                setStandardSoamLoginClaims(token, soamLoginEntity, userSession, true);
+            } else if (accountType.equals("entra")) {
+                SoamLoginEntity soamLoginEntity = fetchSoamLoginEntity("ENTRA", userGUID);
+                token.getOtherClaims().put("accountType", "ENTRA");
+
+                setStandardSoamLoginClaims(token, soamLoginEntity, userSession, false);
             } else if (accountType.equals("bcsc")) {
                 SoamLoginEntity soamLoginEntity = fetchSoamLoginEntity("BCSC", userGUID);
                 token.getOtherClaims().put("accountType", "BCSC");
 
-                setStandardSoamLoginClaims(token, soamLoginEntity, userSession);
+                setStandardSoamLoginClaims(token, soamLoginEntity, userSession, true);
             }
         }
     }
 
-    private void setStandardSoamLoginClaims(IDToken token, SoamLoginEntity soamLoginEntity, UserSessionModel userSession) {
+    private void setStandardSoamLoginClaims(IDToken token, SoamLoginEntity soamLoginEntity, UserSessionModel userSession, boolean includeDisplayName) {
         if (soamLoginEntity.getStudent() != null) {
             populateStudentClaims(token, soamLoginEntity);
         }
@@ -127,7 +132,7 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
 
         //In this case we have a digital identity; someone that has logged in but does not have an associated student record
         else if (soamLoginEntity.getDigitalIdentityID() != null) {
-            populateDigitalIDClaims(token, soamLoginEntity, userSession);
+            populateDigitalIDClaims(token, soamLoginEntity, userSession, includeDisplayName);
         }
 
         //This is an exception since we have no data at all
@@ -136,10 +141,12 @@ public class SoamProtocolMapper extends AbstractOIDCProtocolMapper
         }
     }
 
-    private void populateDigitalIDClaims(IDToken token, SoamLoginEntity soamLoginEntity, UserSessionModel userSession) {
+    private void populateDigitalIDClaims(IDToken token, SoamLoginEntity soamLoginEntity, UserSessionModel userSession, boolean includeDisplayName) {
         Map<String, Object> otherClaims = token.getOtherClaims();
         otherClaims.put("digitalIdentityID", soamLoginEntity.getDigitalIdentityID());
-        otherClaims.put("displayName", userSession.getUser().getFirstAttribute("display_name"));
+        if(includeDisplayName) {
+            otherClaims.put("displayName", userSession.getUser().getFirstAttribute("display_name"));
+        }
     }
 
     private void populateStudentClaims(IDToken token, SoamLoginEntity soamLoginEntity) {
